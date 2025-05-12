@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Visa Casa Pro",
-    "slug": "Visa Casa Pro",
+    "name": "visacasapro",
+    "slug": "visacasapro",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/visacasa2.png",
@@ -31,7 +31,7 @@
         "foregroundImage": "./assets/visacasa2.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.mpatricio.nhiquela_seller"
+      "package": "com.mpatricio.visacasapro"
     },
     "ios": {
       "infoPlist": {
@@ -48,7 +48,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "92c183ff-d0ca-4dc4-a4ce-e7c112be9ee0"
+        "projectId": "27fcc910-b96c-471c-ac3d-cc803ba450b0"
       }
     }
   }
