@@ -30,7 +30,7 @@
     "@rneui/themed": "^4.0.0-rc.8",
     "axios": "^1.6.8",
     "eventemitter3": "^5.0.1",
-    "expo": "^52.0.0",
+    "expo": "^51.0.39",
     "expo-constants": "~17.0.8",
     "expo-device": "~7.0.3",
     "expo-image-picker": "~16.0.6",
