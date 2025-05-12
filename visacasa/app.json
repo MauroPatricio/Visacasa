@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Visa Casa",
-    "slug": "Visa Casa",
+    "name": "visacasa",
+    "slug": "visacasa",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/visacasa2.png",
@@ -38,14 +38,14 @@
         "foregroundImage": "./assets/visacasa2.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.mpatricio.mobile"
+      "package": "com.mpatricio.visacasa"
     },
     "web": {
       "favicon": "./assets/visacasa2.png"
     },
     "extra": {
       "eas": {
-        "projectId": "217ab06d-1e14-42d9-b8be-2e173a4b8c77"
+        "projectId": "9b9e50f1-5973-4d5f-966a-18289eafffe5"
       }
     },
     "owner": "mpatricio"
