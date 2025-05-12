@@ -94,14 +94,14 @@ app.use('/api/notifications', notificationRoutes);
 //Nhabanga
 app.use('/api/notificationsNhabanga', notificationRoutesNhabanga);
 
-const __dirname = path.resolve();
-// const rootDir = path.join(__dirname, '..');
-app.use(express.static(path.join(__dirname, '/frontend/build')));
+// const __dirname = path.resolve();
+// // const rootDir = path.join(__dirname, '..');
+// app.use(express.static(path.join(__dirname, '/frontend/build')));
 
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname+'/frontend/build/index.html'));
-});
+// app.get('*', (req, res) => {
+//   res.sendFile(path.join(__dirname+'/frontend/build/index.html'));
+// });
 
 
 
