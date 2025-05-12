@@ -7,6 +7,10 @@
     "start": "node backend/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "dependencies": {
+  "express": "^4.18.2"
+},
+  
   "repository": {
     "type": "git",
     "url": "git+https://github.com/MauroPatricio/Visacasa.git"
