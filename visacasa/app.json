@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "visacasa",
+    "name": "Visacasa",
     "slug": "visacasa",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -45,7 +45,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "9b9e50f1-5973-4d5f-966a-18289eafffe5"
+        "projectId": "788966d7-889d-41c2-b35c-85a48359b8d7"
       }
     },
     "owner": "mpatricio"
