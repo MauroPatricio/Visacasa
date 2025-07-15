@@ -123,7 +123,7 @@ export default SellersList;
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: 'white', // Keep the background white for contrast
+      backgroundColor: '#fafafa', // Keep the background white for contrast
     },
     // icons: {
     //     position: 'absolute',
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     title: {
       fontSize: 24,
       fontWeight: 'bold',
-      color: '#E85A4F', // Main color for the title
+      color: '##7F00FF', // Main color for the title
       textAlign: 'center',
       marginVertical: 20,
     },
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
       width: width * 0.9,
       padding: 15,
       marginVertical: 10,
-      backgroundColor: '#F0F0F0', // Keep card background white for contrast
+      backgroundColor: '#F8F8F8', // Keep card background white for contrast
       borderRadius: 12,
       alignSelf: 'center',
       shadowColor: 'black',
@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
       shadowRadius: 3.84,
       elevation: 3,
       borderWidth: 1, // Added border to seller card
-      borderColor: '#E85A4F', // Border color matching the main color
+      borderColor: '#7F00FF', // Border color matching the main color
     },
     sellerLogo: {
       width: 60,
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
       borderRadius: 30,
       marginRight: 15,
       borderWidth: 2,
-      borderColor: '#E85A4F', // Border color for logo matching main color
+      borderColor: '#7F00FF', // Border color for logo matching main color
     },
     sellerInfo: {
       flex: 1,

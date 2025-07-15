@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     // flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#fff',
     marginTop:200
   },
   icons:{
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     color:'red'
   },
   buttonContainer: {
-    backgroundColor: '#E85A4F',
+    backgroundColor: '#7F00FF',
     borderRadius: 10,
     paddingVertical: 12,
     paddingHorizontal: 25,

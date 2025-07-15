@@ -17,7 +17,7 @@ const ProductHomeView = ({ title, description, categoryid, products }) => {
         <Text style={styles.title}>{title}</Text>
         <TouchableOpacity  onPress={()=>{ navigation.navigate('ProductListByCategory',{title, categoryid})}}>
 
-        <ArrowRightIcon color={"#E85A4F"} size={30} />
+        <ArrowRightIcon color={"#7F00FF"} size={30} />
         </TouchableOpacity>
       </View>
       <View>

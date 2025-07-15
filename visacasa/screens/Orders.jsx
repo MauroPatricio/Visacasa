@@ -74,7 +74,7 @@ const Orders = () => {
         }}
       >
         {isLoading ? (
-          <ActivityIndicator size="large" color="#E85A4F" />
+          <ActivityIndicator size="large" color="#7F00FF" />
         ) : orders.length > 0 ? (
           orders.map((item) => (
             <TouchableOpacity
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: '#E85A4F',
+    backgroundColor: '#FFF',
     borderRadius: 5,
     shadowColor: '#000',
     shadowOffset: { width: 3, height: 2 },
@@ -125,11 +125,11 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: '700',
     padding: 15,
-    color: '#E85A4F',
+    color: '#7F00FF',
     marginBottom: 20
   },
   cartIcon: {
-    color: '#E85A4F',
+    color: '#7F00FF',
     padding: 20,
     borderRadius: 22,
     backgroundColor: 'white',
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
   code: {
     fontWeight: '500',
     fontSize: 17,
-    color: 'white',
+    color: '#333',
     marginLeft: 10,
     textAlign: 'center',
     top: 20,
@@ -145,16 +145,16 @@ const styles = StyleSheet.create({
   status: {
     fontWeight: '700',
     fontSize: 15,
-    color: 'white',
+    color: '#555',
     marginLeft: 10,
   },
   price: {
-    color: 'white',
+    color: '#666',
     fontSize: 15,
     marginLeft: 10,
   },
   createAt: {
-    color: 'white',
+    color: '#888',
     fontSize: 15,
     marginLeft: 10,
   },

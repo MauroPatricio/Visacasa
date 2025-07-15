@@ -129,7 +129,7 @@ const updateCoorder=()=>{
           <Text style={{ fontWeight: '500', marginLeft: 10 }}>Endereço:</Text>
           <View style={styles.details}>
             <View style={styles.address}>
-              <Ionicons name='location-outline' color="#E85A4F" size={22} />
+              <Ionicons name='location-outline' color="#7F00FF" size={22} />
               <Text><Text style={{ fontWeight: '500' }}>{province.name}</Text> - {address}</Text>
             </View>
           </View>
@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     fontWeight: '600',
     fontSize: 22,
-    color: '#E85A4F',
+    color: '#333333',
   },
   mapContainer: {
     marginTop: 20,
@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 10,
-    color: '#E85A4F',
+    color: '#7F00FF',
     marginLeft: 10,
   },
 });

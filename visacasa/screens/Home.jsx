@@ -303,7 +303,7 @@ const styles = StyleSheet.create({
  bottomSheetContent: {
    // flex: 1,
    // padding: 30,
-   backgroundColor: '#F9F9F9', // Light background for the bottom sheet
+   backgroundColor: '#fff', // Light background for the bottom sheet
    // borderTopLeftRadius: 20,
    // borderTopRightRadius: 20,
    // elevation: 5,
@@ -318,12 +318,12 @@ const styles = StyleSheet.create({
    // padding: 15,
    borderBottomWidth: 1,
    borderBottomColor: '#E0E0E0',
-   backgroundColor: '#FFFFFF', // White background for product items
+   backgroundColor: '#FFF', // White background for product items
  },
  wrapper: {
    letterSpacing: 1,
    marginRight: 10,
-   backgroundColor: '#E85A4F', // Bold category color
+   backgroundColor: '#7F00FF', // Bold category color
    paddingVertical: 8,
    paddingHorizontal: 12,
    borderRadius: 20,
@@ -373,7 +373,7 @@ const styles = StyleSheet.create({
  productPrice: {
    fontSize: 16,
    fontWeight: 'bold',
-   color: '#E85A4F', // Highlight price color
+   color: '#7F00FF', // Highlight price color
  },
  cartCount: {
    position: 'absolute',
@@ -410,7 +410,7 @@ const styles = StyleSheet.create({
  location: {
    fontSize: 16,
    fontWeight: '500',
-   color: '#E85A4F', // Highlighted user greeting
+   color: '#7F00FF', // Highlighted user greeting
    marginTop: 5,
    marginLeft: 10,
  },

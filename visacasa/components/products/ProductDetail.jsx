@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
   countText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#7F00FF',
     marginHorizontal: 10,
   },
   descriptionWrapper: {

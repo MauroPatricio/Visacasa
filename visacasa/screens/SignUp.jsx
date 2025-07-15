@@ -80,7 +80,7 @@ const SignUp = ({ navigation }) => {
               <View>
                 <View style={styles.wrapper}>
                   <Text style={styles.label}>Nome e apelido</Text>
-                  <View style={styles.inputWrapper(touched.name ? '#E85A4F' : '#ccc')}>
+                  <View style={styles.inputWrapper(touched.name ? '#7F00FF' : '#ccc')}>
                     <MaterialCommunityIcons name="face-man" size={20} color="grey" style={styles.iconStyle} />
                     <TextInput
                       placeholder="Nome e apelido"
@@ -95,7 +95,7 @@ const SignUp = ({ navigation }) => {
 
                 <View style={styles.wrapper}>
                   <Text style={styles.label}>Número de telefone</Text>
-                  <View style={styles.inputWrapper(touched.phoneNumber ? '#E85A4F' : '#ccc')}>
+                  <View style={styles.inputWrapper(touched.phoneNumber ? '#7F00FF' : '#ccc')}>
                     <MaterialCommunityIcons name="phone" size={20} color="grey" style={styles.iconStyle} />
                     <TextInput
                       placeholder="Insira o número de telefone"
@@ -111,7 +111,7 @@ const SignUp = ({ navigation }) => {
 
                 <View style={styles.wrapper}>
                   <Text style={styles.label}>Email</Text>
-                  <View style={styles.inputWrapper(touched.email ? '#E85A4F' : '#ccc')}>
+                  <View style={styles.inputWrapper(touched.email ? '#7F00FF' : '#ccc')}>
                     <MaterialCommunityIcons name="email" size={20} color="grey" style={styles.iconStyle} />
                     <TextInput
                       placeholder="Seu email"
@@ -126,7 +126,7 @@ const SignUp = ({ navigation }) => {
 
                 <View style={styles.wrapper}>
                   <Text style={styles.label}>Senha</Text>
-                  <View style={styles.inputWrapper(touched.password ? '#E85A4F' : '#ccc')}>
+                  <View style={styles.inputWrapper(touched.password ? '#7F00FF' : '#ccc')}>
                     <MaterialCommunityIcons name="lock" size={20} color="grey" style={styles.iconStyle} />
                     <TextInput
                       placeholder="Sua senha"
@@ -143,7 +143,7 @@ const SignUp = ({ navigation }) => {
                   {touched.password && errors.password && <Text style={styles.errorMessage}>{errors.password}</Text>}
                 </View>
 
-                <Button title="Registar" onPress={handleSubmit} isValid={isValid ? '#E85A4F' : 'red'} loader={loader} />
+                <Button title="Registar" onPress={handleSubmit} isValid={isValid ? '#7F00FF' : 'red'} loader={loader} />
               </View>
             )}
           </Formik>
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     marginBottom: 5,
-    color: '#E85A4F',
+    color: '#7F00FF',
   },
   inputWrapper: (borderColor) => ({
     borderColor: borderColor,

@@ -32,7 +32,7 @@ const ButtomTabNavegation = () => {
       options={{tabBarIcon: ({focused})=>{
         return <Ionicons name={focused? "home": "home-outline"}
         size={24}
-        color={focused?'#E85A4F':"black"}
+        color={focused?'#7F00FF':"black"}
         />
       }}} />
 
@@ -40,7 +40,7 @@ const ButtomTabNavegation = () => {
       options={{tabBarIcon: ({focused})=>{
         return <Ionicons name={focused? "search": "search-outline"}
         size={24}
-        color={focused?'#E85A4F':"black"}
+        color={focused?'#7F00FF':"black"}
         />
       }}} />
 
@@ -49,7 +49,7 @@ const ButtomTabNavegation = () => {
       options={{tabBarIcon: ({focused})=>{
         return <Ionicons name={focused? "add-circle": "add-circle-outline"}
         size={50}
-        color={focused?'#E85A4F':"#E85A4F"}
+        color={focused?'#7F00FF':"black"}
         />
       }}} />
 
@@ -58,7 +58,7 @@ const ButtomTabNavegation = () => {
       options={{tabBarIcon: ({focused})=>{
         return <Ionicons name={focused? "file-tray-full": "file-tray-full-outline"}
         size={24}
-        color={focused?'#E85A4F':"black"}
+        color={focused?'#7F00FF':"black"}
         />
       }}} />
 
@@ -77,7 +77,7 @@ const ButtomTabNavegation = () => {
       options={{tabBarIcon: ({focused})=>{
         return <Ionicons name={focused? "person": "person-outline"}
         size={24}
-        color={focused?'#E85A4F':"black"}
+        color={focused?'#7F00FF':"black"}
         />
       }}} />
 

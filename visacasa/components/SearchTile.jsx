@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
 container:{
     flexDirection: 'row',
     justifyContent:'space-between',
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     borderRadius: 5,
     shadowColor: '#000',
     shadowOffset: { width: 3, height: 2 },
@@ -46,7 +46,7 @@ container:{
 },
 image: {
     width: 70,
-    backgroundColor:"white",
+    backgroundColor:"#F5F5F5",
     borderRadius: 12,
     justifyContent: "center",
     alignContent: "center",
@@ -67,13 +67,13 @@ textContainer: {
 productTitle:{
     fontSize: 12,
     fontWeight: "700",
-    color: "black",
+    color: "#333333",
     width:240,
 
 },
 seller:{
     fontSize: 12,
-    color: "grey",
+    color: "#666666",
     marginTop: 3,
     width:80,
 

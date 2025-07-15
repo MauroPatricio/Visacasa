@@ -212,16 +212,16 @@ const styles = StyleSheet.create({
     },
     locationText: {
         fontSize: 16,
-        color: '#555', // Soft grey for secondary info
+        color: '#666', // Soft grey for secondary info
         marginBottom: 10,
         textAlign: 'center',
-        backgroundColor: '#F0F0F0', // Slight background contrast
+        backgroundColor: '#F8F8F8', // Slight background contrast
         padding: 10,
         borderRadius: 10, // Rounded corners for a modern look
     },
     distanceText: {
         fontSize: 16,
-        color: '#FF5733', // Highlight distance with a noticeable color
+        color: '#7F00FF', // Highlight distance with a noticeable color
         marginBottom: 10,
         textAlign: 'center',
         fontWeight: '600',
@@ -236,12 +236,12 @@ const styles = StyleSheet.create({
         flexGrow: 1, // Ensure the scroll view expands fully
     },
     barPayment: {
-        backgroundColor: '#E85A4F', // Vibrant purple for the payment button
+        backgroundColor: '#7F00FF', // Vibrant purple for the payment button
         paddingVertical: 15,
         paddingHorizontal: 20,
         borderRadius: 30, // Rounded for a button-like appearance
         marginTop: 20,
-        shadowColor: '#E85A4F', // Subtle shadow matching the button color
+        shadowColor: '#7F00FF', // Subtle shadow matching the button color
         shadowOffset: { width: 0, height: 3 },
         shadowOpacity: 0.5,
         shadowRadius: 5,
@@ -280,11 +280,11 @@ const styles = StyleSheet.create({
         color: 'grey',
     },
     totalDescript: {
-        color: '#E85A4F',
+        color: '#7F00FF',
         fontWeight: '600',
     },
     totalPrice: {
-        color: '#E85A4F',
+        color: '#7F00FF',
         fontWeight: '600',
     },
 });

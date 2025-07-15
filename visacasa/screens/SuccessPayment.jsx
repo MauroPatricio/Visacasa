@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 26,
     fontWeight: 'bold',
-    color: '#333', // Darker color for text
+    color: '#2e2e2e', // Darker color for text
     textAlign: 'center',
   },
   button: {

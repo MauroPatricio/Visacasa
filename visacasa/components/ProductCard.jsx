@@ -86,7 +86,7 @@ const ProductCard = ({
         </View>
         <TouchableOpacity style={styles.addBtn} >
           <Ionicons name='cart' size={25}
-            color={'#E85A4F'}
+            color={'#7F00FF'}
           />
         </TouchableOpacity>
       </View>

@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
   header: {
     borderWidth: 0,
     borderBottomWidth: 1,
-    borderBottomColor: '#E85A4F',
+    borderBottomColor: '#7F00FF',
     padding: 20,
     marginBottom: 10,
     backgroundColor: '#FFFFFF',
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     justifyContent: 'space-between',
     borderWidth:3 ,
-    borderTopColor: '#E85A4F',
+    borderTopColor: '#7F00FF',
     borderLeftColor: 'white',
     borderRightColor:'white',
     borderBottomColor: 'white',
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 9,
     right:40,
-    backgroundColor: '#E85A4F',
+    backgroundColor: '#7F00FF',
     borderRadius: 50,
     marginTop: 10
 
@@ -218,11 +218,11 @@ const styles = StyleSheet.create({
     // top: 12,
     bottom: 5,
     fontWeight: '500',
-    color: '#E85A4F',
+    color: '#7F00FF',
     paddingHorizontal: 10
   },
   remove:{
-    color: '#E85A4F',
+    color: '#7F00FF',
     fontWeight: '500',
     marginTop: 15
 
