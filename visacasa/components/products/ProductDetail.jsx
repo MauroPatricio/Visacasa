@@ -164,7 +164,7 @@ export default ProductDetail;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9F9F9',
+    backgroundColor: '#FAFAFA',
   },
   image: {
     width: '100%',
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
   },
   back: {
     color: 'black',
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    backgroundColor: 'rgba(127, 0, 255, 0.7)',
     borderRadius: 22,
     padding: 5,
   },
@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
   },
   price: {
     fontSize: 22,
-    color: '#E85A4F',
+    color: '#7F00FF',
     fontWeight: '800',
   },
   ratingRow: {
@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
   },
   descText: {
     fontSize: 14,
-    color: '#666',
+    color: '#555',
     lineHeight: 20,
   },
 });
