@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
         
     },
     barPayment: {
-        backgroundColor: '#E85A4F',
+        backgroundColor: '#7F00FF',
          marginTop: 5,
          marginBottom: 10,
         padding: 15,

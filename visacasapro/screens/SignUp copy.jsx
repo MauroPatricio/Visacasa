@@ -186,7 +186,7 @@ const SignUp = ({navigation}) => {
             <Text>Nome e Apelido</Text>
           
 
-                 <View style={styles.inputWrapper(touched.name? '#E85A4F':'black')}>
+                 <View style={styles.inputWrapper(touched.name? '#7F00FF':'black')}>
              
                 <TextInput 
                 autoCapitalize='none'
@@ -201,7 +201,7 @@ const SignUp = ({navigation}) => {
             <Text style={{fontSize: 18, fontWeight: '500', paddingTop:15, paddingBottom: 5}}>Detalhes do estabelecimento</Text>
 
             <Text>Número de telefone</Text>
-            <View style={styles.inputWrapper(touched.phoneNumber? '#E85A4F':'black')}>
+            <View style={styles.inputWrapper(touched.phoneNumber? '#7F00FF':'black')}>
             <TextInput
               onChangeText={handleChange('phoneNumber')}
               onBlur={handleBlur('phoneNumber')}
@@ -215,7 +215,7 @@ const SignUp = ({navigation}) => {
 
             <Text>Email</Text>
 
-            <View style={styles.inputWrapper(touched.email? '#E85A4F':'black')}>
+            <View style={styles.inputWrapper(touched.email? '#7F00FF':'black')}>
 
             <TextInput
               onChangeText={handleChange('email')}
@@ -227,7 +227,7 @@ const SignUp = ({navigation}) => {
             {touched.email && errors.email && <Text style={styles.error}>{errors.email}</Text>}
 
             <Text>Senha</Text>
-            <View style={styles.inputWrapper(touched.password? '#E85A4F':'black')}>
+            <View style={styles.inputWrapper(touched.password? '#7F00FF':'black')}>
             <TextInput
               onChangeText={handleChange('password')}
               onBlur={handleBlur('password')}
@@ -239,7 +239,7 @@ const SignUp = ({navigation}) => {
 
    
             <Text>Confirmar Senha</Text>
-            <View style={styles.inputWrapper(touched.password? '#E85A4F':'black')}>
+            <View style={styles.inputWrapper(touched.password? '#7F00FF':'black')}>
             <TextInput
                 placeholder="Confirmar Senha"
                 secureTextEntry
@@ -253,7 +253,7 @@ const SignUp = ({navigation}) => {
 
             <Text>Localização</Text>
 
-            <View style={styles.inputWrapper(touched.location? '#E85A4F':'black')}>
+            <View style={styles.inputWrapper(touched.location? '#7F00FF':'black')}>
             <TextInput
               onChangeText={handleChange('location')}
               onBlur={handleBlur('location')}
@@ -268,7 +268,7 @@ const SignUp = ({navigation}) => {
 
             {/* Seller Details */}
             <Text>Nome da empresa</Text>
-            <View style={styles.inputWrapper(touched.location? '#E85A4F':'black')}>
+            <View style={styles.inputWrapper(touched.location? '#7F00FF':'black')}>
             <TextInput
               onChangeText={handleChange('seller.name')}
               onBlur={handleBlur('seller.name')}
@@ -278,7 +278,7 @@ const SignUp = ({navigation}) => {
             {touched.seller?.name && errors.seller?.name && <Text style={styles.error}>{errors.seller?.name}</Text>}
 
             <Text>Descrição da loja [Especialidade]</Text>
-            <View style={styles.inputWrapper(touched.location? '#E85A4F':'black')}>
+            <View style={styles.inputWrapper(touched.location? '#7F00FF':'black')}>
 
             <TextInput
               onChangeText={handleChange('seller.description')}
@@ -311,7 +311,7 @@ const SignUp = ({navigation}) => {
             />
 
             <Text>Endereço da loja [Rua/Av.]</Text>
-            <View style={styles.inputWrapper(touched.location? '#E85A4F':'black')}>
+            <View style={styles.inputWrapper(touched.location? '#7F00FF':'black')}>
             <TextInput
               onChangeText={handleChange('seller.address')}
               onBlur={handleBlur('seller.address')}
@@ -323,7 +323,7 @@ const SignUp = ({navigation}) => {
             )}
 
             <Text>Numero de conta da empresa</Text>
-            <View style={styles.inputWrapper(touched.location? '#E85A4F':'black')}>
+            <View style={styles.inputWrapper(touched.location? '#7F00FF':'black')}>
             <TextInput
               onChangeText={handleChange('seller.phoneNumberAccount')}
               onBlur={handleBlur('seller.phoneNumberAccount')}
@@ -448,7 +448,7 @@ const styles = StyleSheet.create({
         marginBottom: 5,
         marginEnd: 2,
         // textAlign:"right",
-        color: '#E85A4F'
+        color: '#7F00FF'
     },
     inputWrapper:(borderColor) =>({
         borderColor: borderColor,

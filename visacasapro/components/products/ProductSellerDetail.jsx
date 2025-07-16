@@ -48,7 +48,7 @@ const ProductSellerDetail = () => {
               <Text
                   style={[
                       styles.stock,
-                      { color: product.countInStock > 0 ? '#E85A4F' : 'red' }
+                      { color: product.countInStock > 0 ? '#7F00FF' : 'red' }
                   ]}
               >
                   {product.countInStock > 0 ? `Quantidade disponível: ${product.countInStock} unidade(s)` : 'Fora de estoque'}
@@ -81,7 +81,7 @@ export default ProductSellerDetail;
 const styles = StyleSheet.create({
   back: {
     top:40,
-    color: '#E85A4F',
+    color: '#7F00FF',
   },
   icons: {
     position: 'absolute',
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
   },
   container: {
       flex: 1,
-      backgroundColor: '#F9F9F9', // Light background for contrast
+      backgroundColor: '#7F00FF', // Light background for contrast
       padding: 16,                // Padding around the content
   },
   button: {
@@ -143,14 +143,14 @@ const styles = StyleSheet.create({
   },
   price: {
       fontSize: 18,                      // Font size for price
-      color: '#E85A4F',                  // Green for pricing
+      color: '#7F00FF',                  // Green for pricing
       fontWeight: '600',                 // Semi-bold for emphasis
       marginBottom: 10,                  // Spacing below the price
       textAlign: 'center',               // Centered text
   },
   onSale: {
       fontSize: 16,                      // Smaller font for sale info
-      color: '#FF6347',                  // Red color for promotions
+      color: '#7F00FF',                  // Red color for promotions
       fontWeight: '500',                 // Medium font weight for emphasis
       marginBottom: 10,                  // Spacing below sale info
       textAlign: 'center',               // Center the text

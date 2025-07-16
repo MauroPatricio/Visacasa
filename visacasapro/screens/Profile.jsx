@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
     color: "#333", // Darker text for better readability
   },
   loginBtn: {
-    backgroundColor: "#E85A4F", // Gradient background color for buttons
+    backgroundColor: "#7F00FF", // Gradient background color for buttons
     padding: 10,
     borderWidth: 0.4,
     borderColor: "white",

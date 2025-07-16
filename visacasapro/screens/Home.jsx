@@ -155,7 +155,7 @@ const Home = () => {
       </View> 
 
       <ScrollView>
-        <Text style={{ fontSize: 25, fontWeight: '700', marginLeft: 20, marginBottom: 10, color: '#E85A4F' }}>Pedidos</Text>
+        <Text style={{ fontSize: 25, fontWeight: '700', marginLeft: 20, marginBottom: 10, color: '#7F00FF' }}>Pedidos</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 15 }}>
           {availableStatuses.map((status) => (
             <TouchableOpacity key={status} style={styles.wrapper} onPress={() => handleStatusSelect(status)}>
@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
   },
   wrapper: {
     marginRight: 7,
-    backgroundColor: '#E85A4F',
+    backgroundColor: '#7F00FF',
     padding: 10,
     borderRadius: 15,
   },
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: '#E85A4F',
+    backgroundColor: '#7F00FF',
     borderRadius: 12,
     shadowColor: '#000',
     shadowOffset: { width: 3, height: 2 },
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   cartIcon: {
-    color: '#E85A4F',
+    color: '#7F00FF',
     padding: 20,
     borderRadius: 22,
     backgroundColor: 'white',

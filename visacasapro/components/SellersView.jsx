@@ -38,7 +38,7 @@ useEffect(()=>{
     <View>
     <View style={styles.sellerWrapper}>
       <Text style={styles.title}>{title}</Text>
-      <ArrowRightIcon color={"#E85A4F"}/>
+      <ArrowRightIcon color={"#7F00FF"}/>
     </View>
     <View>
       <Text style={styles.text}>{description}</Text>

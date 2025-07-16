@@ -36,7 +36,7 @@ const ButtomTabNavegation = () => {
               <Ionicons
                 name={focused ? "home" : "home-outline"}
                 size={24}
-                color={focused ? '#E85A4F' : "black"}
+                color={focused ? '#7F00FF' : "black"}
               />
             );
           },
@@ -52,7 +52,7 @@ const ButtomTabNavegation = () => {
               <Ionicons
                 name={focused ? "list" : "list-outline"} // Changed icon name
                 size={24}
-                color={focused ? '#E85A4F' : "black"}
+                color={focused ? '#7F00FF' : "black"}
               />
             );
           },
@@ -68,7 +68,7 @@ const ButtomTabNavegation = () => {
               <Ionicons
                 name={focused ? "add-circle" : "add-circle-outline"}
                 size={50}
-                color={focused ? '#E85A4F' : "#E85A4F"}
+                color={focused ? '#7F00FF' : "#E85A4F"}
               />
             );
           },
@@ -84,7 +84,7 @@ const ButtomTabNavegation = () => {
               <Ionicons
                 name={focused ? "file-tray" : "file-tray-outline"} // Changed icon name
                 size={24}
-                color={focused ? '#E85A4F' : "black"}
+                color={focused ? '#7F00FF' : "black"}
               />
             );
           },
@@ -100,7 +100,7 @@ const ButtomTabNavegation = () => {
               <Ionicons
                 name={focused ? "person" : "person-outline"}
                 size={24}
-                color={focused ? '#E85A4F' : "black"}
+                color={focused ? '#7F00FF' : "black"}
               />
             );
           },

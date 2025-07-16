@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
  },
     barPopup: {
         alignItems: 'center',
-        backgroundColor: '#E85A4F',
+        backgroundColor: '#7F00FF',
         flexDirection: 'row',   
         justifyContent: 'space-between',
         flex: 1,
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     length: {
 
         fontWeight: '600',
-        color: '#E85A4F',
+        color: '#7F00FF',
         backgroundColor: 'white',
         paddingLeft: 10,
         paddingRight: 10,

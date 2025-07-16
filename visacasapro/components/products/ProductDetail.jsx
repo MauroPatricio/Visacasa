@@ -218,14 +218,14 @@ export default ProductDetail
 const styles = StyleSheet.create({
 container: {
     flex:1,
-    backgroundColor: 'white'
+    backgroundColor: '#FAFAFA'
 
 },
 cartoutline:{
     marginLeft:250,
     color: 'white',
     borderRadius:28,
-    backgroundColor: '#F0777F'
+    backgroundColor: '#7F00FF'
 },
 upperRow:{
     // flex:1 , 
@@ -268,14 +268,14 @@ priceWrapper:{
     marginLeft: 10,
     // marginRight: 10,
     // marginTop: 15,
-    // backgroundColor: "#E85A4F",
+    // backgroundColor: "#7F00FF",
     // borderRadius: 10,
     // alignItems: "center"
 },
 price:{
     fontSize: 20,
     marginLeft: 10,
-    color: "#E85A4F",
+    color: "#7F00FF",
     fontWeight: '800'
 },
 ratingRow:{
@@ -293,7 +293,7 @@ cartCount: {
     height: 16,
     borderRadius: 8,
     alignItems: "center",
-    backgroundColor: '#E85A4F',
+    backgroundColor: '#7F00FF',
     justifyContent: 'center',
     zIndex: 999,
 
@@ -351,7 +351,7 @@ cartRow:{
 cartBtn: {
     padding: 10,
     width: 250,
-    backgroundColor: '#E85A4F',
+    backgroundColor: '#7F00FF',
     borderRadius: 22,
     marginLeft:22
 },
@@ -365,7 +365,7 @@ addCart:{
         height: 37,
         borderRadius: 50,
         // margin: 12,
-        backgroundColor: '#E85A4F',
+        backgroundColor: '#7F00FF',
         marginLeft:20,
         alignItems: "center",
         justifyContent: "center"

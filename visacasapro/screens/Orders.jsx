@@ -73,7 +73,7 @@ const Orders = () => {
 
   return (
     <SafeAreaView style={{ backgroundColor: "white",  flex:1 }}>
-      <Text style={{ fontSize: 25, fontWeight: '700', marginLeft: 14, marginBottom: 40, color: '#E85A4F', marginTop: 30 }}>
+      <Text style={{ fontSize: 25, fontWeight: '700', marginLeft: 14, marginBottom: 40, color: '#7F00FF', marginTop: 30 }}>
         Histórico de pedidos
       </Text>
       <ScrollView
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: '#E85A4F',
+    backgroundColor: '#7F00FF',
     borderRadius: 5,
     shadowColor: '#000',
     shadowOffset: { width: 3, height: 2 },
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     padding: 7,
   },
   cartIcon: {
-    color: '#E85A4F',
+    color: '#7F00FF',
     padding: 20,
     borderRadius: 22,
     backgroundColor: 'white',

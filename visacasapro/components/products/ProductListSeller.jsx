@@ -79,14 +79,14 @@ const ProductListSeller = () => {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#E85A4F" />
+        <ActivityIndicator size="large" color="#7F00FF" />
       </View>
     );
   }
 
   return (
     <SafeAreaView style={{ backgroundColor: "white",  flex:1 }}>
-      <Text style={{ fontSize: 25, fontWeight: '700', marginLeft: 14, marginBottom: 40, marginTop: 30,color: '#E85A4F' }}>
+      <Text style={{ fontSize: 25, fontWeight: '700', marginLeft: 14, marginBottom: 40, marginTop: 30,color: '#7F00FF' }}>
         Lista de produtos
       </Text>
 
@@ -176,13 +176,13 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
   },
   wrapper: {
-    backgroundColor: '#E85A4F',
+    backgroundColor: '#7F00FF',
     padding: 15,
     borderRadius: 12,
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 7,
-    shadowColor: '#E85A4F',
+    shadowColor: '#7F00FF',
     // shadowOffset: { width: 0, height: 2 },
     // shadowOpacity: 0.1,
     // shadowRadius: 6,
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: '#E85A4F',
+    backgroundColor: '#7F00FF',
     borderRadius: 5,
     shadowColor: '#000',
     shadowOffset: { width: 3, height: 2 },
@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
   modalButton: {
     width: '100%',
     padding: 10,
-    backgroundColor: '#E85A4F',
+    backgroundColor: '#7F00FF',
     borderRadius: 8,
     marginBottom: 10,
     alignItems: 'center',

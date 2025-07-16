@@ -279,7 +279,7 @@ const SignUp = () => {
             <Text style={styles.label}>Nome e apelido</Text>
           
 
-                 <View style={styles.inputWrapper(touched.name? '#E85A4F':'#E85A4F')}>
+                 <View style={styles.inputWrapper(touched.name? '#7F00FF':'#ccc')}>
              
                 <TextInput 
                 autoCapitalize='none'
@@ -297,7 +297,7 @@ const SignUp = () => {
             <Text style={{fontSize: 18, fontWeight: '500', paddingTop:15, paddingBottom: 5}}>Dados de acesso</Text>
 
             <Text style={styles.label}>Número de telefone</Text>
-            <View style={styles.inputWrapper(touched.phoneNumber? '#E85A4F':'#E85A4F')}>
+            <View style={styles.inputWrapper(touched.phoneNumber? '#7F00FF':'#ccc')}>
             <TextInput
               onChangeText={handleChange('phoneNumber')}
               onBlur={handleBlur('phoneNumber')}
@@ -313,7 +313,7 @@ const SignUp = () => {
 
             <Text  style={styles.label}>Email</Text>
 
-            <View style={styles.inputWrapper(touched.email? '#E85A4F':'#E85A4F')}>
+            <View style={styles.inputWrapper(touched.email? '#7F00FF':'#ccc')}>
 
             <TextInput
                             style={{flex:1}}
@@ -327,7 +327,7 @@ const SignUp = () => {
             {touched.email && errors.email && <Text style={styles.error}>{errors.email}</Text>}
 
             <Text  style={styles.label}>Senha</Text>
-            <View style={styles.inputWrapper(touched.password? '#E85A4F':'#E85A4F')}>
+            <View style={styles.inputWrapper(touched.password? '#7F00FF':'#ccc')}>
             <TextInput
                             style={{flex:1}}
 
@@ -341,7 +341,7 @@ const SignUp = () => {
 
    
             <Text  style={styles.label}>Confirmar Senha</Text>
-            <View style={styles.inputWrapper(touched.password? '#E85A4F':'#E85A4F')}>
+            <View style={styles.inputWrapper(touched.password? '#7F00FF':'#ccc')}>
             <TextInput
                             style={{flex:1}}
                 placeholder="Confirmar Senha"
@@ -372,7 +372,7 @@ const SignUp = () => {
 
             {/* Seller Details */}
             <Text  style={styles.label}>Nome da empresa</Text>
-            <View style={styles.inputWrapper(touched.location? '#E85A4F':'#E85A4F')}>
+            <View style={styles.inputWrapper(touched.location? '#7F00FF':'#ccc')}>
             <TextInput
              style={{flex:1}}
              onChangeText={(text) => {
@@ -386,7 +386,7 @@ const SignUp = () => {
             {touched.seller?.name && errors.seller?.name && <Text style={styles.error}>{errors.seller?.name}</Text>}
 
             <Text  style={styles.label}>Descrição do estabelecimento [Especialidade]</Text>
-            <View style={styles.inputWrapper(touched.location? '#E85A4F':'#E85A4F')}>
+            <View style={styles.inputWrapper(touched.location? '#7F00FF':'#ccc')}>
 
             <TextInput
               style={{flex:1}}
@@ -405,7 +405,7 @@ const SignUp = () => {
 
 {/* <Text  style={styles.label}>Localização</Text> */}
 
-{/* <View style={styles.inputWrapper(touched.location? '#E85A4F':'#E85A4F')}> */}
+{/* <View style={styles.inputWrapper(touched.location? '#7F00FF':'#ccc')}> */}
           <Picker
             selectedValue={values.province}
             onValueChange={(itemValue) => setFieldValue('seller.province', itemValue)}
@@ -422,7 +422,7 @@ const SignUp = () => {
           )}
 
             <Text  style={styles.label}>Endereço do estabelecimento [Rua/Av.]</Text>
-            <View style={styles.inputWrapper(touched.location? '#E85A4F':'#E85A4F')}>
+            <View style={styles.inputWrapper(touched.location? '#7F00FF':'#ccc')}>
             <TextInput
                             style={{flex:1}}
               onChangeText={handleChange('seller.address')}
@@ -435,7 +435,7 @@ const SignUp = () => {
             )}
 
             <Text  style={styles.label}>Número de conta da empresa [MPESA]</Text>
-            <View style={styles.inputWrapper(touched.location? '#E85A4F':'#E85A4F')}>
+            <View style={styles.inputWrapper(touched.location? '#7F00FF':'#ccc')}>
             <TextInput
                style={{flex:1}}
               onChangeText={handleChange('seller.phoneNumberAccount')}
@@ -554,18 +554,18 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
    label: {
-    color: '#E85A4F'
+    color: '#7F00FF'
    },
   title: {
     fontWeight: '800',
     fontSize: 26, // Slightly larger, stronger font for prominence
     textAlign: 'center',
-    color: '#E85A4F', // Sleek dark violet for branding
+    color: '#7F00FF', // Sleek dark violet for branding
     marginBottom: 25,
   },
   inputWrapper: (borderColor) => ({
-    borderColor: borderColor || '#E85A4F',
-    backgroundColor: '#FFF',
+    borderColor: borderColor || '#7F00FF',
+    backgroundColor: '#F8F8F8',
     borderWidth: 1,
     height: 55,
     borderRadius: 15, // Smoother corners for a modern feel
@@ -573,7 +573,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     alignItems: 'center',
     // marginBottom: 20, // Additional spacing for cleaner layout
-    shadowColor: '#E85A4F',
+    shadowColor: '#7F00FF',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4, // Softer shadow for more depth
@@ -605,11 +605,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '600',
     marginVertical: 20,
-    color: '#E85A4F', // Modern purple accent
+    color: '#7F00FF', // Modern purple accent
     textAlign: 'center',
   },
   removeButton: {
-    backgroundColor: '#FF4500', // Vibrant orange-red for emphasis
+    backgroundColor: '#7F00FF', // Vibrant orange-red for emphasis
     borderRadius: 12,
     paddingVertical: 12,
     paddingHorizontal: 20,
@@ -634,7 +634,7 @@ const styles = StyleSheet.create({
     elevation: 5, // Elevated effect for modern, card-like design
   },
   button: {
-    backgroundColor: '#4CAF50', // Fresh green for action buttons
+    backgroundColor: '#7F00FF', // Fresh green for action buttons
     paddingVertical: 15,
     borderRadius: 12,
     alignItems: 'center',
@@ -647,14 +647,14 @@ const styles = StyleSheet.create({
     letterSpacing: 0.8, // Spacing for elegance
   },
     button: {
-      backgroundColor: '#E85A4F', // Vibrant purple color
+      backgroundColor: '#7F00FF', // Vibrant purple color
       paddingVertical: 15,
       paddingHorizontal: 30, // Added horizontal padding for a wider button
       borderRadius: 12, // Rounded corners for a modern look
       alignItems: 'center',
       justifyContent: 'center',
       marginVertical: 10, // Spacing from other elements
-      shadowColor: '#E85A4F', // Subtle shadow with the same color for depth
+      shadowColor: '#7F00FF', // Subtle shadow with the same color for depth
       shadowOffset: { width: 0, height: 3 },
       shadowOpacity: 0.3,
       shadowRadius: 6,

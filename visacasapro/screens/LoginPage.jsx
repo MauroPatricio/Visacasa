@@ -64,7 +64,7 @@ const LoginPage = ({ navigation }) => {
               <View>
                 <View style={styles.wrapper}>
                   <Text style={styles.label}>Número de telefone</Text>
-                  <View style={styles.inputWrapper(errors.phoneNumber && touched.phoneNumber ? 'red' : '#E85A4F')}>
+                  <View style={styles.inputWrapper(errors.phoneNumber && touched.phoneNumber ? 'red' : '#7F00FF')}>
                     <MaterialCommunityIcons
                       name="phone"
                       size={20}
@@ -88,7 +88,7 @@ const LoginPage = ({ navigation }) => {
 
                 <View style={styles.wrapper}>
                   <Text style={styles.label}>Senha</Text>
-                  <View style={styles.inputWrapper(errors.password && touched.password ? 'red' : '#E85A4F')}>
+                  <View style={styles.inputWrapper(errors.password && touched.password ? 'red' : '#7F00FF')}>
                     <MaterialCommunityIcons
                       name="lock"
                       size={20}
@@ -118,7 +118,7 @@ const LoginPage = ({ navigation }) => {
                 </View>
 
                 <View>
-                  <Button loader={loader} title="Entrar" onPress={isValid ? handleSubmit : null} isValid={isValid ? '#E85A4F' : 'red'} />
+                  <Button loader={loader} title="Entrar" onPress={isValid ? handleSubmit : null} isValid={isValid ? '#7F00FF' : 'red'} />
                   <Text style={styles.registration} onPress={() => navigation.navigate('SignUp')}>Registrar</Text>
                 </View>
               </View>
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
       fontWeight: '500',
       marginBottom: 5,
       marginEnd: 2,
-      color: '#E85A4F',
+      color: '#7F00FF',
     },
     inputWrapper: (borderColor) => ({
       borderColor: borderColor,
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       paddingHorizontal: 15,
       alignItems: 'center',
-      shadowColor: '#E85A4F',
+      shadowColor: '#7F00FF',
       shadowOpacity: 0.1,
       shadowRadius: 5,
       elevation: 3,
@@ -184,12 +184,12 @@ const styles = StyleSheet.create({
       marginTop: 25,
       textAlign: "center",
       fontWeight: "500",
-      borderColor: '#E85A4F',
+      borderColor: '#7F00FF',
       borderWidth: 1.5,
       height: 50,
       borderRadius: 12,
       justifyContent: 'center',
-      color: '#E85A4F',
+      color: '#7F00FF',
       paddingVertical: 10,
       fontSize: 16,
     },
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
       marginRight: 10,
     },
     loginButton: {
-      backgroundColor: '#E85A4F',
+      backgroundColor: '#7F00FF',
       borderRadius: 12,
       height: 50,
       justifyContent: 'center',
