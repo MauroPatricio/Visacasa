@@ -245,7 +245,7 @@ const MpesaScreen = () => {
               <Text style={styles.label}>Total a pagar:</Text>
               <Text style={styles.amount}>{amount} MT</Text>
 
-              <Button loader={loader} title="Pagar" onPress={handleSubmit} isValid={isValid ? '#E85A4F' : 'red'} />
+              <Button loader={loader} title="Pagar" onPress={handleSubmit} isValid={isValid ? '#7F00FF' : 'red'} />
             </View>
           </>
         )}
