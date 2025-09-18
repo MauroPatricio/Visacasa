@@ -16,38 +16,51 @@
     ],
     "ios": {
       "supportsTablet": true,
+      "bundleIdentifier": "com.mpatricio.visacasa",
       "infoPlist": {
-        "NSCameraUsageDescription": "This app needs access to your camera to upload images.",
-        "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to upload images.",
-        "UIBackgroundModes": [
-          "fetch",
-          "remote-notification"
-        ]
+        "NSCameraUsageDescription": "Este aplicativo precisa acessar a câmera para permitir o envio de fotos."
       }
     },
     "android": {
-      "icon": "./assets/visacasa2.png",
-      "permissions": [
-        "CAMERA",
-        "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE",
-        "ACCESS_FINE_LOCATION",
-        "FOREGROUND_SERVICE"
-      ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/visacasa2.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.mpatricio.visacasa"
+      "package": "com.mpatricio.visacasa",
+      "permissions": [
+        "CAMERA",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "RECORD_AUDIO"
+      ]
     },
     "web": {
       "favicon": "./assets/visacasa2.png"
     },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Permita que visacasa acesse a câmera para tirar fotos."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Permita que visacasa acesse sua localização para encontrar entregadores próximos."
+        }
+      ],
+      "expo-notifications",
+      "expo-build-properties",
+      "expo-font"
+    ],
     "extra": {
       "eas": {
         "projectId": "788966d7-889d-41c2-b35c-85a48359b8d7"
       }
     },
-    "owner": "mpatricio"
+   "runtimeVersion": "1.0.0"
   }
 }

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Image,   Alert
-} from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Image, Alert, RefreshControl } from 'react-native';
 import { Formik } from 'formik';
 import api from '../hooks/createConnectionApi';
 import { Picker } from '@react-native-picker/picker';
@@ -8,141 +7,189 @@ import Toast from 'react-native-toast-message';
 import * as Yup from 'yup';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+// import io from 'socket.io-client';
+
+const validationSchema = Yup.object().shape({
+  nome: Yup.string().required('Nome do produto (PT) é obrigatório'),
+  name: Yup.string().required('Nome do produto (EN) é obrigatório'),
+  image: Yup.string().required('A imagem do produto é obrigatória'),
+  price: Yup.number().required('Preço é obrigatório'),
+  category: Yup.string().required('Categoria é obrigatória'),
+  province: Yup.string().required('Localização do produto é obrigatória'),
+  brand: Yup.string().required('Marca/Sabor é obrigatória'),
+  countInStock: Yup.number().required('Quantidade disponível é obrigatória'),
+});
 
 const NewProduct = () => {
-
-  const navigation = useNavigation()
+  const navigation = useNavigation();
+  const route = useRoute();
+  const [editingProduct, setEditingProduct] = useState(null);
   const [provinces, setProvinces] = useState(null);
   const [categories, setCategories] = useState(null);
-const [image, setImage] = useState(null)
-const [loading, setLoading] = useState(null);
-const [error, setError] = useState(null);
-const [errorColor, setErrorColor] = useState(null);
-const [errorSize, setErrorSize] = useState(null);
+  const [image, setImage] = useState(null);
+  const [errorColor, setErrorColor] = useState(null);
+  const [errorSize, setErrorSize] = useState(null);
+  const [colors, setColors] = useState([]);
+  const [sizes, setSizes] = useState([]);
+  const [selectedColors, setSelectedColors] = useState([]);
+  const [selectedSizes, setSelectedSizes] = useState([]);
+  const [userData, setUserData] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [socket, setSocket] = useState(null);
 
-const [colors, setColors] = useState(null);
-const [sizes, setSizes] = useState(null);
-const [selectedColors, setSelectedColors] = useState([]);
-const [selectedSizes, setSelectedSizes] = useState([]);
+  // Estados locais para os campos do formulário
+  const [name, setName] = useState('');
+  const [nome, setNome] = useState('');
+  const [price, setPrice] = useState('');
+  const [category, setCategory] = useState('');
+  const [province, setProvince] = useState('');
+  const [brand, setBrand] = useState('');
+  const [description, setDescription] = useState('');
+  const [countInStock, setCountInStock] = useState('');
 
-const [userData, setUserData] = useState(null);
+  // Configuração do Socket.io
+  // useEffect(() => {
+  //   const newSocket = io(process.env.API_URL); // Substitua pela sua URL do backend
+  //   setSocket(newSocket);
 
-  const handleSubmit = async (values, resetForm) => {
-    console.log('Form Values:', values);
+  //   return () => {
+  //     newSocket.disconnect();
+  //   };
+  // }, []);
 
-    setLoading(true); 
+  // Listener para atualizações de produtos via Socket.io
+  useEffect(() => {
+    if (!socket) return;
 
-    if(userData == null) return;
+    const handleProductUpdate = (updatedProduct) => {
+      if (editingProduct && updatedProduct._id === editingProduct._id) {
+        setEditingProduct(updatedProduct);
+        Toast.show({
+          type: 'success',
+          text1: 'Produto atualizado em tempo real',
+          position: 'top',
+          visibilityTime: 2000
+        });
+      }
+    };
+
+    socket.on('newProduct', handleProductUpdate);
+
+    return () => {
+      socket.off('newProduct', handleProductUpdate);
+    };
+  }, [socket, editingProduct]);
+
+  // Carrega o userData do AsyncStorage
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const storedUser = await AsyncStorage.getItem('userData');
+        if (storedUser) {
+          const parsedUser = JSON.parse(storedUser);
+          setUserData(parsedUser);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar dados do usuário:', error);
+      }
+    };
+    loadUserData();
+  }, []);
+
+  // Atualiza estados locais quando editingProduct muda
+  useEffect(() => {
+    if (editingProduct) {
+      setNome(editingProduct.nome || '');
+      setName(editingProduct.name || '');
+      setPrice(editingProduct.price?.toString() || '');
+      setCategory(editingProduct.category?._id || '');
+      setProvince(editingProduct.province?._id || '');
+      setBrand(editingProduct.brand || '');
+      setDescription(editingProduct.description || '');
+      setCountInStock(editingProduct.countInStock?.toString() || '');
+      setImage(editingProduct.image || null);
+      setSelectedColors(editingProduct.color || []);
+      setSelectedSizes(editingProduct.size || []);
+    }
+  }, [editingProduct]);
+
+  // Carrega o produto para edição quando recebido via rota
+  useEffect(() => {
+    const productToEdit = route.params?.productToEdit;
+    if (productToEdit) {
+      setEditingProduct(productToEdit);
+    } else {
+      // Modo criação: limpar tudo
+      setEditingProduct(null);
+      setSelectedColors([]);
+      setSelectedSizes([]);
+      setImage(null);
+      setNome('');
+      setName('');
+      setPrice('');
+      setCategory('');
+      setProvince('');
+      setBrand('');
+      setDescription('');
+      setCountInStock('');
+    }
+  }, [route.params]);
+
+  // Carrega os dados iniciais
+  useEffect(() => {
+    loadInitialData();
+  }, []);
+
+  const loadInitialData = async () => {
     try {
-      if (!selectedColors) {
-        setErrorColor(' Adicione as cores disponiveis do produto.');
-        Toast.show({
-          type: 'success',
-          text1: errorColor,
-          position: 'top',
-          visibilityTime: 4000, // Time for how long the toast will show
-          autoHide: true,
-          topOffset: 30,
-          bottomOffset: 40,
-          style: {
-              
-          backgroundColor: '#4CAF50', // Green background for success
-          borderLeftWidth: 10,
-          borderLeftColor: '#E85A4F', // Left border accent for success
-          },
-          text1Style: {
-          fontSize: 18,
-          fontWeight: 'bold',
-          color: 'red', // Text color
-          
-          },
-        });
-
-
-        return;
-      }
-
-      if (!selectedSizes) {
-        setErrorSize('Adicione os tamanhos disponiveis produto.');
-
-        Toast.show({
-          type: 'success',
-          text1: errorSize,
-          position: 'top',
-          visibilityTime: 4000, // Time for how long the toast will show
-          autoHide: true,
-          topOffset: 30,
-          bottomOffset: 40,
-          style: {
-              
-          backgroundColor: '#4CAF50', // Green background for success
-          borderLeftWidth: 10,
-          borderLeftColor: '#E85A4F', // Left border accent for success
-          },
-          text1Style: {
-          fontSize: 18,
-          fontWeight: 'bold',
-          color: 'red', // Text color
-          
-          },
-        });
-
-        return;
-      }
-
-      values.color= selectedColors;
-      values.size = selectedSizes;
-
-      // console.log(userData.token)
-       const response = await api.post('/products/', values, 
-        {
-          headers: { Authorization: `Bearer ${userData.token}` }
-        });
-        setLoading(false); // Start loading before the fetch
-
-      if (response.status === 200) {
-
-        Toast.show({
-          type: 'success',
-          text1: 'Produto criado com sucesso',
-          position: 'top',
-          visibilityTime: 4000, // Time for how long the toast will show
-          autoHide: true,
-          topOffset: 30,
-          bottomOffset: 40,
-          style: {
-              
-          backgroundColor: '#4CAF50', // Green background for success
-          borderLeftWidth: 10,
-          borderLeftColor: '#E85A4F', // Left border accent for success
-          },
-          text1Style: {
-          fontSize: 18,
-          fontWeight: 'bold',
-          color: 'black', // Text color
-          
-          },
-        });
-
-        resetForm(); // Limpa o formulário após a submissão
-        setSelectedColors([]);
-        setSelectedSizes([]);
-        setImage(null)
-
-        navigation.navigate('ProductListSeller');
-
-      }
+      await Promise.all([
+        loadCategories(),
+        loadProvinces(),
+        loadColors(),
+        loadSizes(),
+      ]);
     } catch (error) {
-      const errorMessage = error.response?.data.error; // Acessa a mensagem de erro enviada
-
-      console.error(errorMessage);
-
-      alert(errorMessage);
+      console.error('Erro ao carregar dados iniciais:', error);
     }
   };
 
+  const loadCategories = async () => {
+    try {
+      const { data } = await api.get('/categories');
+      setCategories(data.categories);
+    } catch (error) {
+      console.error('Erro ao carregar categorias:', error);
+    }
+  };
 
+  const loadProvinces = async () => {
+    try {
+      const { data } = await api.get('/provinces');
+      setProvinces(data.provinces);
+    } catch (error) {
+      console.error('Erro ao carregar províncias:', error);
+    }
+  };
+
+  const loadColors = async () => {
+    try {
+      const { data } = await api.get('/colors');
+      setColors(data.colors);
+    } catch (error) {
+      console.error('Erro ao carregar cores:', error);
+    }
+  };
+
+  const loadSizes = async () => {
+    try {
+      const { data } = await api.get('/sizes');
+      setSizes(data.sizes);
+    } catch (error) {
+      console.error('Erro ao carregar tamanhos:', error);
+    }
+  };
 
   const handleImagePicker = async (setFieldValue) => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -150,9 +197,10 @@ const [userData, setUserData] = useState(null);
       Alert.alert('Erro', 'Permissão para acessar a galeria é necessária!');
       return;
     }
+
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
+      allowsEditing: false,
       aspect: [4, 3],
       quality: 1,
     });
@@ -161,7 +209,7 @@ const [userData, setUserData] = useState(null);
       const uri = result.assets[0].uri;
       setImage(uri);
       const uploadedImage = await uploadImage(uri);
-      setFieldValue('image', uploadedImage); // Update the seller's logo in Formik state
+      setFieldValue('image', uploadedImage);
     }
   };
 
@@ -169,8 +217,8 @@ const [userData, setUserData] = useState(null);
     const bodyFormData = new FormData();
     bodyFormData.append('file', {
       uri,
-      name: 'image.jpg', // You can set the actual file name here
-      type: 'image/jpeg' // Adjust the MIME type if necessary
+      name: 'image.jpg',
+      type: 'image/jpeg',
     });
 
     try {
@@ -180,462 +228,469 @@ const [userData, setUserData] = useState(null);
         },
       });
       setImage(data.secure_url);
-      return data.secure_url; // Return the uploaded image URL
+      return data.secure_url;
     } catch (error) {
-      // console.error(error);
       Alert.alert('Erro', 'Falha ao enviar a imagem.');
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true); // Start loading before the fetch
-      try {
-        const { data } = await api.get('provinces');
-        setProvinces(data.provinces); // Update the provinces state
-        setLoading(false); // End loading after successful fetch
-      } catch (err) {
-        setError(err.message); // Set error message
-        setLoading(false); // End loading even after error
-      }
-    };
-    fetchData();
-  }, []);
-
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true); // Start loading before the fetch
-      try {
-        const { data } = await api.get('categories');
-        setCategories(data.categories); // Update the provinces state
-        setLoading(false); // End loading after successful fetch
-      } catch (err) {
-        setError(err.message); // Set error message
-        setLoading(false); // End loading even after error
-      }
-    };
-    fetchData();
-  }, []);
-
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true); // Start loading before the fetch
-      try {
-        const { data } = await api.get('colors');
-        setColors(data.colors); // Update the provinces state
-        setLoading(false); // End loading after successful fetch
-      } catch (err) {
-        setError(err.message); // Set error message
-        setLoading(false); // End loading even after error
-      }
-    };
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true); // Start loading before the fetch
-      try {
-        const { data } = await api.get('sizes');
-        setSizes(data.sizes); // Update the provinces state
-        setLoading(false); // End loading after successful fetch
-      } catch (err) {
-        setError(err.message); // Set error message
-        setLoading(false); // End loading even after error
-      }
-    };
-    fetchData();
-  }, []);
-
-  // Definir o esquema de validação usando Yup
-  const validationSchema = Yup.object().shape({
-    nome: Yup.string()
-      .required('O nome é obrigatório'),
-    name: Yup.string()
-      .required('O nome do produto é obrigatório'),
-
-    slug: Yup.string()
-      .required('O nome abreviado do produto é obrigatório'),
-    price: Yup.number()
-      .typeError('O preço deve ser um número')
-      .required('O preço é obrigatório'),
-      image: Yup.string()
-      .required('A imagem do produto é obrigatória'),
-    category: Yup.string()
-      .required('A categoria é obrigatória'),
-    province: Yup.string()
-      .required('A localização é obrigatória'),
-    countInStock: Yup.number()
-      .typeError('A quantidade em estoque deve ser um número')
-      .required('A quantidade em estoque é obrigatória'),
-    description: Yup.string()
-      .required('A descrição é obrigatória'),
-  });
-
-
-  
-  const checkIfUserExist = async () => {
-    const id = await AsyncStorage.getItem('id');
-    const userId = `user${JSON.parse(id)}`;
-
-    try {
-      const currentUser = await AsyncStorage.getItem(userId);
-      if (currentUser !== null) {
-        const parseData = JSON.parse(currentUser);
-        setUserData(parseData);
-      }
-    } catch (error) {
-      console.error(error);
+  const handleColorSelect = (item) => {
+    if (item && !selectedColors.find(c => c._id === item._id)) {
+      setSelectedColors(prev => [...prev, item]);
+      setErrorColor(null);
     }
   };
 
-  useEffect(() => {
-    checkIfUserExist();
-  }, []);
-
-
-    // Function to toggle colors
-    const handleColorSelect = (color) => {
-      setSelectedColors((prevSelectedColors) => {
-        if (prevSelectedColors.includes(color)) {
-          // Remove the color
-          return prevSelectedColors.filter((c) => c !== color);
-        } else {
-          // Add the color
-          return [...prevSelectedColors, color];
-        }
-      });
-    };
-
-  // Function to toggle sizes
-  const handleSizeSelect = (size) => {
-    setSelectedSizes((prevSelectedSizes) => {
-      if (prevSelectedSizes.includes(size)) {
-        // Remove the size
-        return prevSelectedSizes.filter((s) => s !== size);
-      } else {
-        // Add the size
-        return [...prevSelectedSizes, size];
-      }
-    });
+  const handleSizeSelect = (item) => {
+    if (item && !selectedSizes.find(s => s._id === item._id)) {
+      setSelectedSizes(prev => [...prev, item]);
+      setErrorSize(null);
+    }
   };
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await loadInitialData();
+    } catch (error) {
+      console.error('Erro ao atualizar:', error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
+  const handleSubmit = async (values, { resetForm }) => {
+    if (!userData) return;
+
+    setIsSubmitting(true);
+    try {
+      if (selectedColors.length === 0) {
+        setErrorColor('Adicione as cores disponíveis do produto.');
+        Toast.show({ type: 'error', text1: 'Adicione as cores disponíveis do produto.', position: 'top' });
+        return;
+      }
+
+      if (selectedSizes.length === 0) {
+        setErrorSize('Adicione os tamanhos disponíveis do produto.');
+        Toast.show({ type: 'error', text1: 'Adicione os tamanhos disponíveis do produto', position: 'top' });
+        return;
+      }
+
+      values.color = selectedColors;
+      values.size = selectedSizes;
+      values.isSellerOpen = userData?.seller?.openstore
+
+      let response;
+      if (editingProduct) {
+        response = await api.put(`products/${editingProduct._id}`, values, {
+          headers: { Authorization: `Bearer ${userData.token}` },
+        });
+        
+        // Atualiza o estado com os dados retornados
+        setEditingProduct(response.data.product);
+
+              const body =  `O produto ${response.data.product.nome} foi actualizado. Confira já!`;
+              const data = response.data.product;
+              const title = 'Produto actualizado na visacasa'
+
+         // Envia para os utilizadores registrados
+          response = await api.post('notifications/broadcast', {title, body, data}, {
+          headers: { Authorization: `Bearer ${userData.token}` },
+        });
+        
+
+        navigation.navigate('ProductListSeller');
+
+        Toast.show({ 
+          type: 'success', 
+          text1: 'SUCESSO', 
+          text2: 'Produto actualizado com sucesso!',
+          position: 'top',
+          visibilityTime: 2000
+        });
+      } else {
+        response = await api.post('products/', values, {
+          headers: { Authorization: `Bearer ${userData.token}` },
+        });
+
+      const body =  `O produto ${response.data.product.nome} agora está disponível. Confira na visacasa!`;
+      const data = response.data.product;
+      const title = 'Novo produto disponível na visacasa'
+
+         // Envia para os utilizadores registrados
+          response = await api.post('notifications/broadcast', {title, body, data}, {
+          headers: { Authorization: `Bearer ${userData.token}` },
+        });
+        
+        Toast.show({ 
+          type: 'success', 
+          text1: 'SUCESSO', 
+          text2: 'Produto criado com sucesso!', 
+          position: 'top',
+          visibilityTime: 2000
+        });
+        resetForm();
+        setSelectedColors([]);
+        setSelectedSizes([]);
+        setImage(null);
+        navigation.navigate('ProductListSeller');
+      }
+    } catch (error) {
+      const errorMessage = error.response?.data.error || 'Erro ao salvar o produto.';
+      Toast.show({ 
+        type: 'error', 
+        text1: 'Erro', 
+        text2: errorMessage, 
+        position: 'top',
+        visibilityTime: 3000
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>Criar novo produto</Text>
+    <ScrollView style={styles.container}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          colors={['#E85A4F']}
+          tintColor="#E85A4F"
+        />
+      }>
+      <Text style={styles.title}>
+        {editingProduct ? 'Editar Produto' : 'Criar novo produto'}
+      </Text>
 
-{userData && userData.isApproved?
-
-
-
-
-      <Formik
-        initialValues={{
-          nome: '',
-          name: '',
-          slug: '',
-          image: '',
-          price: '',
-          category: '',
-          province: '',
-          brand: '',
-          countInStock: '',
-          description: '',
-          onSale: false,
-          onSalePercentage: 0,
-          color: '',
-          size: '', 
-          qualityType: '',
-          conditionStatus: '',
-          isOrdered: false,
-          orderPeriod: 0,
-          isGuaranteed: false,
-          guaranteedPeriod: 0,
-        }}
-        validationSchema={validationSchema}
-
-        onSubmit={(values, { resetForm }) => handleSubmit(values, resetForm)}
+      {userData && userData?.isApproved ? (
+        <Formik
+          enableReinitialize
+          initialValues={{
+            nome: nome,
+            name: name,
+            image: image || '',
+            price: price,
+            category: category,
+            province: province,
+            brand: brand,
+            countInStock: countInStock,
+            description: description,
+            onSale: editingProduct?.onSale || false,
+            onSalePercentage: editingProduct?.onSalePercentage || 0,
+            color: selectedColors,
+            size: selectedSizes,
+            orderPeriod: editingProduct?.orderPeriod || 0,
+            isGuaranteed: editingProduct?.isGuaranteed || false,
+            guaranteedPeriod: editingProduct?.guaranteedPeriod || 0,
+            isOrdered: editingProduct?.isOrdered || false,
+            isSellerOpen: userData?.seller?.openstore||false
+          }}
+          validationSchema={validationSchema}
+          onSubmit={handleSubmit}
         >
-        {({ handleChange, handleBlur, handleSubmit, values, setFieldValue, touched, errors, resetForm }) => (
-          <>
-
-        
-<Picker
-            selectedValue={values.category || ''} // Verificação segura do campo
-            onValueChange={(itemValue) => setFieldValue('category', itemValue)} // Atualizando seller.categorie
-            style={styles.picker}
-          >
-            <Picker.Item label="Categoria" value="" />
-            {categories && categories.map((categorie) => (
-              <Picker.Item key={categorie._id} label={categorie.nome} value={categorie._id} />
-            ))}
-          </Picker>
-
-                      {/* </View> */}
-                      {touched.category && errors.category && (
-                                <Text style={styles.error}>{errors.category}</Text> // Mensagem de erro
-                              )}
-
-          
-
-          <Picker
-            selectedValue={values.province || ''} // Verificação segura do campo
-            onValueChange={(itemValue) => setFieldValue('province', itemValue)} // Atualizando seller.province
-            style={styles.picker}
-          >
-            <Picker.Item label="Localização do produto" value="" />
-            {provinces && provinces.map((province) => (
-              <Picker.Item key={province._id} label={province.name} value={province._id} />
-            ))}
-          </Picker>
-
-                    {/* </View> */}
-                    {touched.province && errors.province && (
-                                <Text style={styles.error}>{errors.province}</Text> // Mensagem de erro
-                              )}
-
-<Picker
-  selectedValue={null} // Avoid pre-selection in multi-select scenarios
-  onValueChange={(itemValue) => handleColorSelect(itemValue)}
-  style={styles.picker}
->
-  <Picker.Item label="Selecione a cor" value="" />
-  {colors && colors.map((color) => (
-    <Picker.Item key={color._id} label={color.nome} value={color} />
-  ))}
-</Picker>
-
-<Text>Cores selecionadas: {selectedColors.map(color => color.nome).join(', ')}</Text>
-
-{errorColor && <p style={{ color: 'red' }}>{errorColor}</p>}
-
-
-{/* {touched.size && errors.size && (
-                      <Text style={styles.error}>{errors.size}</Text> // Mensagem de erro para tamanho
-                    )}  */}
-
-<Picker
-  selectedValue={null} // Avoid pre-selection in multi-select scenarios
-  onValueChange={(itemValue) => handleSizeSelect(itemValue)}
-  style={styles.picker}
->
-  <Picker.Item label="Selecione o tamanho" value="" />
-  {sizes && sizes.map((size) => (
-    <Picker.Item key={size._id} label={size.nome} value={size} />
-  ))}
-</Picker>
-<Text style={styles.size} >Tamanhos seleccionados: {selectedSizes.map(size => size.nome).join(', ')}</Text>
-{errorSize && <p style={{ color: 'red' }}>{errorSize}</p>}
-
-                    {/* {touched.size && errors.size && (
-                      <Text style={styles.error}>{errors.size}</Text> // Mensagem de erro para tamanho
-                    )}  */}
-
-
-<>
-   
-        </>
-
-
-            <TextInput
-              style={styles.input}
-              placeholder="Nome do produto (PT)"
-              onChangeText={handleChange('nome')}
-              onBlur={handleBlur('nome')}
-              value={values.nome}
-            />
-
-            <TextInput
-              style={styles.input}
-              placeholder="Nome do produto (En)"
-              onChangeText={handleChange('name')}
-              onBlur={handleBlur('name')}
-              value={values.name}
-            />
-
-            <TextInput
-              style={styles.input}
-              placeholder="Nome abreviado"
-              onChangeText={handleChange('slug')}
-              onBlur={handleBlur('slug')}
-              value={values.slug}
-            />
-
-<TextInput
-              style={styles.input}
-              placeholder="[Detalhes do produto]"
-              onChangeText={handleChange('description')}
-              onBlur={handleBlur('description')}
-              value={values.description}
-            />
-
-         
-
-                         {/* Upload da Logo */}
-                         {image ? (
-  <Image source={{ uri: image }} style={styles.logo} />
-) : (
-  <Text style={{color: 'red'}}>Adicione a imagem</Text>
-)}
-
-  {/* </View> */}
-  {touched.image && errors.image && (
-                                <Text style={styles.error}>{errors.image}</Text> // Mensagem de erro
-                              )}
-      
-
-
-          <TouchableOpacity
-              style={styles.imagePicker}
-              onPress={() => handleImagePicker(setFieldValue)}
-            >
-              <Text style={styles.imagePickerText}>
-                {values.image ? 'Mudar Image' : 'Imagem do produto'}
-              </Text>
-            </TouchableOpacity>
-
-            <TextInput
-              style={styles.input}
-              placeholder="Preço"
-              onBlur={handleBlur('price')}
-              value={values.price}
-              onChangeText={(text) => {
-                const filteredText = text.replace(/[^0-9]/g, ''); // Permitir apenas letras e espaços
-                setFieldValue('price', filteredText); // Atualiza o campo de nome com o texto filtrado
-              }}
-            />
-
-            <TextInput
-              style={styles.input}
-              placeholder="Marca/Sabor"
-              onChangeText={handleChange('brand')}
-              onBlur={handleBlur('brand')}
-              value={values.brand}
-            />
-
-            <TextInput
-              style={styles.input}
-              placeholder="Quantidade disponível"
-              onBlur={handleBlur('countInStock')}
-              value={values.countInStock}
-              onChangeText={(text) => {
-                const filteredText = text.replace(/[^0-9]/g, ''); // Permitir apenas letras e espaços
-                setFieldValue('countInStock', filteredText); // Atualiza o campo de nome com o texto filtrado
-              }}
-            />
-
-         
-
-            <View style={styles.switchRow}>
-              <Text>Está em promoção?</Text>
-              <TouchableOpacity
-                onPress={() => setFieldValue('onSale',!values.onSale)}
-                style={[styles.switchButton, values.onSale ? styles.active : styles.inactive]}
-              >
-                <Text style={styles.switchText}>{values.onSale ? 'Sim' : 'Não'}</Text>
-              </TouchableOpacity>
-            </View>
-
-            {values.onSale && (
-              <TextInput
-                style={styles.input}
-                placeholder="Percentagem da promoção"
-                onChangeText={(text) => {
-                  const filteredText = text.replace(/[^0-9]/g, ''); // Permitir apenas letras e espaços
-                  setFieldValue('price', filteredText); // Atualiza o campo de nome com o texto filtrado
+          {({ handleChange, handleBlur, handleSubmit, values, setFieldValue, touched, errors }) => (
+            <>
+              <Picker
+                selectedValue={values.category || ''}
+                onValueChange={(itemValue) => {
+                  setFieldValue('category', itemValue);
+                  setCategory(itemValue);
                 }}
-                onBlur={handleBlur('onSalePercentage')}
-                value={String(values.onSalePercentage)}
-              />
-            )}
-
-                  <View style={styles.switchRow}>
-                    <Text>Produto solicitado por encomenda?</Text>
-                    <TouchableOpacity
-                      onPress={() => setFieldValue('isOrdered', !values.isOrdered)} // Alterado para usar setFieldValue
-                      style={[styles.switchButton, values.isOrdered ? styles.active : styles.inactive]}
-                    >
-                      <Text style={styles.switchText}>{values.isOrdered ? 'Sim' : 'Não'}</Text>
-                    </TouchableOpacity>
-                  </View>
-
-                  {values.isOrdered && (
-                    <TextInput
-                      style={styles.input}
-                      placeholder="Número de dias de entrega do produto"
-                      onChangeText={(text) => {
-                        const filteredText = text.replace(/[^0-9]/g, ''); // Permitir apenas letras e espaços
-                        setFieldValue('orderPeriod', filteredText); // Atualiza o campo de nome com o texto filtrado
-                      }}
-                      onBlur={handleBlur('orderPeriod')}
-                      value={values.orderPeriod}
-                    />
-                  )}
-
-            <View style={styles.switchRow}>
-              <Text>Tem garantia?</Text>
-              <TouchableOpacity
-                onPress={() => setFieldValue('isGuaranteed', !values.isGuaranteed)}
-                style={[styles.switchButton, values.isGuaranteed ? styles.active : styles.inactive]}
+                style={styles.picker}
               >
-                <Text style={styles.switchText}>{values.isGuaranteed ? 'Sim' : 'Não'}</Text>
-              </TouchableOpacity>
-            </View>
+                <Picker.Item label="Categoria" value="" />
+                {categories &&
+                  categories.map((categorie) => (
+                    <Picker.Item key={categorie._id} label={categorie.nome} value={categorie._id} />
+                  ))}
+              </Picker>
+              {touched.category && errors.category && <Text style={styles.error}>{errors.category}</Text>}
 
-            {values.isGuaranteed && (
+              <Picker
+                selectedValue={values.province || ''}
+                onValueChange={(itemValue) => {
+                  setFieldValue('province', itemValue);
+                  setProvince(itemValue);
+                }}
+                style={styles.picker}
+              >
+                <Picker.Item label="Localização do produto" value="" />
+                {provinces &&
+                  provinces.map((province) => (
+                    <Picker.Item key={province._id} label={province.name} value={province._id} />
+                  ))}
+              </Picker>
+              {touched.province && errors.province && <Text style={styles.error}>{errors.province}</Text>}
+
+              <Picker
+                selectedValue={null}
+                onValueChange={(itemValue) => handleColorSelect(itemValue)}
+                style={styles.picker}
+              >
+                <Picker.Item label="Selecione a cor" value="" />
+                {colors &&
+                  colors.map((color) => (
+                    <Picker.Item key={color._id} label={color.nome} value={color} />
+                  ))}
+              </Picker>
+              <Text>Cores selecionadas: {selectedColors.map((color) => color.nome).join(', ')}</Text>
+              {errorColor && <Text style={styles.error}>{errorColor}</Text>}
+
+              <Picker
+                selectedValue={null}
+                onValueChange={(itemValue) => handleSizeSelect(itemValue)}
+                style={styles.picker}
+              >
+                <Picker.Item label="Selecione o tamanho" value="" />
+                {sizes &&
+                  sizes.map((size) => (
+                    <Picker.Item key={size._id} label={size.nome} value={size} />
+                  ))}
+              </Picker>
+              <Text>Tamanhos selecionados: {selectedSizes.map((size) => size.nome).join(', ')}</Text>
+              {errorSize && <Text style={styles.error}>{errorSize}</Text>}
+
               <TextInput
                 style={styles.input}
-                placeholder="Período de garantia (meses)"
-                onChangeText={handleChange('guaranteedPeriod')}
-
-               
-                onBlur={handleBlur('guaranteedPeriod')}
-                value={values.guaranteedPeriod}
+                placeholder="Nome do produto (PT)"
+                onChangeText={(text) => {
+                  handleChange('nome')(text);
+                  setNome(text);
+                }}
+                onBlur={handleBlur('nome')}
+                value={values.nome}
               />
-            )}
+              {touched.nome && errors.nome && <Text style={styles.error}>{errors.nome}</Text>}
 
-            <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-              <Text style={styles.submitButtonText}   disabled={loading} >Criar produto</Text>
-            </TouchableOpacity>
+              <TextInput
+                style={styles.input}
+                placeholder="Nome do produto (En)"
+                onChangeText={(text) => {
+                  handleChange('name')(text);
+                  setName(text);
+                }}
+                onBlur={handleBlur('name')}
+                value={values.name}
+              />
+              {touched.name && errors.name && <Text style={styles.error}>{errors.name}</Text>}
 
-            <View style={{ marginBottom: 250 }} />
-          </>
-        )}
-      </Formik>
-      :<Text style={styles.notAccepted}> Caso deseje expor seus produtos a sua conta conta deve ser autorizada, em caso de duvidas para mais informações, por favor contacte a NHIQUELA pelo contacto 853600036.
- </Text>
-}
+         
+
+              <TextInput
+                style={styles.input}
+                placeholder="Descrição do produto"
+                onChangeText={(text) => {
+                  handleChange('description')(text);
+                  setDescription(text);
+                }}
+                onBlur={handleBlur('description')}
+                value={values.description}
+              />
+              {touched.description && errors.description && <Text style={styles.error}>{errors.description}</Text>}
+
+              {image ? (
+                <Image source={{ uri: image }} style={styles.logo} />
+              ) : (
+                <Text style={{ color: 'red' }}>Adicione a imagem</Text>
+              )}
+              {touched.image && errors.image && <Text style={styles.error}>{errors.image}</Text>}
+
+                <TouchableOpacity
+                style={styles.imagePicker}
+                onPress={() => handleImagePicker(setFieldValue)}
+              >
+                <Text style={styles.imagePickerText}>
+                  {values.image ? 'Mudar Imagem' : 'Imagem do produto'}
+                </Text>
+              </TouchableOpacity>
+
+              <TextInput
+                style={styles.input}
+                placeholder="Preço"
+                onChangeText={(text) => {
+                  const filteredText = text.replace(/[^0-9]/g, '');
+                  handleChange('price')(filteredText);
+                  setPrice(filteredText);
+                }}
+                onBlur={handleBlur('price')}
+                value={values.price}
+                keyboardType="numeric"
+              />
+              {touched.price && errors.price && <Text style={styles.error}>{errors.price}</Text>}
+
+              <TextInput
+                style={styles.input}
+                placeholder="Marca/Sabor"
+                onChangeText={(text) => {
+                  handleChange('brand')(text);
+                  setBrand(text);
+                }}
+                onBlur={handleBlur('brand')}
+                value={values.brand}
+              />
+              {touched.brand && errors.brand && <Text style={styles.error}>{errors.brand}</Text>}
+
+              <TextInput
+                style={styles.input}
+                placeholder="Quantidade disponível"
+                onChangeText={(text) => {
+                  const filteredText = text.replace(/[^0-9]/g, '');
+                  handleChange('countInStock')(filteredText);
+                  setCountInStock(filteredText);
+                }}
+                onBlur={handleBlur('countInStock')}
+                value={values.countInStock}
+                keyboardType="numeric"
+              />
+              {touched.countInStock && errors.countInStock && <Text style={styles.error}>{errors.countInStock}</Text>}
+
+              <View style={styles.switchRow}>
+                <Text>Está em promoção?</Text>
+                <TouchableOpacity
+                  onPress={() => setFieldValue('onSale', !values.onSale)}
+                  style={[styles.switchButton, values.onSale ? styles.active : styles.inactive]}
+                >
+                  <Text style={styles.switchText}>{values.onSale ? 'Sim' : 'Não'}</Text>
+                </TouchableOpacity>
+              </View>
+
+              {values.onSale && (
+                <View>
+                  <Picker
+                    selectedValue={values.onSalePercentage}
+                    onValueChange={(itemValue) => setFieldValue('onSalePercentage', itemValue)}
+                    style={styles.input}
+                  >
+                    <Picker.Item label="Selecione a percentagem de desconto" value="" />
+                    {[10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95].map((percent) => (
+                      <Picker.Item key={percent} label={`${percent}%`} value={percent} />
+                    ))}
+                  </Picker>
+                </View>
+              )}
+              {touched.onSalePercentage && errors.onSalePercentage && (
+                <Text style={styles.error}>{errors.onSalePercentage}</Text>
+              )}
+
+              <View style={styles.switchRow}>
+                <Text>Produto solicitado por encomenda?</Text>
+                <TouchableOpacity
+                  onPress={() => setFieldValue('isOrdered', !values.isOrdered)}
+                  style={[styles.switchButton, values.isOrdered ? styles.active : styles.inactive]}
+                >
+                  <Text style={styles.switchText}>{values.isOrdered ? 'Sim' : 'Não'}</Text>
+                </TouchableOpacity>
+              </View>
+
+              {values.isOrdered && (
+                <View>
+                  <Picker
+                    selectedValue={values.orderPeriod}
+                    onValueChange={(itemValue) => setFieldValue('orderPeriod', itemValue)}
+                    style={styles.input}
+                  >
+                    <Picker.Item label="Em quantos dias a encomenda será entregue?" value="" />
+                    {['1 dia', '2 dias', '5 dias', '7 dias', '10 dias', '15 dias', '20 dias', '30 dias', '45 dias'].map((days) => (
+                      <Picker.Item key={days} label={`${days}`} value={days} />
+                    ))}
+                  </Picker>
+                </View>
+              )}
+              {touched.orderPeriod && errors.orderPeriod && (
+                <Text style={styles.error}>{errors.orderPeriod}</Text>
+              )}
+
+              <View style={styles.switchRow}>
+                <Text>Tem garantia?</Text>
+                <TouchableOpacity
+                  onPress={() => setFieldValue('isGuaranteed', !values.isGuaranteed)}
+                  style={[styles.switchButton, values.isGuaranteed ? styles.active : styles.inactive]}
+                >
+                  <Text style={styles.switchText}>{values.isGuaranteed ? 'Sim' : 'Não'}</Text>
+                </TouchableOpacity>
+              </View>
+
+              {values.isGuaranteed && (
+                <View>
+                  <Text style={styles.label}>Período de garantia (meses)</Text>
+                  <Picker
+                    selectedValue={values.guaranteedPeriod}
+                    onValueChange={(itemValue) => setFieldValue('guaranteedPeriod', itemValue)}
+                    style={styles.input}
+                  >
+                    <Picker.Item label="1 mês" value="1 mês" />
+                    <Picker.Item label="3 meses" value="3 meses" />
+                    <Picker.Item label="6 meses" value="6 meses" />
+                    <Picker.Item label="9 meses" value="9 meses" />
+                    <Picker.Item label="12 meses" value="12 meses" />
+                  </Picker>
+                </View>
+              )}
+              {touched.guaranteedPeriod && errors.guaranteedPeriod && (
+                <Text style={styles.error}>{errors.guaranteedPeriod}</Text>
+              )}
+
+              <TouchableOpacity 
+                style={[styles.submitButton, isSubmitting && styles.submitButtonDisabled]} 
+                onPress={handleSubmit}
+                disabled={isSubmitting}
+              >
+                <Text style={styles.submitButtonText}>
+                  {isSubmitting ? 'Processando...' : editingProduct ? 'Atualizar Produto' : 'Criar Produto'}
+                </Text>
+              </TouchableOpacity>
+
+              <View style={{ marginBottom: 250 }} />
+            </>
+          )}
+        </Formik>
+      ) : (
+        <View style={styles.notAccepted}>
+          <Text style={styles.notAcceptedTitle}>Sua conta está em análise!</Text>
+          
+          <Text style={styles.notAcceptedText}>
+            Para começar a publicar seus produtos e vender na visacasa, precisamos finalizar a ativação da sua conta.
+          </Text>
+
+          <Text style={styles.notAcceptedContact}>
+            Entre em contato conosco pelo <Text style={styles.notAcceptedHighlight}>WhatsApp: 85 3600036</Text>
+          </Text>
+          
+          <Text style={styles.notAcceptedContact}> ou pelo email:
+            <Text style={styles.notAcceptedHighlight}>visacasaservicosconsultoria@gmail.com</Text>
+          </Text>
+
+          <Text style={styles.notAcceptedText}>
+            Nossa equipe está pronta para ajudar você a começar suas vendas o mais rápido possível!
+          </Text>
+
+          <Text style={styles.notAcceptedFooter}>
+            Agradecemos sua paciência e interesse em fazer parte da nossa plataforma.
+          </Text>
+        </View>
+      )}
     </ScrollView>
   );
 };
-
-export default NewProduct;
 
 const styles = StyleSheet.create({
   container: {
     paddingTop: 40,
     backgroundColor: '#fff',
-    padding:20
+    padding: 20,
   },
-  notAccepted:{
-    color: 'red',
-    alignItems: 'center',
+  notAccepted: {
+    color: 'blue',
     textAlign: 'center',
-    marginTop: 200
+    marginTop: 200,
+    fontSize: 16,
+    fontWeight: '500'
   },
-
-  size:{
-      marginBottom: 12,
+  error: {
+    color: 'red',
+    marginBottom: 10,
   },
-
-  error:{
-    color: 'red'
-  },
-
   logo: {
     width: 120,
     height: 120,
@@ -651,12 +706,18 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 16,
     textAlign: 'center',
-    color:'#E85A4F'
+    color: '#E85A4F',
   },
   input: {
     borderColor: '#ccc',
     borderWidth: 1,
     padding: 10,
+    marginBottom: 10,
+    borderRadius: 5,
+  },
+  picker: {
+    borderColor: '#ccc',
+    borderWidth: 1,
     marginBottom: 10,
     borderRadius: 5,
   },
@@ -670,12 +731,6 @@ const styles = StyleSheet.create({
   imagePickerText: {
     color: '#fff',
     fontWeight: 'bold',
-  },
-  imagePreview: {
-    width: 100,
-    height: 100,
-    resizeMode: 'contain',
-    marginBottom: 10,
   },
   switchRow: {
     flexDirection: 'row',
@@ -703,9 +758,63 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 20,
   },
+  submitButtonDisabled: {
+    backgroundColor: '#CC99FF',
+  },
   submitButtonText: {
     color: 'white',
     fontWeight: 'bold',
     fontSize: 16,
   },
+  notAccepted: {
+    backgroundColor: '#F8F9FA',
+    padding: 20,
+    borderRadius: 12,
+    margin: 16,
+    borderLeftWidth: 4,
+    borderLeftColor: '#E85A4F',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  notAcceptedTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#2D3748',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  notAcceptedText: {
+    fontSize: 15,
+    lineHeight: 22,
+    color: '#4A5568',
+    marginBottom: 8,
+  },
+  notAcceptedContact: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#2D3748',
+    marginTop: 12,
+    marginBottom: 4,
+  },
+  notAcceptedHighlight: {
+    color: '#E85A4F',
+    fontWeight: '600',
+  },
+  notAcceptedFooter: {
+    fontSize: 14,
+    fontStyle: 'italic',
+    color: '#718096',
+    marginTop: 16,
+    textAlign: 'center',
+  },
+  label: {
+    marginBottom: 8,
+    fontWeight: '600',
+    color: '#4A5568',
+  }
 });
+
+export default NewProduct;

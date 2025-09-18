@@ -5,7 +5,6 @@ const modelSchema = new mongoose.Schema({
     name: {type: String, required: true},
     email: {type: String, required: true, unique: true},
     password: {type: String, required: true},
-    resetToken: {type: String},
     phoneNumber: {type: Number, required: true, unique: true},
     isAdmin: {type: Boolean, default: false},
     isDeliveryMan: {type: Boolean, default: false},
@@ -15,7 +14,8 @@ const modelSchema = new mongoose.Schema({
     location: {type: String},
     latitude: {type: String},
     longitude: {type: String},
-    pushToken: {type: String},
+    token: { type: String },
+    deviceToken: { type: String },
     seller:{
         name: {type: String},
         logo: {type: String},
@@ -23,9 +23,11 @@ const modelSchema = new mongoose.Schema({
         rating: {type: Number, default: 0,},
         numReviews: {type: Number, default: 0, },
         province: {type: mongoose.Schema.Types.ObjectId, ref: 'Province',  default: null},
+        tipoEstabelecimento: {type: mongoose.Schema.Types.ObjectId, ref: 'TipoEstabelecimento',  default: null},
         address: {type: String},
         latitude: {type: String},
         longitude: {type: String},
+        openstore: {type: Boolean},
         workDayAndTime: [
             {
               dayNumber: Number,

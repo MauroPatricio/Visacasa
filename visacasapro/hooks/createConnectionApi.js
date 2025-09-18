@@ -1,6 +1,13 @@
-import axios from 'axios'
+import axios from 'axios';
 
-const instance = axios.create({baseURL: 'https://visacasa-3a2ff6784f00.herokuapp.com/api'})
-//const instance = axios.create({baseURL: 'http://localhost:5000/api'})
+let baseURL = '';
 
-export default instance;
+if (process.env.NODE_ENV === 'development') {
+  baseURL = 'http://192.168.0.3:5000/api'; // ou localhost se estiver no navegador
+} else {
+  baseURL = 'https://deliveryshop.herokuapp.com/api';
+}
+
+const api = axios.create({ baseURL });
+
+export default api;

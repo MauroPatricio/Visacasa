@@ -1,19 +1,13 @@
-import axios from 'axios'
+import axios from 'axios';
 
- const instance = axios.create({baseURL: 'https://visacasa-3a2ff6784f00.herokuapp.com/api'});
-//  const instance = axios.create({baseURL: 'http://localhost:5000/api'})
+let baseURL = '';
 
+if (process.env.NODE_ENV === 'development') {
+  baseURL = 'http://192.168.0.3:5000/api'; // ou localhost se estiver no navegador
+} else {
+  baseURL = 'https://deliveryshop.herokuapp.com/api';
+}
 
- export  const registerNotification = async data => {
-    return instance.post(`notification`, data);
-  };
-  
- export const updateNotification = async data => {
-    return instance.patch(`notification?userid=${data?.userId}`, {
-      tokenID: data?.token,
-    })};
+const api = axios.create({ baseURL });
 
-
-
-
-export default instance;
+export default api;
