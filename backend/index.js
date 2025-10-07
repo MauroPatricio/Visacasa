@@ -96,20 +96,17 @@ app.use('/api/notifications', notificationRouter);
 app.use('/api/wallet', walletRouter);
 
 
-// Corrigir __dirname no ES Modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// **Configuração do diretório e frontend**
+const __dirname = path.resolve();
+// const rootDir = path.join(__dirname, '..');
+app.use(express.static(path.join(__dirname, '/visacasaweb/build')));
 
-// Caminho absoluto para o build do React
-const frontendPath = path.join(__dirname, '../visacasaweb/build');
 
-// Servir ficheiros estáticos do React
-app.use(express.static(frontendPath));
-
-// Rota principal (React Router)
 app.get('*', (req, res) => {
-  res.sendFile(path.join(frontendPath, 'index.html'));
-});
+  res.sendFile(path.join(__dirname+'/visacasaweb/build/index.html'));});
+
+
+
 // Middleware de erro
 app.use((err, req, res, next) => {
   console.log(err);
