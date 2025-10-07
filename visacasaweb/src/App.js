@@ -141,7 +141,7 @@ export  function App() {
     <BrowserRouter>
       <div className="d-flex flex-column site-background">
         <Helmet>
-          <title>Visa</title>Casa
+          <title>VisaCasa</title>
         </Helmet>
         <ToastContainer position="top-right" autoClose={3000} />
 

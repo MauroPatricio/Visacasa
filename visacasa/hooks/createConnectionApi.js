@@ -5,7 +5,7 @@ let baseURL = '';
 if (process.env.NODE_ENV === 'development') {
   baseURL = 'http://192.168.152.176:5000/api'; // ou localhost se estiver no navegador
 } else {
-  baseURL = 'https://deliveryshop.herokuapp.com/api';
+  baseURL = 'https://visacasa-3a2ff6784f00.herokuapp.com/api';
 }
 
 const api = axios.create({ baseURL });
