@@ -7,7 +7,7 @@
     "start": "node backend/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "dependencies": { 
+  "dependencies": {
     "@notifee/react-native": "^9.0.2",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^1.35.0",
@@ -22,6 +22,7 @@
     "mongoose": "7.0.0",
     "mpesa-node-api": "^1.1.0",
     "multer": "^1.4.5-lts.1",
+    "node-cron": "^4.2.1",
     "node-gyp": "^9.4.0",
     "nodemailer": "^6.9.8",
     "semver": "^7.5.4",
@@ -32,7 +33,6 @@
   "devDependencies": {
     "nodemon": "^2.0.20"
   },
-  
   "repository": {
     "type": "git",
     "url": "git+https://github.com/MauroPatricio/Visacasa.git"
