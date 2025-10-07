@@ -463,7 +463,7 @@ const text = `<p>Por favor click no link abaixo para resetar a sua senha</p>
 const mailOptions = {
   from: 'mauro.patricio1@gmail.com',         
   to: user.email,       
-  subject: 'Recuperação de senha – Nhiquela Shop',                
+  subject: 'Recuperação de senha – VisaCasa',                
   text: text,
 };
 
