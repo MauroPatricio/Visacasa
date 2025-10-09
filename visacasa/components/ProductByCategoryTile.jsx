@@ -4,7 +4,6 @@ import {useNavigation} from '@react-navigation/native'
 
 const ProductByCategoryTile = (item) => {
     const navigation = useNavigation();
-    console.log(item.item.seller);
   return (
     <View>
       <TouchableOpacity style={styles.container} onPress={()=>{navigation.navigate('ProductDetail', {item})}}>

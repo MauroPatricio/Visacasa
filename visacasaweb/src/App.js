@@ -141,7 +141,7 @@ export  function App() {
     <BrowserRouter>
       <div className="d-flex flex-column site-background">
         <Helmet>
-          <title>Nhiquela Shop</title>
+          <title>VisaCasa</title>
         </Helmet>
         <ToastContainer position="top-right" autoClose={3000} />
 
@@ -156,7 +156,7 @@ export  function App() {
             <Container>
               <LinkContainer to="/" >
                 <Navbar.Brand className="Navbar-Brand"  >
-                Nhiquela Shop
+                VisaCasa
                 </Navbar.Brand>
               </LinkContainer>
               <SearchBox />

@@ -1,294 +1,327 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Alert} from 'react-native'
-import React, {useState, useEffect} from 'react'
-import { StatusBar } from 'expo-status-bar'
-import {AntDesign, MaterialCommunityIcons, SimpleLineIcons} from "@expo/vector-icons"
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+  Alert,
+  Switch,
+  ActivityIndicator,
+} from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { StatusBar } from 'expo-status-bar';
+import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import api from '../hooks/createConnectionApi';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
-const Profile = ({navigation}) => {
+const Profile = () => {
+  const navigation = useNavigation();
+  
   const [userData, setUserData] = useState(null);
   const [userLogin, setUserLogin] = useState(false);
+  const [isStoreOpen, setIsStoreOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(()=>{
-    checkIfUserExist();
-    }, [])
+  const [pendingCount, setPendingCount] = useState(0);
+  const [isAdmin, setIsAdmin] = useState(false);
 
-    const checkIfUserExist = async() =>{
-      const id = await AsyncStorage.getItem('id');
-      const userId = `user${JSON.parse(id)}`;
-      try{
-        const currentUser = await AsyncStorage.getItem(userId);
-        setUserLogin(false);
-        if(currentUser !== null){
-          const parseData = JSON.parse(currentUser);
-          setUserData(parseData);
-          setUserLogin(true);
-        }
-      }catch(error){
-        navigation.navigate('Login')
+
+const fetchPendingWithdrawals = async () => {
+
+  if(userData?.token){
+    try {
+      const response = await api.get('/wallet/pending', { 
+        headers: { Authorization: `Bearer ${userData.token}` } 
+      });
+      setPendingCount(response.data.length || 0);
+    } catch (error) {
+      console.error("Erro ao buscar solicitações pendentes:", error);
+    }
+  }
+};
+
+useFocusEffect(
+  useCallback(() => {
+    const loadUserAndPending = async () => {
+      await checkIfUserExist();
+      if (userData?.token && isAdmin) {
+        fetchPendingWithdrawals();
       }
+    };
+    loadUserAndPending();
+  }, [userData, isAdmin])
+);
+
+
+
+  const checkIfUserExist = async () => {
+    try {
+      const storedUserData = await AsyncStorage.getItem('userData');
+      const storedUserId = await AsyncStorage.getItem('id');
+
+      if (storedUserData && storedUserId) {
+        const parsedUserData = JSON.parse(storedUserData);
+        if (parsedUserData._id === storedUserId) {
+          setUserData(parsedUserData);
+          setIsStoreOpen(parsedUserData.seller?.openstore || false);
+          setUserLogin(true);
+          setIsAdmin(parsedUserData.isAdmin);
+        } else {
+          navigation.navigate('Login');
+        }
+      } else {
+        navigation.navigate('Login');
+      }
+    } catch (error) {
+      navigation.navigate('Login');
+    } finally {
+      setIsLoading(false);
     }
+  };
 
-    const userLogout = async ()=> {
-      const id = await AsyncStorage.getItem('id');
-      const userId = `user${JSON.parse(id)}`;
-      // try{
-        // setUserLogin(false);
-        await AsyncStorage.removeItem(userId);
-        await AsyncStorage.removeItem('id');
-
-        navigation.replace('Bottom Navigation')
-
-      // }catch(error){
-      //   navigation.navigate('Login')
-      // }
-    }
-
+  const userLogout = async () => {
+    setIsLoading(true);
+    await AsyncStorage.removeItem('id');
+    await AsyncStorage.removeItem('userData');
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'Login' }],
+    });
+    setIsLoading(false);
+  };
 
   const logout = () => {
-    Alert.alert(
-      "Sair",
-      "Tem a certeza que deseja sair?",
-      [
+    Alert.alert("Sair", "Tem a certeza que deseja sair?", [
+      { text: "Cancelar" },
+      { text: "Continuar", onPress: () => userLogout() },
+    ]);
+  };
 
-        {
-          text: "Cancelar", onPress: () => console.log("cancelado")
-        },
-        {
-          text: "Continuar", onPress: () => userLogout()
-        },
-       
-        
+  const toggleStoreStatus = async () => {
+    setIsLoading(true);
+    try {
+      const id = await AsyncStorage.getItem('id');
+      const newStatus = !isStoreOpen;
 
-      ]
-    )
+      const response = await api.put(
+        `/users/seller/${id}`,
+        { isopenstore: newStatus },
+        { headers: { Authorization: `Bearer ${userData.token}` } }
+      );
+
+      if (response?.status === 201) {
+        const updatedUser = {
+          ...userData,
+          seller: { ...userData.seller, openstore: newStatus }
+        };
+        await AsyncStorage.setItem('userData', JSON.stringify(updatedUser));
+        setUserData(updatedUser);
+        setIsStoreOpen(newStatus);
+      } else {
+        Alert.alert('Erro', 'Falha ao atualizar o status da loja.');
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar o estado da loja:', error);
+      Alert.alert('Erro', 'Não foi possível atualizar o estado da loja.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <>
+      
+      <StatusBar backgroundColor='white' />
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#E85A4F" />
+        <Text style={{ marginTop: 60 }}>Carregando...</Text>
+      </View>
+      </>
+    );
   }
 
-  const clearCache = () => {
-    Alert.alert(
-      "Limpar registros",
-      "Tem a certeza que deseja Limpar todos os registros do seu dispositivo?",
-      [
-        {
-          text: "Continuar", onPress: () => console.log("cancelado")
-        },
-        {
-          text: "Cancelar", onPress: () => console.log("cancelado")
-        },
-        
+    // return (
+    //   <></>
+    // );
 
-      ]
-    )
-  }
-
-  const deleteAccount = () => {
-    Alert.alert(
-      "Apagar conta",
-      "Tem a certeza que deseja apagar definitivamente a sua conta?",
-      [
-        {
-          text: "Continuar", onPress: () => console.log("cancelado")
-        },
-        {
-          text: "Cancelar", onPress: () => console.log("cancelado")
-        },
-        
-
-      ]
-    )
-  }
   return (
-
-  <ScrollView>
-
-    <View style={styles.container}>
-          <View style={styles.container}>
-            <StatusBar backgroundColor='white'/>
-            <View style={{width: '100%'}}>
-              <Image source={require('../assets/visacasa2.png')}
-              style={styles.cover}
-              />
+    <ScrollView style={{ backgroundColor: '#F3F4F6' }}>
+      
+      <View style={styles.header}>
+        <Image source={require('../assets/visacasa2.png')} style={styles.cover} />
+        <View style={styles.profileWrapper}>
+          <Image source={require('../assets/default1.jpg')} style={styles.profile} />
+          <Text style={styles.name}>
+            {userLogin ? userData.name : "Por favor faça o login!"}
+          </Text>
+          {!userLogin ? (
+            <TouchableOpacity style={styles.loginBtn} onPress={() => navigation.navigate('Login')}>
+              <Text style={styles.loginText}>Entrar</Text>
+            </TouchableOpacity>
+          ) : (
+            <View style={styles.phoneTag}>
+              <Text style={styles.phoneText}>{userData?.phoneNumber}</Text>
             </View>
-            <View style={styles.profileContainer}>
-            <Image source={require('../assets/default1.jpg')}
-              style={styles.profile}
-              />
-              <Text style={styles.name}> 
-                  {userLogin === true ? userData.name: "Por favor faça o login!"}
-              </Text>
+          )}
+        </View>
+      </View>
 
-              {userLogin === false?(<TouchableOpacity onPress={()=>{navigation.navigate('Login')}}>
-                    <View style={styles.loginBtn}>
-                      <Text style={styles.menuText}>Entrar</Text>
-                    </View>
-                 </TouchableOpacity>):
-                 (<View style={styles.loginBtn} onPress={()=>{navigation.navigate('Login')}}>
-                    {/* <Text style={styles.menuText}>{userData?.email}</Text> */}
-                    <Text style={styles.menuText}>{userData?.phoneNumber}</Text>
-
-                  </View>)}
-            {userLogin!==true?(
-                    <View></View>):(
-                    <View  style={styles.menuWrapper}>
-                    {/* <TouchableOpacity onPress={()=>{}}>
-                        <View style={styles.menuItem(0.2)}>
-                            <MaterialCommunityIcons
-                            name="heart-outline"
-                            size={28}
-                            color={"red"}
-                            />
-                            <Text style={styles.menuText2}>Favoritos</Text>
-                        </View>
-                    </TouchableOpacity> */}
-
-                    {/* <TouchableOpacity onPress={()=>{}}>
-                        <View style={styles.menuItem(0.2)}>
-                            <MaterialCommunityIcons
-                            name="truck-delivery-outline"
-                            size={28}
-                            // color={"red"}
-                            />
-                            <Text style={styles.menuText2}>Pedidos</Text>
-                        </View>
-                    </TouchableOpacity> */}
-
-                    {/* <TouchableOpacity onPress={()=>{}}>
-                        <View style={styles.menuItem(0.2)}>
-                            <MaterialCommunityIcons
-                            name="cart"
-                            size={28}
-                            // color={"red"}
-                            />
-                            <Text style={styles.menuText2}>Carinha de compras</Text>
-                        </View>
-                    </TouchableOpacity> */}
-
-                    {/* <TouchableOpacity onPress={()=>{clearCache()}}>
-                        <View style={styles.menuItem(0.2)}>
-                            <MaterialCommunityIcons
-                            name="cached"
-                            size={28}
-                            />
-                            <Text style={styles.menuText2}>Limpar registros</Text>
-                        </View>
-                    </TouchableOpacity> */}
-                    <TouchableOpacity onPress={()=>{deleteAccount()}}>
-                        <View style={styles.menuItem(0.2)}>
-                            <AntDesign
-                            name="user"
-                            size={28}
-                            />
-                            <Text style={styles.menuText2}>Apagar conta</Text>
-                        </View>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity onPress={()=>{logout()}}>
-                        <View style={styles.menuItem(0.2)}>
-                            <AntDesign
-                            name="logout"
-                            size={28}
-                            
-                            />
-                            <Text style={styles.menuText2}>Sair</Text>
-                        </View>
-                    </TouchableOpacity>
-                    </View>
-                    
-                    
-                  )}
-
-           
-
-            
-
-</View>
+      {userLogin && (
+        <View style={styles.card}>
+          <View style={styles.menuItem}>
+            <MaterialCommunityIcons name="store" size={28} color="#E85A4F" />
+            <Text style={styles.menuText}>Loja Aberta</Text>
+            <Switch
+              value={isStoreOpen}
+              onValueChange={toggleStoreStatus}
+              trackColor={{ false: "#ccc", true: "#E85A4F" }}
+              thumbColor={isStoreOpen ? "#fff" : "#f4f3f4"}
+            />
           </View>
-    </View>
+        </View>
+      )}
+
+      {userLogin && (
+        <View style={styles.card}>
+          <TouchableOpacity onPress={() => navigation.navigate('Wallet')}>
+            <View style={styles.menuItem}>
+              <MaterialCommunityIcons name="wallet" size={28} color="#E85A4F" />
+              <Text style={styles.menuText}>Minha Carteira</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+      )}
+
+{isAdmin && (
+  <View style={styles.card}>
+    <TouchableOpacity onPress={() => navigation.navigate('WithdrawalRequests')}>
+      <View style={styles.menuItem}>
+        <MaterialCommunityIcons name="bank-transfer" size={28} color="#E85A4F" />
+        <Text style={styles.menuText}>Autorizar Levantamentos</Text>
+        {pendingCount > 0 && (
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>{pendingCount}</Text>
+          </View>
+        )}
+      </View>
+    </TouchableOpacity>
+  </View>
+)}
+      
+
+      <View style={styles.card}>
+        <TouchableOpacity onPress={logout}>
+          <View style={styles.menuItem}>
+            <AntDesign name="logout" size={28} color="#E85A4F" />
+            <Text style={styles.menuText}>Sair</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+
+      <View style={{ marginBottom: 200 }} />
     </ScrollView>
+  );
+};
 
-  )
-}
-
-export default Profile
+export default React.memo(Profile);
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F3F4F6', // Light grey background for better contrast
-    paddingBottom: 20, // Add some padding at the bottom for the scroll view
+  header: {
+    backgroundColor: '#fff',
+    marginBottom: 20,
+    elevation: 4,
   },
   cover: {
-    height: 300,
+    height: 200,
     width: "100%",
     resizeMode: "cover",
-    overflow: 'hidden',
   },
-  profileContainer: {
-    flex: 1,
+  profileWrapper: {
     alignItems: "center",
-    marginTop: -50, // Bring the profile image up
+    marginTop: -60,
+    paddingBottom: 20,
   },
   profile: {
-    height: 160,
-    width: 160,
-    borderRadius: 80, // Circular profile picture
+    height: 120,
+    width: 120,
+    borderRadius: 60,
     borderWidth: 4,
-    borderColor: "#FFFFFF", // White border around profile picture
-    shadowColor: '#000', // Adding shadow for depth
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 5, // Elevation for Android
+    borderColor: "#fff",
+    elevation: 5,
   },
   name: {
     fontWeight: "700",
-    fontSize: 18,
+    fontSize: 20,
     marginVertical: 10,
-    color: "#333", // Darker text for better readability
+    color: "#333",
   },
   loginBtn: {
-    backgroundColor: "#E85A4F", // Gradient background color for buttons
-    padding: 10,
-    borderWidth: 0.4,
-    borderColor: "white",
-    borderRadius: 24,
-    width: '80%', // Full width for buttons
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginVertical: 10, // Space between buttons
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    backgroundColor: "#E85A4F",
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    borderRadius: 25,
     elevation: 3,
   },
-  menuText: {
+  loginText: {
+    color: "#fff",
     fontWeight: "600",
     fontSize: 16,
-    lineHeight: 22,
-    color: "white",
   },
-  menuWrapper: {
-    marginTop: 20,
-    width: '100%',
-    paddingHorizontal: 20, // Padding for menu items
+  phoneTag: {
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#E85A4F",
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    borderRadius: 20,
+    elevation: 2,
   },
-  menuItem: (borderBottomWidth) => ({
-    borderBottomWidth: borderBottomWidth,
+  phoneText: {
+    fontWeight: "600",
+    color: "#E85A4F",
+  },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    marginHorizontal: 16,
+    marginBottom: 16,
+    elevation: 3,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+  },
+  menuItem: {
     flexDirection: "row",
-    paddingVertical: 15,
-    borderColor: "#E0E0E0", // Subtle border color
-    alignItems: 'center', // Center items vertically
-  }),
-  menuText2: {
+    alignItems: "center",
+    paddingVertical: 12,
+    justifyContent: 'space-between',
+  },
+  menuText: {
+    flex: 1,
     marginLeft: 15,
     fontSize: 16,
     fontWeight: "500",
-    color: "#333", // Dark text for contrast
+    color: "#333",
   },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: '#F3F4F6',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  badge: {
+  backgroundColor: 'red',
+  borderRadius: 10,
+  paddingHorizontal: 6,
+  paddingVertical: 2,
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+badgeText: {
+  color: '#fff',
+  fontSize: 12,
+  fontWeight: 'bold',
+},
 });

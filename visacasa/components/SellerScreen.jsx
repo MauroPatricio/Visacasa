@@ -1,39 +1,26 @@
-import { SafeAreaView, ScrollView, StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native'
-import React, { useEffect, useLayoutEffect, useState } from 'react'
-import { useRoute } from '@react-navigation/native'
-import { useNavigation } from '@react-navigation/native'
-import { Ionicons } from '@expo/vector-icons'
+import {
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+} from 'react-native';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
+import { useRoute, useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import api from '../hooks/createConnectionApi';
-import SellerProduct from './SellerProduct'
-import BasketIcon from './BasketIcon'
-import { useDispatch } from 'react-redux'
-import { setSeller } from '../features/sellerSlice'
-import MapView, { Marker } from 'react-native-maps'; // Import MapView
+import SellerProduct from './SellerProduct';
+import BasketIcon from './BasketIcon';
+import { useDispatch } from 'react-redux';
+import { setSeller } from '../features/sellerSlice';
+import MapView, { Marker } from 'react-native-maps';
+import * as Location from 'expo-location';
 
 const SellerScreen = () => {
-  const { params: {
-    id,
-    name,
-    logo,
-    description,
-    rating,
-    numReviews,
-    province,
-    address,
-    latitude,
-    longitude,
-  } } = useRoute();
-
-  const navigation = useNavigation();
-  const sellerId = id;
-  const [productsBySeller, setProductsBySeller] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [sellerLocation, setSellerLocation] = useState(null);
-
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(setSeller({
+  const {
+    params: {
       id,
       name,
       logo,
@@ -44,49 +31,87 @@ const SellerScreen = () => {
       address,
       latitude,
       longitude,
-    }));
+      openstore,
+    },
+  } = useRoute();
+
+  const navigation = useNavigation();
+  const sellerId = id;
+
+  const [productsBySeller, setProductsBySeller] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [distance, setDistance] = useState('Calculando...');
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(setSeller({ id, name, logo, description, rating, numReviews, province, address, latitude, longitude }));
   }, []);
 
+  useEffect(() => {
+    const getUserLocation = async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        console.log('Permissão de localização negada');
+        setDistance('Indisponível');
+        return;
+      }
 
-const updateCoorder=()=>{
-  if (latitude && longitude){
-    setSellerLocation({latitude: parseFloat(latitude).toFixed(4), longitude: parseFloat(longitude).toFixed(4)});
-  }
-}
+      let location = await Location.getCurrentPositionAsync({});
+      const userLat = location.coords.latitude;
+      const userLon = location.coords.longitude;
 
-  const fechtData = async () => {
+      if (latitude && longitude) {
+        setDistance(calculateDistance(userLat, userLon, parseFloat(latitude), parseFloat(longitude)) + ' km');
+      } else {
+        setDistance('Indisponível');
+      }
+    };
+
+    getUserLocation();
+  }, [latitude, longitude]);
+
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * (Math.PI / 180);
+    const dLon = (lon2 - lon1) * (Math.PI / 180);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * (Math.PI / 180)) *
+        Math.cos(lat2 * (Math.PI / 180)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return (R * c).toFixed(2);
+  };
+
+  const fetchData = async () => {
     try {
       setLoading(true);
       const response = await api.get(`/products?seller=${sellerId}`);
-      if (response.status == 200) {
-        setLoading(false);
+      if (response.status === 200) {
         setProductsBySeller(response.data.products);
       }
+      setLoading(false);
     } catch (error) {
       setLoading(false);
     }
-  }
-
-
+  };
 
   useEffect(() => {
-    fechtData();
-    updateCoorder();
-  }, [latitude, longitude]);
+    fetchData();
+  }, []);
 
   useLayoutEffect(() => {
-    navigation.setOptions({ headerShow: false })
+    navigation.setOptions({ headerShown: false });
   }, []);
 
   return (
     <>
       <BasketIcon />
 
-      <ScrollView style={{ backgroundColor: 'white' }}>
-        <Image
-          source={{ uri: logo, height: 300 }}
-          style={styles.logo}
-        />
+      <ScrollView style={{ backgroundColor: '#F5F5F5' }}>
+        <Image source={{ uri: logo }} style={styles.logo} />
+
         <View style={styles.icons}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Ionicons name='chevron-back-circle' size={35} style={styles.back} />
@@ -94,64 +119,65 @@ const updateCoorder=()=>{
         </View>
 
         <View style={styles.view}>
-          <View style={styles.rating}>
-            <Text style={styles.sellerName}>{name}</Text>
-            <Ionicons name="star" color={'gold'} size={22} />
-            <Text>{rating}</Text>
-          </View>
-          {latitude && longitude ? (
-          <View style={styles.mapContainer}>
-            <Text style={styles.mapTitle}>Localização do Vendedor</Text>
-          
-{latitude && longitude ?(
-                               <MapView
-                               style={styles.map}
-                               initialRegion={{
-                                 latitude: latitude ? parseFloat(latitude) : 0,  // Use valores padrão se não houver latitude
-                                 longitude: longitude ? parseFloat(longitude) : 0, // Use valores padrão se não houver longitude
-                                 latitudeDelta: 0.001,
-                                 longitudeDelta:0.001,
-                               }}
-                             >
-                               {latitude && longitude && (
-                                 <Marker
-                                   coordinate={{ latitude: parseFloat(latitude), longitude: parseFloat(longitude) }}
-                                   title="Localização do Fornecedor"
-                                 />
-                               )}
-                             </MapView>
-                            ) : (
-                                <Text style={styles.locationText}>Localização do vendedor não disponível.</Text>
-                            )}
-          </View>
-        ) : null}
+          <Text style={styles.sellerName}>{name}</Text>
 
-          <Text style={{ fontWeight: '500', marginLeft: 10 }}>Endereço:</Text>
-          <View style={styles.details}>
-            <View style={styles.address}>
-              <Ionicons name='location-outline' color="#E85A4F" size={22} />
-              <Text><Text style={{ fontWeight: '500' }}>{province.name}</Text> - {address}</Text>
+          {latitude && longitude ? (
+            <View style={styles.mapContainer}>
+              <Text style={styles.mapTitle}>Localização do Fornecedor</Text>
+              {/* <MapView
+                style={styles.map}
+                initialRegion={{
+                  latitude: parseFloat(latitude),
+                  longitude: parseFloat(longitude),
+                  latitudeDelta: 0.005,
+                  longitudeDelta: 0.005,
+                }}
+              >
+                <Marker
+                  coordinate={{
+                    latitude: parseFloat(latitude),
+                    longitude: parseFloat(longitude),
+                  }}
+                  title="Localização do Vendedor"
+                />
+              </MapView> */}
             </View>
+          ) : (
+            <Text style={styles.locationText}>Localização do vendedor não disponível.</Text>
+          )}
+
+          <Text style={styles.distanceText}>Distância: {distance}</Text>
+
+          <Text style={[styles.openstore, { color: openstore ? 'green' : 'red' }]}>
+            {openstore ? 'Estamos abertos' : 'Estamos fechados'}
+          </Text>
+
+          <Text style={styles.sectionTitle}>Endereço:</Text>
+          <View style={styles.details}>
+            <Ionicons name='location-outline' color="#E85A4F" size={22} />
+            <Text style={styles.addressText}>
+              <Text style={{ fontWeight: '500' }}>{province?.name}</Text> - {address}
+            </Text>
           </View>
 
           <View style={styles.description}>
-            <Text style={{ fontWeight: '500' }}>Especialidade:</Text>
-            <Text>{description}</Text>
+            <Text style={styles.sectionTitle}>Especialidade:</Text>
+            <Text style={styles.descriptionText}>{description}</Text>
           </View>
         </View>
 
-     
+        <Text style={styles.title}>Produtos</Text>
 
-        <View>
-          <Text style={styles.title}>Produtos</Text>
-        </View>
-
-        <View style={{ paddingBottom: 90 }}>
+        <View style={styles.productView}>
           {productsBySeller && productsBySeller.map((product) => (
+                  
+
+            
             <SellerProduct
               key={product._id}
               id={product._id}
-              name={product.nome}
+              nome={product.nome}
+              name={product.name}
               image={product.image}
               images={product.images}
               description={product.description}
@@ -159,19 +185,26 @@ const updateCoorder=()=>{
               numReviews={product.numReviews}
               province={product.province}
               address={product.address}
+              priceFromSeller={product.priceFromSeller}
               price={product.price}
               onSale={product.onSale}
               countInStock={product.countInStock}
               seller={product.seller}
               sellerName={product.seller.seller.name}
-            />
+              discount={product.discount}
+              comissionPercentage={product.comissionPercentage}
+              sellerEarningsAfterDiscount={product.sellerEarningsAfterDiscount}
+              isSellerOpen={product.isSellerOpen}
+
+              
+              />
           ))}
         </View>
-
+                <Text style={styles.padding}></Text>
       </ScrollView>
     </>
-  )
-}
+  );
+};
 
 export default SellerScreen;
 
@@ -179,12 +212,12 @@ const styles = StyleSheet.create({
   logo: {
     width: '100%',
     height: 300,
-    overflow: 'hidden',
+    resizeMode: 'cover',
   },
   icons: {
     position: 'absolute',
     top: 30,
-    flexDirection: "row",
+    flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
@@ -200,55 +233,71 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     padding: 20,
     borderRadius: 20,
+    margin: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
     elevation: 3,
   },
   sellerName: {
     fontSize: 30,
     fontWeight: '700',
     color: '#333333',
+    marginBottom: 10,
+  },
+  distanceText: {
+    marginTop: 10,
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#E85A4F',
+  },
+  openstore: {
+    marginTop: 10,
+    fontSize: 16,
+    fontWeight: '500',
   },
   details: {
     flexDirection: 'row',
-    marginTop: 5,
-  },
-  address: {
-    flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 5,
+    marginTop: 10,
   },
-  description: {
-    marginTop: 5,
+  addressText: {
     fontSize: 16,
     color: '#666666',
-  },
-  rating: {
-    flexDirection: "row",
-    alignItems: 'center',
-    marginTop: 5,
-  },
-  title: {
-    marginTop: 20,
-    marginLeft: 10,
-    marginBottom: 12,
-    fontWeight: '600',
-    fontSize: 22,
-    color: '#E85A4F',
+    marginLeft: 5,
   },
   mapContainer: {
-    marginTop: 20,
-    marginHorizontal: 10,
-    borderRadius: 15,
-    overflow: 'hidden',
-  },
-  map: {
-    height: 90,
-    width: '100%',
+    marginTop: 10,
   },
   mapTitle: {
     fontSize: 18,
     fontWeight: '600',
-    marginBottom: 10,
     color: '#E85A4F',
-    marginLeft: 10,
+    marginBottom: 10,
   },
+  map: {
+    height: 150,
+    width: '100%',
+    borderRadius: 10,
+  },
+  description: {
+    marginTop: 10,
+  },
+  descriptionText: {
+    fontSize: 16,
+    color: '#666666',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#333333',
+    marginLeft: 20,
+    marginTop: 20,
+    marginBottom: 10,
+  },
+
+  padding:{
+    paddingBottom:100
+  }
 });

@@ -87,17 +87,17 @@ requestDeliver.post(
       stepStatus: req.body.stepStatus
     });
 
-    let mailText = `Ola ${req.user.name},\n \n Seja bem vindo(a) a Nhiquela Shop.\n Dentro de instantes confirmaremos o seu pagamento.\n Por favor, aguarde e muito obrigado pela preferencia. Pedido: ${newOrder.code}. \n Atenciosamente,\n \n Nhiquela Shop`; 
+    let mailText = `Ola ${req.user.name},\n \n Seja bem vindo(a) a VisaCasa.\n Dentro de instantes confirmaremos o seu pagamento.\n Por favor, aguarde e muito obrigado pela preferencia. Pedido: ${newOrder.code}. \n Atenciosamente,\n \n VisaCasa`; 
     
     //  Para envio de mensagens
     // const sellerOfProduct = await User.findById(newOrder.seller);
 
       if (newOrder.isPaid){
         // Enviar sms para o fornecedor
-      let msg = `Ola, a Nhiquela Shop informa que possui um novo pedido com o codigo nr ${newOrder.code}`; 
+      let msg = `Ola, a VisaCasa informa que possui um novo pedido com o codigo nr ${newOrder.code}`; 
       sendSMSToUSendItDeliverman( msg);
     }else{
-       let msg = `Ola, a Nhiquela Shop informa que possui um novo pedido com o codigo nr ${newOrder.code}`; 
+       let msg = `Ola, a VisaCasa informa que possui um novo pedido com o codigo nr ${newOrder.code}`; 
         sendSMSToUSendItAdmin(msg);
     }
 
@@ -237,12 +237,12 @@ requestDeliver.put(
 
       //  Para envio de mensagens
 
-       let msg =`Ola, a Nhiquela Shop informa que o entregador aceitou o pedido nr ${updateOrder.code}`;
+       let msg =`Ola, a VisaCasa informa que o entregador aceitou o pedido nr ${updateOrder.code}`;
  
        sendSMSToUSendIt(req, msg)
       
 
-       let mailText = `Ola ${req.user.name},\n \n a Nhiquela Shop informa que o entregador aceitou o pedido nr ${updateOrder.code}. \n \n Atenciosamente, \n Nhiquela Shop`; 
+       let mailText = `Ola ${req.user.name},\n \n a VisaCasa informa que o entregador aceitou o pedido nr ${updateOrder.code}. \n \n Atenciosamente, \n VisaCasa`; 
     
       sendEmailOrderStatus(req,mailText, updateOrder, res);
 
@@ -270,13 +270,13 @@ requestDeliver.put(
 
         //  Para envio de mensagens
 
-        let msg =`Ola ${req.user.name},\n \n A Nhiquela Shop tem o prazer de lhe informar que o pedido ${order.code} esta a caminho do destino indicado.`;
+        let msg =`Ola ${req.user.name},\n \n A VisaCasa tem o prazer de lhe informar que o pedido ${order.code} esta a caminho do destino indicado.`;
  
  
         sendSMSToUSendIt(req, msg)
        
  
-        let mailText = `A Nhiquela Shop tem o prazer de lhe informar que o pedido ${order.code} esta a caminho do destino indicado.. \n \n Atenciosamente, \n Nhiquela Shop`; 
+        let mailText = `A VisaCasa tem o prazer de lhe informar que o pedido ${order.code} esta a caminho do destino indicado.. \n \n Atenciosamente, \n VisaCasa`; 
      
        sendEmailOrderStatus(req,mailText, order, res);
 
@@ -303,13 +303,13 @@ requestDeliver.put(
 
       //  Para envio de mensagens
 
-       let msg =`Ola, a Nhiquela Shop informa que o entregador ja se encontra no local de destino por si informado referente ao pedido nr ${updateOrder.code}`;
+       let msg =`Ola, a VisaCasa informa que o entregador ja se encontra no local de destino por si informado referente ao pedido nr ${updateOrder.code}`;
  
  
        sendSMSToUSendIt(req, msg)
       
 
-       let mailText = `Ola ${req.user.name},\n \n a Nhiquela Shop informa que o entregador ja se encontra no local de destino por si informado referente ao pedido nr ${updateOrder.code}. \n \n Atenciosamente, \n Nhiquela Shop`; 
+       let mailText = `Ola ${req.user.name},\n \n a VisaCasa informa que o entregador ja se encontra no local de destino por si informado referente ao pedido nr ${updateOrder.code}. \n \n Atenciosamente, \n VisaCasa`; 
     
        sendEmailOrderStatus(req,mailText, order, res);
 
@@ -350,11 +350,11 @@ requestDeliver.put(
 
        //  Para envio de mensagens
 
-      let msg =`Ola, o pedido ${order.code} foi entregue com sucesso. Agradecemos por escolher e confiar em nós. Nhiquela Shop - Tudo em suas mãos.`;
+      let msg =`Ola, o pedido ${order.code} foi entregue com sucesso. Agradecemos por escolher e confiar em nós. VisaCasa - Tudo em suas mãos.`;
  
       sendSMSToUSendIt(req,msg);
 
-      let mailText = `Ola ${req.user.name},\n \n a Nhiquela Shop informa que o seu pedido foi entregue com sucesso e agradecemos por escolher e confiar em nós. \n \n Atenciosamente, \n Nhiquela Shop`; 
+      let mailText = `Ola ${req.user.name},\n \n a VisaCasa informa que o seu pedido foi entregue com sucesso e agradecemos por escolher e confiar em nós. \n \n Atenciosamente, \n VisaCasa`; 
     
       sendEmailOrderStatus(req,mailText, updateOrder, res);
 
@@ -385,11 +385,11 @@ requestDeliver.put(
       
       //  Para envio de mensagens
 
-      let msg =`Ola, a Nhiquela Shop lamenta lhe informar que o seu pedido nr ${order.code} foi cancelado. O motivo do cancelamento podera verificar no site pesquisando pelo codigo.`;
+      let msg =`Ola, a VisaCasa lamenta lhe informar que o seu pedido nr ${order.code} foi cancelado. O motivo do cancelamento podera verificar no site pesquisando pelo codigo.`;
  
       sendSMSToUSendIt(req,msg);
 
-      let mailText = `Ola ${req.user.name},\n \n a Nhiquela Shop informa que o seu pedido foi cancelado. \n \n Atenciosamente, \n Nhiquela Shop`; 
+      let mailText = `Ola ${req.user.name},\n \n a VisaCasa informa que o seu pedido foi cancelado. \n \n Atenciosamente, \n VisaCasa`; 
     
       sendEmailOrderStatus(req,mailText, updateOrder, res);
 
@@ -421,7 +421,7 @@ requestDeliver.put(
        
 
       //  Para envio de mensagens
-      let msg =`Ola, a Nhiquela Shop gostaria de lhe informar que o pagamento referente ao pedido nr ${updateOrder.code} no valor de ${updateOrder.totalPrice} foi efectuado com sucesso.`;
+      let msg =`Ola, a VisaCasa gostaria de lhe informar que o pagamento referente ao pedido nr ${updateOrder.code} no valor de ${updateOrder.totalPrice} foi efectuado com sucesso.`;
 
       // Em falta metodo para envio de mensagem e email
       sendSMSToUSendItDeliverman( msg);
