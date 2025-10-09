@@ -22,7 +22,8 @@ const ProductDetail = ({navigation}) => {
     
     
      const id =item.item._id                
-     const name=item.item.nome
+     const name=item.item.name
+     const nome = item.item.nome
      const image=item.item.image
      const images=item.item.images
      const description=item.item.description
@@ -30,11 +31,13 @@ const ProductDetail = ({navigation}) => {
      const numReviews=item.item.numReviews
      const province=item.item.province
       const address=item.item.address
+      const priceFromSeller = item.item.priceFromSeller
       const price=item.item.price
       const onSale=item.item.onSale
       const countInStock=item.item.countInStock
       const sellerDetail = item.item.sellerDetails
       const seller = sellerDetail.seller.name
+      const discount = item.item.discount
 
         const _id = id
         const dispatch = useDispatch();
@@ -46,7 +49,8 @@ const ProductDetail = ({navigation}) => {
               return; // Prevent adding if the stock is exhausted
             }
             if ( countInStock == items.length ) return;
-            dispatch(addToBasket({id, _id,                 
+            dispatch(addToBasket({id, _id,
+                nome,                 
                 name,
                 image,
                 images,
@@ -55,10 +59,12 @@ const ProductDetail = ({navigation}) => {
                 numReviews,
                 province,
                 address,
+                priceFromSeller,
                 price,
                 onSale,
                 countInStock,
                 seller,
+                discount,
                 quantity: currentQuantity + 1 // Increase quantity by 1 when adding
 
                 }));

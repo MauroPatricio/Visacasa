@@ -1,7 +1,7 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 import { useState, useEffect } from 'react'
-import api from '../hooks/createConnectionApi';
+import api from './createConnectionApi';
 
 const useFetch = () => {
 

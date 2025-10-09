@@ -1,22 +1,27 @@
 {
-    "build": {
-      "development": {
-        "distribution": "internal",
-        "android": {
-          "buildType": "apk"
-        },
-        "ios": {
-          "simulator": true
-        }
+  "cli": {
+    "version": ">= 12.4.1",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal"
+    },
+    "production": {
+      "autoIncrement": true,
+      "android": {
+        "buildType": "app-bundle"
       },
-      "production": {
-        "android": {
-          "buildType": "app-bundle"
-        },
-        "ios": {
-          "simulator": false
-        }
+      "env": {
+        "EXPO_TARGET_SDK_VERSION": "35"
       }
     }
+  },
+  "submit": {
+    "production": {}
   }
-  
+}

@@ -7,7 +7,8 @@ import { addToBasket, removeFromBasket } from '../features/basketSlice';
 
 
 const SellerProduct = ({
-    id,                 
+    id,  
+    nome,               
     name,
     image,
     images,
@@ -16,8 +17,10 @@ const SellerProduct = ({
     numReviews,
     province,
     address,
+    priceFromSeller,
     price,
     onSale,
+    discount,
     countInStock,
 seller, quantity}) => {
 
@@ -37,7 +40,8 @@ seller, quantity}) => {
             }
         
             if ( countInStock == items.length ) return;
-            dispatch(addToBasket({id, _id,                 
+            dispatch(addToBasket({id, _id,   
+                nome,              
                 name,
                 image,
                 images,
@@ -46,10 +50,12 @@ seller, quantity}) => {
                 numReviews,
                 province,
                 address,
+                priceFromSeller,
                 price,
                 onSale,
                 countInStock,
                 seller,
+                discount,
                 quantity: currentQuantity + 1 // Increase quantity by 1 when adding
             }));
         }

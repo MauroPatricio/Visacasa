@@ -4,8 +4,7 @@ import User from '../models/UserModel.js';
 import { isAuth, isAdmin, sendEmailOrderStatus, sendEmailOrderToSeller, sendSMSToUSendIt, sendSMSToSellerUSendIt, sendSMSToUSendItAdmin } from '../utils.js';
 import expressAsyncHandler from 'express-async-handler';
 import Product from '../models/ProductModel.js';
-import  axios  from 'axios' // Ensure axios is imported
-import { createNotification } from '../controllers/notificationControllerNhabanga.js';
+import sendNotification from '../utils/sendNotification.js';
 
 
 
@@ -109,7 +108,7 @@ orderRouter.get(
       deleted: { $eq: false},
       status: { $ne: 'Finalizado' }
 
-    }).populate('user').skip(pageSize *(page -1)).limit(pageSize).sort({createdAt: -1});
+    }).populate('user', 'name phoneNumber').skip(pageSize *(page -1)).limit(pageSize).sort({createdAt: -1});
 
     const countOrders = await Order.countDocuments({
       ...sellerFilter,
@@ -239,15 +238,26 @@ orderRouter.get(
     res.send({orders, pages});
   })
 );
+
+
+
 orderRouter.post(
   '/',
   isAuth,
   expressAsyncHandler(async (req, res) => {
+
+    const comission_price = parseFloat(process.env.COMISSION_PRICE);
+    const priceFromSeller = parseFloat(req.body.itemsPriceForSeller);
+    const priceComission  = parseFloat(priceFromSeller * comission_price);
+
+    
     // Create a new order object
     const newOrder = new Order({
+   
       seller: req.body.orderItems[0].seller,
       orderItems: req.body.orderItems.map((x) => ({ ...x, product: x._id })),
       deliveryAddress: req.body.address,
+      isUserWantDelivery: req.body.isUserWantDelivery, // If user want delivery or not
       paymentMethod: req.body.paymentMethod,
       itemsPrice: req.body.itemsPrice,
       deliveryPrice: req.body.deliveryPrice,
@@ -256,6 +266,8 @@ orderRouter.post(
       ivaTax: req.body.ivaTax,
       siteTax: req.body.siteTax,
       addressPrice: req.body.addressPrice,
+            address: req.body.address,
+
       itemsPriceForSeller: req.body.itemsPriceForSeller,
       user: req.user ? req.user._id : req.body.user._id,
       code: generateCode(),
@@ -264,6 +276,10 @@ orderRouter.post(
       paidAt: req.body.paidAt,
       stepStatus: req.body.stepStatus,
       customerId: req.user ? req.user._id : req.body.user._id,
+      priceComission: priceComission,
+      comissionPercentage: comission_price,
+      priceFromSeller: priceFromSeller,
+      sellerPriceWithDeliver: req.body.sellerPriceWithDeliver
     });
 
     try {
@@ -272,23 +288,23 @@ orderRouter.post(
         req.body.orderItems.map(async (item) => {
           // Check if the item is defined
           if (!item || !item._id) {
-            throw new Error(`Invalid item: ${JSON.stringify(item)}`);
+            throw new Error(`Produto invalido: ${JSON.stringify(item)}`);
           }
 
           const product = await Product.findById(item._id);
           
           // Ensure product exists and quantity is valid
           if (!product) {
-            throw new Error(`Product not found: ${item._id}`);
+            throw new Error(`Produto nao encontrado: ${item._id}`);
           }
           if (typeof item.quantity !== 'number' || isNaN(item.quantity)) {
-            throw new Error(`Invalid quantity for product: ${item.name}`);
+            throw new Error(`Quantidade Invalida para o produto: ${item.name}`);
           }
 
           // Ensure stock doesn't go below 0
           const newCountInStock = product.countInStock - item.quantity;
           if (newCountInStock < 0) {
-            throw new Error(`Insufficient stock for product: ${product.name}`);
+            throw new Error(`Estoque insuficiente para o produto: ${product.name}.  Por favor verifique a quantidade`);
           }
 
           // Update and save product stock
@@ -298,39 +314,15 @@ orderRouter.post(
       );
 
       // Save the order
-      const order = await newOrder.save();
+
+      const savedOrder = await newOrder.save();
+      const order = await savedOrder.populate('seller');
 
       // Create a notification after the order is saved
-      const mensagem = `O seu pedido com o código ${order.code} foi criado com sucesso. Por favor! Aguarde pela confirmação do fornecedor.`;
-     
-      console.log(mensagem);
-      console.log(order.seller);
-      console.log(order.user);
-      console.log(order._id);
-
-      const sellerOfProduct = await User.findById(order.seller);
-      const clientOfProduct = await User.findById(order.user);
-  
-  //toSeller
-  await createNotification({
-    message: mensagem,
-    receiver_id: order.seller,
-    sender_id: order.user,
-    orderID: order._id,
-    pushToken: sellerOfProduct.pushToken,
-  
-  });
-  //toOrderClient
-  await createNotification({
-  message: mensagem,
-  receiver_id: order.seller,
-  sender_id: order.user,
-  orderID: order._id,
-  pushToken: clientOfProduct.pushToken
-  });
+      const mensagem = `Olá! Seu pedido com o código ${order.code} foi criado com sucesso! 🎉 Agora, aguarde pela confirmação do fornecedor❤️`;
 
       // Respond with success message
-      res.status(201).send({ message: 'Novo pedido criado com sucesso', order });
+      res.status(201).send({ mensagem, order });
       
     } catch (error) {
       // Handle errors during product update or order save
@@ -346,7 +338,7 @@ orderRouter.get(
   isAuth,
   expressAsyncHandler(async (req, res) => {
     
-    const orders = await Order.find({ user: req.user._id, isDeletedByRequester: false }).sort({createdAt: -1});
+    const orders = await Order.find({ user: req.user._id, isDeletedByRequester: false,   deleted: { $eq: false} }).populate('seller').sort({createdAt: -1});
     res.send(orders);
   })
 );
@@ -419,13 +411,34 @@ orderRouter.get(
   })
 );
 
+// Deleted by the user
 orderRouter.delete(
   '/:id',
   isAuth,
   expressAsyncHandler(async (req, res) => {
     const order = await Order.findById(req.params.id);
     if (order) {
+      order.deleted = true;
+      order.isActive = false;
+
+      await order.save();
+
+      res.send({ message: `Pedido removido com sucesso` });
+    } else {
+      res.status(404).send({ message: 'Pedido não encontrado' });
+    }
+  })
+);
+
+// Deleted by the seller
+orderRouter.delete(
+  '/seller/:id',
+  isAuth,
+  expressAsyncHandler(async (req, res) => {
+    const order = await Order.findById(req.params.id);
+    if (order) {
       order.isDeletedBySeller = true;
+      order.deleted = true;
       order.isActive = false;
 
       await order.save();
@@ -460,7 +473,7 @@ orderRouter.get(
   '/:id',
   isAuth,
   expressAsyncHandler(async (req, res) => {
-    const order = await Order.findById(req.params.id);
+    const order = await Order.findById(req.params.id).populate('seller');
 
     if (order) {
       res.send(order);
@@ -498,31 +511,34 @@ orderRouter.put(
        
 
       //  Para envio de mensagens
-      let message =`Ola, a Nhiquela Shop gostaria de lhe informar que o pagamento referente ao pedido nr ${order.code} no valor de ${updateOrder.totalPrice} foi efectuado com sucesso.`;
-      sendEmailOrderToSeller(req,message, sellerOfProduct, updateOrder, res);
+      let message =`Olá! 👋 O pagamento referente ao pedido ${order.code} no valor de ${order.totalPrice} foi confirmado com sucesso! Agora, estamos preparando tudo para você. Obrigado por confiar na Nhiquela!`;
+      // sendEmailOrderToSeller(req,message, sellerOfProduct, updateOrder, res);
 
-//toSeller
-      await createNotification({
-        message: message,
-        receiver_id: order.seller,
-        sender_id: order.user,
-        orderID: order._id,
-        pushToken: sellerOfProduct.pushToken,
+      if(sellerOfProduct.deviceToken && clientOfProduct.deviceToken){
 
-      });
-//toOrderClient
-await createNotification({
-  message: message,
-  receiver_id: order.seller,
-  sender_id: order.user,
-  orderID: order._id,
-  pushToken: clientOfProduct.pushToken
-});
+        //toSeller
+              // await createNotification({
+              //   message: message,
+              //   receiver_id: order.seller,
+              //   sender_id: order.user,
+              //   orderID: order._id,
+              //   deviceToken: sellerOfProduct.deviceToken,
+        
+              // });
+        //toOrderClient
+        // await createNotification({
+        //   message: message,
+        //   receiver_id: order.user,
+        //   sender_id: order.seller,
+        //   orderID: order._id,
+        //   deviceToken: clientOfProduct.deviceToken
+        // });
+      }
 
       if (sellerOfProduct){
 
         //  Para envio de mensagens
-      let msgSeller =`Ola, a Nhiquela Shop gostaria de lhe informar que possui um novo pedido com o codigo ${order.code}.`;
+      let msgSeller =`Ola, a Nhiquela gostaria de lhe informar que possui um novo pedido com o codigo ${order.code}.`;
     //  sendSMSToSellerUSendIt(sellerOfProduct, msgSeller);
   }
 
@@ -540,49 +556,21 @@ orderRouter.put(
   expressAsyncHandler(async (req, res) => {
     const order = await Order.findById(req.params.id);
 
-
-    if (order) {
-      order.isAccepted = true;
-      order.isCanceled = false;
-      order.stepStatus = 2;
-      order.status = 'Aceite';
-
-     
-      await order.save();
-
-      //  Para envio de mensagens
-
-    let message =`Ola, a Nhiquela Shop tem o prazer de lhe informar que o seu pedido nr ${order.code} foi aceite com sucesso pelo fornecedor.`;
- 
-    //  sendSMSToUSendIt(req, message);
-    const sellerOfProduct = await User.findById(order.seller);
-    const clientOfProduct = await User.findById(order.user);
-
-//toSeller
-await createNotification({
-  message: message,
-  receiver_id: order.seller,
-  sender_id: order.user,
-  orderID: order._id,
-  pushToken: sellerOfProduct.pushToken,
-
-});
-//toOrderClient
-await createNotification({
-message: message,
-receiver_id: order.seller,
-sender_id: order.user,
-orderID: order._id,
-pushToken: clientOfProduct.pushToken
-});
-
-
-    // sendEmailOrderStatus(req,message, order, res);
-
-      res.send({ order, message: `Pedido aceite com sucesso` });
-    } else {
-      res.status(404).send({ message: 'Pedido não encontrado' });
+    if (!order) {
+      return res.status(404).send({ message: 'Pedido não encontrado' });
     }
+
+    order.isAccepted = true;
+    order.isCanceled = false;
+    order.stepStatus = 2;
+    order.status = 'Aceite';
+
+    await order.save();
+
+    // Buscar o pedido novamente com populate
+    const updatedOrder = await Order.findById(order._id).populate('user', 'name phoneNumber');
+
+    res.send({ order: updatedOrder, message: `Pedido nr ${order.code} aceite com sucesso` });
   })
 );
 
@@ -593,53 +581,58 @@ orderRouter.put(
   expressAsyncHandler(async (req, res) => {
     const order = await Order.findById(req.params.id);
 
-    if (order) {
-      order.isAvailableToDeliver = true;
-      order.status = 'Pronto';
-      order.stepStatus = 3;
-      if(order.addressPrice === 0){
-        order.status = 'Finalizado';
-        order.isInTransit = true;
-        order.isDelivered = true;
-        order.deliveredAt = Date.now();
-      }
-
-      const savedOrder = await order.save();
-
-      let message =`Ola, a Nhiquela Shop lhe informa que o pedido nr ${order.code} esta pronto e disponivel para entrega.`;
-
-      const sellerOfProduct = await User.findById(order.seller);
-      const clientOfProduct = await User.findById(order.user);
-  
-  //toSeller
-  await createNotification({
-    message: message,
-    receiver_id: order.seller,
-    sender_id: order.user,
-    orderID: order._id,
-    pushToken: sellerOfProduct.pushToken,
-  
-  });
-  //toOrderClient
-  await createNotification({
-  message: message,
-  receiver_id: order.seller,
-  sender_id: order.user,
-  orderID: order._id,
-  pushToken: clientOfProduct.pushToken
-  });
-  
-  
-
-      sendEmailOrderStatus(req,message, order, res);
-
-      // sendSMSToUSendItAdmin(message);
-      res.send({ order: savedOrder, message: `Pedido disponível para entrega` });
-    } else {
-      res.status(404).send({ message: 'Pedido não encontrado' });
+    if (!order) {
+      return res.status(404).send({ message: 'Pedido não encontrado' });
     }
+
+    order.isAvailableToDeliver = true;
+    order.status = 'Pronto';
+    order.stepStatus = 3;
+
+    if (order.addressPrice === 0) {
+      order.status = 'Finalizado';
+      order.isInTransit = true;
+      order.isDelivered = true;
+      order.deliveredAt = Date.now();
+    }
+
+    await order.save();
+
+    // Recarrega o pedido com o campo `user` populado
+    const savedOrder = await Order.findById(order._id).populate('user', 'name phoneNumber');
+
+    const message = `Olá, a Nhiquela lhe informa que o pedido nr ${order.code} está pronto e disponível para ser entregue.`;
+
+    const sellerOfProduct = await User.findById(order.seller);
+    const clientOfProduct = await User.findById(order.user);
+
+    if (sellerOfProduct?.deviceToken && clientOfProduct?.deviceToken) {
+      // Aqui você pode habilitar os envios de notificação push se quiser
+      /*
+      await createNotification({
+        message,
+        receiver_id: order.seller,
+        sender_id: order.user,
+        orderID: order._id,
+        deviceToken: sellerOfProduct.deviceToken,
+      });
+
+      await createNotification({
+        message,
+        receiver_id: order.user,
+        sender_id: order.seller,
+        orderID: order._id,
+        deviceToken: clientOfProduct.deviceToken,
+      });
+      */
+    }
+
+    sendEmailOrderStatus(req, message, order, res);
+
+    res.send({ order: savedOrder, message: `Pedido disponível para entrega` });
   })
 );
+
 
 
 
@@ -650,53 +643,58 @@ orderRouter.put(
   expressAsyncHandler(async (req, res) => {
     const order = await Order.findById(req.params.id);
 
-    if (order) {
-      order.isAvailableToDeliver = true;
-      order.status = 'Disponível para entrega';
-      order.stepStatus = 3;
-      if(order.addressPrice === 0){
-        order.status = 'Finalizado';
-        order.isInTransit = true;
-        order.isDelivered = true;
-        order.deliveredAt = Date.now();
-      }
-
-      const savedOrder = await order.save();
-
-      let message =`Ola, a Nhiquela Shop lhe informa que o pedido nr ${order.code} esta pronto e disponivel para entrega.`;
-
-      const sellerOfProduct = await User.findById(order.seller);
-      const clientOfProduct = await User.findById(order.user);
-  
-  //toSeller
-  await createNotification({
-    message: message,
-    receiver_id: order.seller,
-    sender_id: order.user,
-    orderID: order._id,
-    pushToken: sellerOfProduct.pushToken,
-  
-  });
-  //toOrderClient
-  await createNotification({
-  message: message,
-  receiver_id: order.seller,
-  sender_id: order.user,
-  orderID: order._id,
-  pushToken: clientOfProduct.pushToken
-  });
-  
-  
-
-      sendEmailOrderStatus(req,message, order, res);
-
-      // sendSMSToUSendItAdmin(message);
-      res.send({ order: savedOrder, message: `Pedido disponível para entrega` });
-    } else {
-      res.status(404).send({ message: 'Pedido não encontrado' });
+    if (!order) {
+      return res.status(404).send({ message: 'Pedido não encontrado' });
     }
+
+    order.isAvailableToDeliver = true;
+    order.status = 'Disponível para entrega';
+    order.stepStatus = 3;
+
+    if (order.addressPrice === 0) {
+      order.status = 'Finalizado';
+      order.isInTransit = true;
+      order.isDelivered = true;
+      order.deliveredAt = Date.now();
+    }
+
+    await order.save();
+
+    // 👉 Recarrega o pedido com o campo `user` populado
+    const savedOrder = await Order.findById(order._id).populate('user', 'name phoneNumber');
+
+    const message = `Olá, a Nhiquela lhe informa que o pedido nr ${order.code} está pronto e disponível para entrega.`;
+
+    const sellerOfProduct = await User.findById(order.seller);
+    const clientOfProduct = await User.findById(order.user);
+
+    if (sellerOfProduct?.deviceToken && clientOfProduct?.deviceToken) {
+      // Aqui você pode ativar o envio de notificação, se necessário
+      /*
+      await createNotification({
+        message,
+        receiver_id: order.seller,
+        sender_id: order.user,
+        orderID: order._id,
+        deviceToken: sellerOfProduct.deviceToken,
+      });
+
+      await createNotification({
+        message,
+        receiver_id: order.user,
+        sender_id: order.seller,
+        orderID: order._id,
+        deviceToken: clientOfProduct.deviceToken,
+      });
+      */
+    }
+
+    sendEmailOrderStatus(req, message, order, res);
+
+    res.send({ order: savedOrder, message: `Pedido disponível para entrega` });
   })
 );
+
 
 
 
@@ -711,30 +709,33 @@ orderRouter.put(
       order.isSupplierPaid = true;
       const savedOrder = await order.save();
 
-      let message =`Ola, a Nhiquela Shop lhe informa que o pagamento correspondente ao pedido nr ${order.code} foi pago com sucesso.`;
+      let message =`Ola, a Nhiquela lhe informa que o pagamento correspondente ao pedido nr ${order.code} foi pago com sucesso.`;
 
       // sendEmailOrderStatus(req,message, order, res);
 
       const sellerOfProduct = await User.findById(order.seller);
       const clientOfProduct = await User.findById(order.user);
   
-  //toSeller
-  await createNotification({
-    message: message,
-    receiver_id: order.seller,
-    sender_id: order.user,
-    orderID: order._id,
-    pushToken: sellerOfProduct.pushToken,
-  
-  });
-  //toOrderClient
-  await createNotification({
-  message: message,
-  receiver_id: order.seller,
-  sender_id: order.user,
-  orderID: order._id,
-  pushToken: clientOfProduct.pushToken
-  });
+      if(sellerOfProduct.deviceToken && clientOfProduct.deviceToken){
+
+        //toSeller
+        // await createNotification({
+        //   message: message,
+        //   receiver_id: order.seller,
+        //   sender_id: order.user,
+        //   orderID: order._id,
+        //   deviceToken: sellerOfProduct.deviceToken,
+        
+        // });
+        //toOrderClient
+        // await createNotification({
+        // message: message,
+        // receiver_id: order.user,
+        // sender_id: order.seller,
+        // orderID: order._id,
+        // deviceToken: clientOfProduct.deviceToken
+        // });
+      }
   
   
 
@@ -757,30 +758,33 @@ orderRouter.put(
       order.isDeliverPaid = true;
       const savedOrder = await order.save();
 
-      let message =`Ola, a Nhiquela Shop lhe informa que o pagamento correspondente ao pedido nr ${order.code} foi pago com sucesso.`;
+      let message =`Ola, a Nhiquela lhe informa que o pagamento correspondente ao pedido nr ${order.code} foi pago com sucesso.`;
 
       // sendEmailOrderStatus(req,message, order, res);
 
       const sellerOfProduct = await User.findById(order.seller);
       const clientOfProduct = await User.findById(order.user);
   
-  //toSeller
-  await createNotification({
-    message: message,
-    receiver_id: order.seller,
-    sender_id: order.user,
-    orderID: order._id,
-    pushToken: sellerOfProduct.pushToken,
-  
-  });
-  //toOrderClient
-  await createNotification({
-  message: message,
-  receiver_id: order.seller,
-  sender_id: order.user,
-  orderID: order._id,
-  pushToken: clientOfProduct.pushToken
-  });
+      if( sellerOfProduct.deviceToken && clientOfProduct.deviceToken){
+        //toSeller
+        // await createNotification({
+        //   message: message,
+        //   receiver_id: order.seller,
+        //   sender_id: order.user,
+        //   orderID: order._id,
+        //   deviceToken: sellerOfProduct.deviceToken,
+        
+        // });
+        //toOrderClient
+        // await createNotification({
+        // message: message,
+        // receiver_id: order.user,
+        // sender_id: order.seller,
+        // orderID: order._id,
+        // deviceToken: clientOfProduct.deviceToken
+        // });
+
+      }
   
   
 
@@ -824,7 +828,7 @@ orderRouter.put(
 
       //  Para envio de mensagens
 
-       let message =`Ola, a Nhiquela Shop informa que o entregador aceitou o pedido nr ${updateOrder.code}`;
+       let message =`Ola, a Nhiquela informa que o entregador aceitou o pedido nr ${updateOrder.code}`;
  
       //  sendSMSToSellerUSendIt(sellerOfProduct,message);
 
@@ -834,22 +838,22 @@ orderRouter.put(
       const clientOfProduct = await User.findById(order.user);
   
   //toSeller
-  await createNotification({
-    message: message,
-    receiver_id: order.seller,
-    sender_id: order.user,
-    orderID: order._id,
-    pushToken: sellerOfProduct.pushToken,
+  // await createNotification({
+  //   message: message,
+  //   receiver_id: order.seller,
+  //   sender_id: order.user,
+  //   orderID: order._id,
+  //   deviceToken: sellerOfProduct.deviceToken,
   
-  });
+  // });
   //toOrderClient
-  await createNotification({
-  message: message,
-  receiver_id: order.seller,
-  sender_id: order.user,
-  orderID: order._id,
-  pushToken: clientOfProduct.pushToken
-  });
+  // await createNotification({
+  // message: message,
+  // receiver_id: order.user,
+  // sender_id: order.seller,
+  // orderID: order._id,
+  // deviceToken: clientOfProduct.deviceToken
+  // });
   
   
 
@@ -867,76 +871,53 @@ orderRouter.put(
   isAuth,
   expressAsyncHandler(async (req, res) => {
     const order = await Order.findById(req.params.id);
-    // const user_deliver = await User.findById(req.user._id);
 
-    if (order) {
-      //     order.isPaid = true;
-      //     order.paidAt= Date.now();
-      order.status = 'Em trânsito';
-      order.isInTransit = true;
-      order.stepStatus=5;
-
-      // if(user_deliver.isDeliveryMan){
-
-      //   order.deliveryman = {
-      //     photo: user_deliver.deliveryman.photo,
-      //     name:  user_deliver.deliveryman.name,
-      //     phoneNumber:  user_deliver.deliveryman.phoneNumber,
-      //     transport_type:  user_deliver.deliveryman.transport_type,
-      //     transport_color:  user_deliver.deliveryman.transport_color,
-      //     transport_registration:  user_deliver.deliveryman.transport_registration,
-      //   }
-      // }
-
-
-      // order.paymentResult = {
-      //   id: req.body.id,
-      //   status: req.body.status,
-      //   update_time: req.body.update_time,
-      //   email_address: req.body.email_address,
-      // };
-      const savedOrder =await order.save();
-
-        //  Para envio de mensagens
-
-        let message =`A Nhiquela Shop tem o prazer de lhe informar que o pedido ${order.code} esta a caminho do destino indicado. Em caso de duvida contacte o entregador pelo nr nos detalhes do pedido`;
- 
-        //  sendSMSToUSendIt(req,message);
-
-        const sellerOfProduct = await User.findById(order.seller);
-        const clientOfProduct = await User.findById(order.user);
-    
-    //toSeller
-    await createNotification({
-      message: message,
-      receiver_id: order.seller,
-      sender_id: order.user,
-      orderID: order._id,
-      pushToken: sellerOfProduct.pushToken,
-    
-    });
-    //toOrderClient
-    await createNotification({
-    message: message,
-    receiver_id: order.seller,
-    sender_id: order.user,
-    orderID: order._id,
-    pushToken: clientOfProduct.pushToken
-    });
-    
-
-       
-
-
-      sendEmailOrderToSeller(req,message, sellerOfProduct, order, res);
-
-        
-      res.send({ order: savedOrder, message: `Pedido em trânsito` });
-    } else {
-      res.status(404).send({ message: 'Pedido não encontrado' });
+    if (!order) {
+      return res.status(404).send({ message: 'Pedido não encontrado' });
     }
+
+    order.status = 'Em trânsito';
+    order.isInTransit = true;
+    order.stepStatus = 5;
+
+    await order.save();
+
+    // Recarrega o pedido com o campo user populado
+    const savedOrder = await Order.findById(order._id).populate('user', 'name phoneNumber');
+
+    const message = `A Nhiquela lhe informa que o pedido ${order.code} está a caminho do destino indicado.`;
+
+    const sellerOfProduct = await User.findById(order.seller);
+    const clientOfProduct = await User.findById(order.user);
+
+    // Aqui você pode reativar as notificações se desejar:
+    /*
+    if (sellerOfProduct?.deviceToken && clientOfProduct?.deviceToken) {
+      await createNotification({
+        message,
+        receiver_id: order.seller,
+        sender_id: order.user,
+        orderID: order._id,
+        deviceToken: sellerOfProduct.deviceToken,
+      });
+
+      await createNotification({
+        message,
+        receiver_id: order.user,
+        sender_id: order.seller,
+        orderID: order._id,
+        deviceToken: clientOfProduct.deviceToken,
+      });
+    }
+    */
+
+    // Exemplo de envio de e-mail (já comentado no seu código):
+    // sendEmailOrderToSeller(req, message, sellerOfProduct, order, res);
+
+    res.send({ order: savedOrder, message: `Pedido em trânsito` });
   })
 );
+
 
 // O entregador Confirma a chegada do destino de entrega
 orderRouter.put(
@@ -955,32 +936,32 @@ orderRouter.put(
 
       //  Para envio de mensagens
 
-       let message =`Ola, a Nhiquela Shop informa que o entregador ja se encontra no local de destino por si informado referente ao pedido nr ${updateOrder.code}`;
+       let message =`Ola, a Nhiquela informa que o entregador ja se encontra no local de destino por si informado referente ao pedido nr ${updateOrder.code}`;
  
       //  sendSMSToUSendIt(req,message);
 
-      sendEmailOrderToSeller(req,message,sellerOfProduct, updateOrder, res);
+      // sendEmailOrderToSeller(req,message,sellerOfProduct, updateOrder, res);
 
       
       const clientOfProduct = await User.findById(order.user);
   
   //toSeller
-  await createNotification({
-    message: message,
-    receiver_id: order.seller,
-    sender_id: order.user,
-    orderID: order._id,
-    pushToken: sellerOfProduct.pushToken,
+  // await createNotification({
+  //   message: message,
+  //   receiver_id: order.seller,
+  //   sender_id: order.user,
+  //   orderID: order._id,
+  //   deviceToken: sellerOfProduct.deviceToken,
   
-  });
+  // });
   //toOrderClient
-  await createNotification({
-  message: message,
-  receiver_id: order.seller,
-  sender_id: order.user,
-  orderID: order._id,
-  pushToken: clientOfProduct.pushToken
-  });
+  // await createNotification({
+  // message: message,
+  // receiver_id: order.user,
+  // sender_id: order.seller,
+  // orderID: order._id,
+  // deviceToken: clientOfProduct.deviceToken
+  // });
   
 
 
@@ -997,66 +978,46 @@ orderRouter.put(
   '/:id/deliver',
   isAuth,
   expressAsyncHandler(async (req, res) => {
-    const order = await Order.findById(req.params.id);
+    let order = await Order.findById(req.params.id);
 
     if (order) {
-      //     order.isPaid = true;
-      //     order.paidAt= Date.now();
-
-
-
+      order.status = 'Entregue';
       order.isDelivered = true;
       order.deliveredAt = Date.now();
-      order.status = 'Entregue';
       order.stepStatus = 6;
 
-      order.paymentResult = {
-        id: req.body.id,
-        status: req.body.status,
-        update_time: req.body.update_time,
-        email_address: req.body.email_address,
-      };
       const savedOrder = await order.save();
 
-       //  Para envio de mensagens
+      // Popula o vendedor e o cliente
+      order = await Order.findById(savedOrder._id)
+        .populate('seller')
 
-      let message =`Ola, o pedido ${order.code} foi entregue com sucesso. Agradecemos por escolher e confiar em nós. Nhiquela Shop - Tudo em suas mãos.`;
- 
-      const sellerOfProduct = await User.findById(order.seller);
-      const clientOfProduct = await User.findById(order.user);
-  
-  //toSeller
-  await createNotification({
-    message: message,
-    receiver_id: order.seller,
-    sender_id: order.user,
-    orderID: order._id,
-    pushToken: sellerOfProduct.pushToken,
-  
-  });
-  //toOrderClient
-  await createNotification({
-  message: message,
-  receiver_id: order.seller,
-  sender_id: order.user,
-  orderID: order._id,
-  pushToken: clientOfProduct.pushToken
-  });
-  
+      const message = `A Nhiquela informa que o pedido ${order.code} foi entregue com sucesso.`;
 
-      //  sendSMSToUSendIt(req,message);
+      // Exemplo de uso com as notificações
+      // await createNotification({
+      //   message,
+      //   receiver_id: order.seller._id,
+      //   sender_id: order.user._id,
+      //   orderID: order._id,
+      //   deviceToken: order.seller.deviceToken,
+      // });
 
-      
+      // await createNotification({
+      //   message,
+      //   receiver_id: order.user._id,
+      //   sender_id: order.seller._id,
+      //   orderID: order._id,
+      //   deviceToken: order.user.deviceToken,
+      // });
 
-
-      sendEmailOrderToSeller(req,message, sellerOfProduct, order, res);
-
-      res.send({ message: `Pedido entregue com sucesso`, order: savedOrder });
+      res.send({ order, message: `Pedido entregue com sucesso` });
     } else {
       res.status(404).send({ message: 'Pedido não encontrado' });
     }
   })
 );
+
 
 // Em caso de cancelamento do pedido
 orderRouter.put(
@@ -1065,58 +1026,61 @@ orderRouter.put(
   expressAsyncHandler(async (req, res) => {
     const order = await Order.findById(req.params.id);
 
-    if (order) {
-      order.orderItems.map(async o=>{
-
-        const product = await Product.findById(o);
-        product.countInStock = parseInt(product.countInStock) + parseInt(o.quantity)
-        await product.save();
-
-      })
-      order.isCanceled = true;
-      order.isAccepted = false;
-      order.status = 'Cancelado';
-      order.stepStatus = 7;
-      order.canceledReason = req.body.message;
-
-
-     const savedOrder = await order.save();
-      
-      //  Para envio de mensagens
-
-      let message =`Ola, a Nhiquela Shop lamenta lhe informar que o seu pedido nr ${order.code} foi cancelado. O motivo do cancelamento podera verificar no site pesquisando pelo codigo.`;
-
-        // sendSMSToUSendIt(req,message);    
-
-        const sellerOfProduct = await User.findById(order.seller);
-        const clientOfProduct = await User.findById(order.user);
-    
-    //toSeller
-    await createNotification({
-      message: message,
-      receiver_id: order.seller,
-      sender_id: order.user,
-      orderID: order._id,
-      pushToken: sellerOfProduct.pushToken,
-    
-    });
-    //toOrderClient
-    await createNotification({
-    message: message,
-    receiver_id: order.seller,
-    sender_id: order.user,
-    orderID: order._id,
-    pushToken: clientOfProduct.pushToken
-    });
-  
-
-
-      sendEmailOrderToSeller(req,message, sellerOfProduct, order, res);
-
-      res.send({ message: `Pedido cancelado com sucesso`, order: savedOrder});
-    } else {
-      res.status(404).send({ message: 'Pedido não encontrado' });
+    if (!order) {
+      return res.status(404).send({ message: 'Pedido não encontrado' });
     }
+
+    // Repor o stock de cada produto do pedido
+    await Promise.all(
+      order.orderItems.map(async (o) => {
+        const product = await Product.findById(o._id);
+        if (product) {
+          product.countInStock = parseInt(product.countInStock) + parseInt(o.quantity);
+          await product.save();
+        }
+      })
+    );
+
+    order.isCanceled = true;
+    order.isAccepted = false;
+    order.status = 'Cancelado';
+    order.stepStatus = 7;
+    order.canceledReason = req.body.message;
+
+    await order.save();
+
+    // Buscar novamente o pedido com o campo user populado
+    const savedOrder = await Order.findById(order._id).populate('user', 'name phoneNumber');
+
+    const message = `Ola, a Nhiquela lamenta lhe informar que o seu pedido nr ${order.code} foi cancelado. O motivo do cancelamento poderá verificar pesquisando pelo código.`;
+
+    const sellerOfProduct = await User.findById(order.seller);
+    const clientOfProduct = await User.findById(order.user);
+
+    // Notificações (se quiser ativar):
+    /*
+    if (sellerOfProduct?.deviceToken && clientOfProduct?.deviceToken) {
+      await createNotification({
+        message,
+        receiver_id: order.seller,
+        sender_id: order.user,
+        orderID: order._id,
+        deviceToken: sellerOfProduct.deviceToken,
+      });
+
+      await createNotification({
+        message,
+        receiver_id: order.user,
+        sender_id: order.seller,
+        orderID: order._id,
+        deviceToken: clientOfProduct.deviceToken,
+      });
+    }
+    */
+
+    // sendEmailOrderToSeller(req, message, sellerOfProduct, order, res);
+
+    res.send({ message: `Pedido cancelado com sucesso`, order: savedOrder });
   })
 );
 

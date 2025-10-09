@@ -5,9 +5,10 @@
   "main": "index.js",
   "scripts": {
     "start": "node backend/index.js",
+    "build": "cd backend && npm install && cd ../visacasaweb && npm install",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "dependencies": { 
+  "dependencies": {
     "@notifee/react-native": "^9.0.2",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^1.35.0",
@@ -32,7 +33,6 @@
   "devDependencies": {
     "nodemon": "^2.0.20"
   },
-  
   "repository": {
     "type": "git",
     "url": "git+https://github.com/MauroPatricio/Visacasa.git"
