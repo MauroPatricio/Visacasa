@@ -338,9 +338,6 @@ navegate('/cart')
                       </Form.Select>
                   </Form.Group>
                   </ListGroup.Item>} */}
-
-
-
                   <ListGroup.Item>
                   <Form.Group className="mb-3" controlId="Cor">
                    <Form.Label>{t('color')}:</Form.Label>

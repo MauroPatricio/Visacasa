@@ -3,6 +3,7 @@
     "name": "Visacasa",
     "slug": "visacasa",
     "version": "1.0.0",
+    "owner": "mpatricio",
     "orientation": "portrait",
     "icon": "./assets/visacasa2.png",
     "userInterfaceStyle": "light",
