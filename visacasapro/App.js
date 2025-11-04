@@ -159,7 +159,12 @@ export default function App() {
                 <Stack.Screen name="withdraw" component={WalletWithdrawScreen} />
               </Stack.Navigator>
 
-              <Toast />
+              <Toast
+                  position="top"
+                  topOffset={60}
+                  visibilityTime={4000}
+                  autoHide
+                />
             </KeyboardAvoidingView>
           </SafeAreaProvider>
         </Provider>

@@ -104,7 +104,7 @@ export default function LoginPage() {
               source={require('../assets/visacasa2.png')}
               style={styles.cover}
             />
-            <Text style={styles.title}>Bem-vindo à VPRO</Text>
+            <Text style={styles.title}>Bem-vindo à VisacasaPRO</Text>
             <Text style={styles.subtitle}>Faça login para continuar</Text>
 
             {/* Telefone */}
