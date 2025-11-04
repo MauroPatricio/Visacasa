@@ -167,7 +167,7 @@ export default function PlaceOrderScreen() {
     try{
     dispatch({ type: 'CREATE_MPESA_REQUEST' });
 
-    const { data } = await axios.post(`/api/payments/mpesa`, {customerNumber, amount},  {
+    const { data } = await axios.post(`/api/payments/mpesa/c2b`, {customerNumber, amount},  {
       headers: {
         authorization: `Bearer ${userInfo.token}`,
       },

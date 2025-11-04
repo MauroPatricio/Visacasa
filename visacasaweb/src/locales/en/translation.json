@@ -20,6 +20,7 @@
     "orders":"Orders",
     "userslist":"Users List",
     "Support":"Support",
+    "tipoestabelecimento":"Tipos de Estabelecimento",
     "stayconnected":"Stay connected with us on the following social networks",
     "everythinginhands":"Everything in your hands",
     "wedeliveryourorder":"We deliver your orders quickly, easily and safely",
@@ -31,7 +32,7 @@
     "mozambique":"Mozambique",
     "maputocity":"Maputo city",
     "delivertime":"Deliveries available to Maputo city and province from",
-    "sellernotauthorizedyet":"Your account has not yet been authorized to display your products. For more information, please contact VisaCasa using the contact details below.",
+    "sellernotauthorizedyet":"Your account has not yet been authorized to display your products. For more information, please contact Nhiquela Shop using the contact details below.",
     "onsale":"On sale",
     "featuredproducts":"Featured products",
     "contacts":"Contacts",
@@ -217,7 +218,7 @@
     "quantityinstock":"Quantity in stock",
     "makeorder":"By order",
     "deliveryestimate":"Delivery estimate",
-    "emaillang":"info@nhiquelashop.co.mz",
+    "emaillang":"nhiquelaservicosconsultoria@gmail.com",
     "ordername":"Requester name",
     "orderphone":"Requester Phone",
     "transporttypetoroder":"Type of transport to request",
@@ -236,7 +237,15 @@
     "rating":"Rating",
     "leaveyourcomment":"to leave your comment",
     "please":"Please",
-    "getlocation": "Get latitude and Longitude"
+    "getlocation": "Get latitude and Longitude",
+    "aboutus":"About Us",
+    "searchfilters":"Search Filters",
+    "privacy":"Privacy Policy",
+    "broadcast":"Send message to all users"
+
+
+
+
 
 
 

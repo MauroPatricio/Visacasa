@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "726599208898",
+    "project_id": "visacasa-35c56",
+    "storage_bucket": "visacasa-35c56.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:726599208898:android:3197b9187eda8e57b4905b",
+        "android_client_info": {
+          "package_name": "com.mpatricio.visacasa"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyALNpX1d6sjk4XapSLRXh1QXurXGYaruf4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

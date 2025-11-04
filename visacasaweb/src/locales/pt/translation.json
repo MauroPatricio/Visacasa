@@ -5,7 +5,7 @@
     "myorders":"Meus pedidos",
     "orderstodeliver":"Pedidos por entregar",
     "logout":"Sair",
-    "login":"Entrar",
+    "login":"Faça login para fazer compras",
     "myproducts":"Meus produtos",
     "orderclients":"Pedidos dos clientes",
     "dashboard":"Painel de controle",
@@ -20,6 +20,7 @@
     "orders":"Pedidos",
     "userslist":"Lista de usuários",
     "Support":"Suporte",
+    "tipoestabelecimento":"Tipos de Estabelecimento",
     "stayconnected":"Fique conectado a nós nas seguintes redes sociais",
     "everythinginhands":"Tudo em suas mãos",
     "wedeliveryourorder":"Fazemos entrega de seus pedidos de forma rápida, fácil e segura",
@@ -27,11 +28,11 @@
     "howtobuy":"Como comprar",
     "howtobesupplier":"Como tornar-se fornecedor",
     "termsandcondition":"Termos e condições",
-    "reservedrights":"Todos os direitos são reservados",
+    "reservedrights":"Todos os direitos são reservados. Nhiquela Serviços e Consultoria, LDA",
     "mozambique":"Moçambique",
     "maputocity":"Maputo cidade",
     "delivertime":"Entregas disponíveis para Maputo cidade e província a partir das",
-    "sellernotauthorizedyet":"A sua conta ainda não foi autorizada para poder expor os seus produtos. Para mais informações, por favor contacte a VisaCasa pelos contactos abaixo.",
+    "sellernotauthorizedyet":"A sua conta ainda não foi autorizada para poder expor os seus produtos. Para mais informações, por favor contacte a Nhiquela Shop pelos contactos abaixo.",
     "onsale":"Em promoção",
     "featuredproducts":"Produtos em destaque",
     "contacts":"Contactos",
@@ -219,7 +220,7 @@
    "quantityinstock":"Quantidade em estoque",
    "makeorder":"Por encomenda",
    "deliveryestimate":"Estimativa de entrega",
-   "emaillang":"geral@nhiquelashop.co.mz",
+   "emaillang":"nhiquelaservicosconsultoria@gmail.com",
    "ordername":"Nome do solicitante",
    "orderphone":"Telefone do solicitante",
    "transporttypetoroder":"Tipo de transporte a solicitar",
@@ -239,7 +240,11 @@
    "rating":"Pontuação",
    "leaveyourcomment":"para deixar o seu comentário",
    "please":"Por favor",
-   "getlocation": "Obter a latitude e Longitude"
+   "getlocation": "Obter a latitude e Longitude",
+   "aboutus":"Sobre nós",
+   "searchfilters":"Filtros de pesquisa",
+   "privacy":"Política de Privacidade",
+    "broadcast":"Enviar mensagem para todos os utilizadores"
 
 
 

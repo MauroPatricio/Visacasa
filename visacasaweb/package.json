@@ -1,6 +1,6 @@
 {
-  "name": "visacasaweb",
-  "homepage": "http://.",
+  "name": "frontend",
+  "homepage": "https://.",
   "proxy": "http://localhost:5000",
   "version": "0.1.0",
   "private": true,
@@ -17,7 +17,7 @@
     "axios": "^1.4.0",
     "bootstrap": "^5.2.3",
     "bson": "^5.2.0",
-    "expo": "^50.0.0",
+    "expo": "^50.0.21",
     "expo-cli": "^6.3.10",
     "firebase": "^10.13.1",
     "font-awesome": "^4.7.0",
@@ -80,7 +80,8 @@
   },
   "devDependencies": {
     "@types/react-native": "^0.73.0",
-    "npm-force-resolutions": "0.0.10"
+    "npm-force-resolutions": "0.0.10",
+    "webpack-bundle-analyzer": "^4.10.2"
   },
   "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
   "main": "index.js",

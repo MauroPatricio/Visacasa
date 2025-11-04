@@ -42,6 +42,8 @@ import WalletScreen from './screens/WalletScreen';
 import WalletWithdrawScreen from './screens/WalletWithdrawScreen';
 import WithdrawalRequestsScreen from './components/WithdrawalRequests';
 import { navigationRef, navigate } from './navegation/RootNavigation';
+import { enableScreens } from 'react-native-screens';
+
 
 const Stack = createNativeStackNavigator();
 
@@ -62,6 +64,8 @@ export default function App() {
 
   useEffect(() => {
     // 🔧 Criação do canal Android
+    enableScreens();
+
     if (Platform.OS === 'android') {
       Notifications.setNotificationChannelAsync('order-updates', {
         name: 'Atualizações de Pedido',
@@ -185,7 +189,7 @@ async function registerForPushNotificationsAsync() {
   }
 
   const tokenData = await Notifications.getExpoPushTokenAsync({
-    projectId: Constants.expoConfig?.extra?.eas?.projectId,
+    projectId: "3955dd7f-ad17-497a-966b-33dfae1b0b18",
   });
 
   return tokenData.data;

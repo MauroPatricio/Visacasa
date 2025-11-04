@@ -43,6 +43,9 @@ const renderProductItem = ({ item }) => (
       {item.isOrdered ? (
         <View style={styles.badgeOrdered}>
           <Text style={styles.badgeText}>Por encomenda</Text>
+                    <Text style={styles.badgePeriodOrder}>{item.orderPeriod}</Text>
+
+          
         </View>
       ) : item.countInStock > 0 ? (
         <View style={styles.badgeInStock}>
@@ -70,7 +73,7 @@ const renderProductItem = ({ item }) => (
       )}
 
       <View style={styles.extraInfo}>
-        <Text style={styles.infoTextB}>Fornecedor: {item.sellerName || item.seller?.name || 'N/A'}</Text>
+        <Text style={styles.infoTextB}>Fornecedor: {item.sellerName || item.seller?.seller?.name || 'N/A'}</Text>
         <Text style={styles.infoText}>{item.province?.name || 'N/A'}</Text>
       </View>
     </View>
@@ -281,6 +284,12 @@ badgeText: {
   fontSize: 10,
   fontWeight: 'bold',
   color: 'white',
+},
+badgePeriodOrder: {
+  fontSize: 10,
+  fontWeight: 'bold',
+  color: 'white',
+  textAlign: 'right'
 },
 badgeTextQ: {
   fontSize: 10,

@@ -118,13 +118,14 @@ const ProductDetail = () => {
             )}
             {/* Estoque */}
             <View style={{ marginVertical: 6 }}>
-              {item.item?.isOrdered ? (
+              {itemData.isOrdered ? (
                 <>
-                  <Badge style={styles.badgeOrdered}>Por encomenda: <Text style={{ fontSize: 13, marginTop: 2 }}>{item.item.orderPeriod}</Text></Badge>
-                  
+                  <Badge style={styles.badgeOrdered}>Por encomenda: <Text style={{ fontSize: 13, marginTop: 2 }}>{itemData.orderPeriod} para entrega</Text></Badge>
+                  <Text style={{paddingTop:10}}>{countInStock} unidade(s) disponíveis</Text>
+
                 </>
               ) : countInStock > 0 ? (
-                <Text style={styles.badgeInStock}>{countInStock} unidade(s)</Text>
+                <Text style={styles.badgeInStock}>{countInStock} unidade(s) disponíveis</Text>
               ) : (
                 <Badge style={styles.badgeOutOfStock}>Sem estoque</Badge>
               )}

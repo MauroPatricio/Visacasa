@@ -126,57 +126,34 @@ walletRouter.post('/pay', isAuth, async (req, res) => {
 });
 
 /**
- * Solicitar levantamento (withdraw)
+ * Solicitar levantamento (withdraw) - sem taxa de levantamento de 20% por isso esta comentado
  */
-walletRouter.post('/withdraw', isAuth, async (req, res) => {
-  try {
-    const { amount, phone } = req.body;
-    if (!amount || amount <= 0 || !phone) {
-      return res.status(400).json({ message: 'Dados inválidos para levantamento.' });
-    }
+// walletRouter.post('/withdraw', isAuth, async (req, res) => {
+//   try {
+//     const { amount, phone } = req.body;
+//     if (!amount || amount <= 0 || !phone) {
+//       return res.status(400).json({ message: 'Dados inválidos para levantamento.' });
+//     }
 
-    const balance = await updateWallet(
-      req.user._id,
-      amount,
-      'debit',
-      'withdrawal',
-      `Levantamento solicitado para ${phone}`,
-      'pendente' // levantamento fica pendente
-    );
+//     const balance = await updateWallet(
+//       req.user._id,
+//       amount,
+//       'debit',
+//       'withdrawal',
+//       `Levantamento solicitado para ${phone}`,
+//       'pendente' // levantamento fica pendente
+//     );
 
-    // Aqui poderia chamar serviço externo (ex: M-PESA) após aprovação admin
+//     // Aqui poderia chamar serviço externo (ex: M-PESA) após aprovação admin
 
-    res.json({ message: 'Solicitação de levantamento registrada. Aguarde confirmação.', balance });
-  } catch (error) {
-    console.error('Erro ao solicitar levantamento:', error);
-    res.status(500).json({ message: error.message || 'Erro interno ao solicitar levantamento.' });
-  }
-});
+//     res.json({ message: 'Solicitação de levantamento registrada. Aguarde confirmação.', balance });
+//   } catch (error) {
+//     console.error('Erro ao solicitar levantamento:', error);
+//     res.status(500).json({ message: error.message || 'Erro interno ao solicitar levantamento.' });
+//   }
+// });
 
-walletRouter.post('/withdraw', isAuth, async (req, res) => {
-  try {
-    const { amount, phone } = req.body;
-    if (!amount || amount <= 0 || !phone) {
-      return res.status(400).json({ message: 'Dados inválidos para levantamento.' });
-    }
 
-    const balance = await updateWallet(
-      req.user._id,
-      amount,
-      'debit',
-      'withdrawal',
-      `Levantamento solicitado para ${phone}`,
-      'pendente' // levantamento fica pendente
-    );
-
-    // Aqui poderia chamar serviço externo (ex: M-PESA) após aprovação admin
-
-    res.json({ message: 'Solicitação de levantamento registrada. Aguarde confirmação.', balance });
-  } catch (error) {
-    console.error('Erro ao solicitar levantamento:', error);
-    res.status(500).json({ message: error.message || 'Erro interno ao solicitar levantamento.' });
-  }
-});
 
 
 // Buscar levantamentos pendentes
@@ -240,5 +217,79 @@ walletRouter.put('/:id/cancel', async (req, res) => {
     res.status(500).json({ message: 'Erro ao cancelar solicitação' });
   }
 });
+
+/**
+ * Solicitar levantamento (withdraw) com taxa de 20%
+ */
+walletRouter.post('/withdraw', isAuth, async (req, res) => {
+  try {
+    const { amount, phone } = req.body;
+    const TAX_RATE = 0.20; // 20% de taxa
+    const MIN_WITHDRAW = 100; // valor mínimo de levantamento
+
+    if (!amount || amount <= 0 || !phone) {
+      return res.status(400).json({ message: 'Dados inválidos para levantamento.' });
+    }
+
+    if (amount < MIN_WITHDRAW) {
+      return res.status(400).json({ message: `O valor mínimo de levantamento é ${MIN_WITHDRAW} MT.` });
+    }
+
+    // Valor total a debitar da carteira (valor + taxa)
+    const totalDebit = amount / (1 - TAX_RATE); // Ex: 100 / 0.8 = 125 MT
+
+    const wallet = await Wallet.findOne({ userId: req.user._id });
+    if (!wallet || wallet.balance < totalDebit) {
+      return res.status(400).json({ message: `Saldo insuficiente. É necessário ter pelo menos ${totalDebit.toFixed(2)} MT.` });
+    }
+
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+      // Debitar total (valor + taxa)
+      wallet.balance -= totalDebit;
+      await wallet.save({ session });
+
+      // Registrar transação para o usuário (valor líquido que ele recebe)
+      await Transaction.create([{
+        walletId: wallet._id,
+        type: 'debit',
+        amount: amount, // valor líquido que ele recebe
+        method: 'withdrawal',
+        description: `Levantamento solicitado para ${phone} (valor líquido: ${amount} MT)`,
+        status: 'pendente'
+      }], { session });
+
+      // Registrar transação para a plataforma (taxa)
+      await Transaction.create([{
+        walletId: wallet._id,
+        type: 'debit',
+        amount: totalDebit - amount, // taxa da plataforma
+        method: 'fee',
+        description: `Taxa de levantamento de 20%`,
+        status: 'confirmado'
+      }], { session });
+
+      await session.commitTransaction();
+      session.endSession();
+
+      res.json({ 
+        message: 'Solicitação de levantamento registrada. Aguarde confirmação.',
+        balance: wallet.balance.toFixed(2),
+        amountRequested: amount,
+        fee: (totalDebit - amount).toFixed(2)
+      });
+    } catch (error) {
+      await session.abortTransaction();
+      session.endSession();
+      throw error;
+    }
+  } catch (error) {
+    console.error('Erro ao solicitar levantamento:', error);
+    return res.status(500).json({ message: error.message || 'Erro interno ao solicitar levantamento.' });
+  }
+});
+
 
 export default walletRouter;

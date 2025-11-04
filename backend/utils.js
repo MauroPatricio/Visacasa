@@ -6,7 +6,7 @@ import soap from 'soap';
 
 
 export const baseUrl = ()=> process.env.BASE_URL ? process.env.BASE_URL : process.env.NODE_ENV !== 'production'?
-'http://localhost:3000': 'https://nhiquelashop.co.mz';
+'http://localhost:3000': 'https://visacasa-3a2ff6784f00.herokuapp.com';
 
 
 const transporter = nodemailer.createTransport({
@@ -325,9 +325,9 @@ export const sendEmailOrderStatus = async (req, msg, order, res)=>{
 const test ='mauro.patricio1@gmail.com'
 // Email message configuration
 const mailOptions = {
-  from: 'VisaCasa <nhiquelaservicosconsultoria@gmail.com>',      // Your email address
+  from: 'Nhiquela Shop <nhiquelaservicosconsultoria@gmail.com>',      // Your email address
   to: [ test, email],       
-  subject: `VisaCasa - Acompanhamento do Pedido - pedido Nº ${order.code}`,                
+  subject: `Nhiquela Shop - Acompanhamento do Pedido - pedido Nº ${order.code}`,                
   text: msg,
 };
 
@@ -362,7 +362,7 @@ const test ='nhiquelaservicosconsultoria@gmail.com'
 const mailOptions = {
   from: 'mauro.patricio1@gmail.com',      // Your email address
   to: [ test, email],       
-  subject: `VisaCasa - Acompanhamento do Pedido - pedido Nº ${order.code}`,                
+  subject: `Nhiquela Shop - Acompanhamento do Pedido - pedido Nº ${order.code}`,                
   text: msg,
 };
 
@@ -398,7 +398,7 @@ export const sendEmailOrderToSeller = async (req, msg,seller, order, res)=>{
 const mailOptions = {
   from: 'mauro.patricio1@gmail.com',      // Your email address
   to: [ sellerEmail, userOrderEmail],       
-  subject: `VisaCasa - Acompanhamento do Pedido - pedido Nº ${order.code}`,                
+  subject: `Nhiquela Shop - Acompanhamento do Pedido - pedido Nº ${order.code}`,                
   text: msg,
 };
 
@@ -433,7 +433,7 @@ export const sendEmailOrderStatusToSellerAndDeliver = async (req, msg, seller, o
 const mailOptions = {
   from: 'mauro.patricio1@gmail.com',      // Your email address
   to: [ sellerEmail, userOrderEmail],       
-  subject: `VisaCasa - Acompanhamento do Pedido - pedido Nº ${order.code}`,                
+  subject: `Nhiquela Shop - Acompanhamento do Pedido - pedido Nº ${order.code}`,                
   text: msg,
 };
 

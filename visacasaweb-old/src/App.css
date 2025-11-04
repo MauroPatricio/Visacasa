@@ -1,0 +1,191 @@
+/* Global Styles */ 
+body {
+  background-color: #ffffff;
+  font-family: 'Roboto', sans-serif;
+  color: #333;
+}
+
+/* Main Color Theme */
+:root {
+  --main-color: #E85A4F;
+  --accent-color: #c84b42;
+  --light-color: #F8E5E3;
+  --text-color: #333;
+  --bg-color: #ffffff;
+}
+
+/* Container for the form */
+.small-conteiner {
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.1);
+  max-width: 450px;
+  margin: 50px auto;
+  padding: 30px;
+}
+
+/* Header styling */
+h1.my-3 {
+  text-align: center;
+  color: var(--main-color);
+  font-size: 26px;
+  margin-bottom: 30px;
+  font-weight: 600;
+}
+
+/* Form styles */
+form {
+  margin-top: 20px;
+}
+
+form label {
+  font-weight: bold;
+  color: var(--text-color);
+}
+
+form .form-control {
+  border-radius: 5px;
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid var(--light-color);
+  margin-top: 5px;
+  transition: border 0.3s ease;
+}
+
+form .form-control:focus {
+  border-color: var(--main-color);
+  box-shadow: 0px 0px 6px rgba(232, 90, 79, 0.3);
+}
+
+/* Input fields with icons */
+.form-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mz-flag {
+  height: 20px;
+  width: 30px;
+}
+
+.fa-mobile, .fa-lock {
+  color: var(--main-color);
+  font-size: 20px;
+}
+
+/* Button styles */
+.customButtom {
+  background-color: var(--main-color);
+  color: white;
+  border-radius: 5px;
+  padding: 12px 18px;
+  font-size: 16px;
+  border: none;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.customButtom:hover {
+  background-color: var(--accent-color);
+  transform: translateY(-2px);
+  cursor: pointer;
+}
+
+/* Links styles */
+.link {
+  color: var(--main-color);
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.2s ease;
+}
+
+.link:hover {
+  color: var(--accent-color);
+  text-decoration: underline;
+}
+
+/* Modal Styles */
+.modal .modal-header {
+  background-color: var(--main-color);
+  color: white;
+}
+
+.modal .modal-footer .btn-danger:hover {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+/* App Header */
+.App-header {
+  background-color: var(--main-color);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+  animation: App-logo-spin infinite 20s linear;
+}
+
+.App-link {
+  color: var(--light-color);
+}
+
+/* Modal Styles */
+.modal {
+  position: fixed;
+}
+
+.modal-content {
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  color: #888;
+}
+
+.close-btn:hover {
+  color: #333;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .App-header {
+    font-size: calc(8px + 2vmin);
+  }
+
+  .App-logo {
+    height: 30vmin;
+  }
+
+  .modal-content {
+    width: 90%;
+  }
+}
+
+@media (max-width: 576px) {
+  form {
+    font-size: 14px;
+  }
+
+  .customButtom {
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .App-header {
+    font-size: calc(6px + 2vmin);
+  }
+
+  .close-btn {
+    font-size: 14px;
+  }
+}

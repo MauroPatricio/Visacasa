@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Image, StyleSheet, StatusBar } from 'react-native';
+import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, Image, StyleSheet, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from "@expo/vector-icons";
 import api from '../hooks/createConnectionApi';
@@ -9,44 +9,46 @@ import FlashMessage, { showMessage } from "react-native-flash-message";
 import NetInfo from '@react-native-community/netinfo';
 import * as Notifications from 'expo-notifications';
 
-// Configuração de handler de notificações
+// ✅ Configuração segura de notificações (SDK 35)
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-    shouldShowBanner: true,
+    shouldShowAlert: true,
     shouldPlaySound: true,
-    shouldSetBadge: true,
+    shouldSetBadge: false,
   }),
 });
 
 const Home = () => {
   const [expoPushToken, setExpoPushToken] = useState('');
-  const [notification, setNotification] = useState(false);
-  const notificationListener = useRef();
-  const responseListener = useRef();
   const [userData, setUserData] = useState(null);
   const [orders, setOrders] = useState([]);
   const [availableStatuses, setAvailableStatuses] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState(null);
   const [walletBalance, setWalletBalance] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [userLogin, setUserLogin] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  
+  // 🔥 NOVO: Estado para controle de polling
+  const [lastUpdate, setLastUpdate] = useState(null);
+  const pollingRef = useRef(null);
 
   const navigation = useNavigation();
+  const notificationListener = useRef();
+  const responseListener = useRef();
 
-  // Atualiza token push no backend
-  const updatePushToken = async (userId, newPushToken) => {
-    if (!userId) return;
+  // ✅ Função memoizada para atualizar push token
+  const updatePushToken = useCallback(async (userId, newPushToken) => {
+    if (!userId || !newPushToken) return;
     try {
       await api.patch(`/users/updatePushToken/${userId}`, { pushToken: newPushToken });
     } catch (error) {
-      console.error('Erro ao atualizar o PushToken:', error.message);
+      console.log('Erro ao atualizar PushToken:', error.message);
     }
-  };
+  }, []);
 
-  // Registro de notificações push
-  const registerForPushNotificationsAsync = async (user) => {
+  // ✅ Registro de notificações push
+  const registerForPushNotificationsAsync = useCallback(async (user) => {
     if (!user) return;
-
     try {
       const { status: existingStatus } = await Notifications.getPermissionsAsync();
       let finalStatus = existingStatus;
@@ -56,90 +58,136 @@ const Home = () => {
         finalStatus = status;
       }
 
-      if (finalStatus !== 'granted') {
-        alert('Permita notificações para receber avisos de pedidos.');
-        return;
-      }
+      if (finalStatus !== 'granted') return;
 
       const token = (await Notifications.getExpoPushTokenAsync()).data;
-      await updatePushToken(user._id, token);
       setExpoPushToken(token);
+      await updatePushToken(user._id, token);
     } catch (error) {
-      console.error("Erro ao registrar push notification:", error.message || error);
+      console.log("Erro ao registrar notificações:", error.message);
     }
-  };
+  }, [updatePushToken]);
 
-  // Checa notificações pendentes
-  const checkPendingNotifications = async () => {
-    const pendingNotifications = await Notifications.getPresentedNotificationsAsync();
-    if (pendingNotifications.length > 0) {
-      pendingNotifications.forEach(notification => {
-        showMessage({
-          message: "Pedido pendente",
-          description: notification.request.content.body,
-          type: "info",
-          icon: "auto",
-          duration: 3000,
-        });
-      });
-    }
-  };
-
-  // Busca saldo da wallet
-  const fetchWalletBalance = async (user) => {
+  // ✅ Buscar saldo
+  const fetchWalletBalance = useCallback(async (user) => {
     if (!user) return;
     try {
-      setIsLoading(true);
       const response = await api.get('/wallet/balance', {
         headers: { authorization: `Bearer ${user.token}` },
       });
       setWalletBalance(Number(response.data?.balance) || 0);
     } catch (error) {
-      console.error("Erro ao buscar saldo da wallet:", error.response?.data || error.message);
-      setWalletBalance(0);
-    } finally {
-      setIsLoading(false);
+      console.log("Erro ao buscar saldo:", error.message);
     }
-  };
+  }, []);
 
-  // Valida e seta usuário local
-  const validateAndSetUser = async () => {
+  // ✅ Buscar pedidos - ATUALIZADA para sincronização
+  const fetchData = useCallback(async (user, showNotification = false) => {
+    if (!user) return;
     try {
-      const [storedUserData, storedUserId] = await Promise.all([
-        AsyncStorage.getItem('userData'),
-        AsyncStorage.getItem('id'),
-      ]);
-      if (!storedUserData || !storedUserId) throw new Error("Usuário não encontrado");
-      const parsedUserData = JSON.parse(storedUserData);
-      if (!parsedUserData?._id || parsedUserData._id !== storedUserId) throw new Error("Dados inconsistentes");
+      const response = await api.get(`/orders/sellerview?seller=${user._id}`, {
+        headers: { authorization: `Bearer ${user.token}` },
+      });
+      if (response.status === 200) {
+        const newOrders = response.data.orders;
+        
+        // 🔥 VERIFICA SE HÁ NOVOS PEDIDOS
+        if (showNotification && newOrders.length > orders.length) {
+          const newOrdersCount = newOrders.length - orders.length;
+          showMessage({
+            message: `${newOrdersCount} novo(s) pedido(s)`,
+            description: "Atualizando lista...",
+            type: "success",
+            icon: "auto",
+            duration: 2000,
+          });
+        }
+        
+        setOrders(newOrders);
+        setAvailableStatuses([...new Set(newOrders.map(o => o.status))]);
+        setLastUpdate(new Date()); // 🔥 MARCA HORA DA ÚLTIMA ATUALIZAÇÃO
+      }
+    } catch (error) {
+      console.log("Erro ao buscar pedidos:", error.message);
+    }
+  }, [orders]);
 
+  // 🔥 NOVO: Polling automático a cada 30 segundos
+  const startPolling = useCallback((user) => {
+    if (pollingRef.current) clearInterval(pollingRef.current);
+    
+    pollingRef.current = setInterval(async () => {
+      if (user) {
+        await fetchData(user, true); // 🔥 true = mostra notificação se houver novos
+        await fetchWalletBalance(user);
+      }
+    }, 30000); // 30 segundos
+  }, [fetchData, fetchWalletBalance]);
+
+  // 🔥 NOVO: Parar polling
+  const stopPolling = useCallback(() => {
+    if (pollingRef.current) {
+      clearInterval(pollingRef.current);
+      pollingRef.current = null;
+    }
+  }, []);
+
+  // ✅ Carregar usuário ao entrar
+  const validateAndSetUser = useCallback(async () => {
+    try {
+      const storedUserData = await AsyncStorage.getItem('userData');
+      const storedUserId = await AsyncStorage.getItem('id');
+
+      if (!storedUserData || !storedUserId) throw new Error("Usuário não encontrado");
+
+      const parsedUserData = JSON.parse(storedUserData);
       setUserData(parsedUserData);
-      setUserLogin(true);
       return parsedUserData;
     } catch (error) {
-      setIsLoading(false);
       navigation.navigate('Login');
       return null;
     }
-  };
+  }, [navigation]);
 
-  // useFocusEffect para carregar dados quando a tela ganha foco
+  // ✅ useFocusEffect ATUALIZADO com polling
   useFocusEffect(
     useCallback(() => {
+      let active = true;
+      
       const initialize = async () => {
         const user = await validateAndSetUser();
-        if (!user) return;
-
+        if (!user || !active) return;
+        
         await registerForPushNotificationsAsync(user);
         await Promise.all([fetchData(user), fetchWalletBalance(user)]);
+        
+        // 🔥 INICIA POLLING APÓS CARREGAMENTO INICIAL
+        startPolling(user);
       };
+      
       initialize();
-    }, [])
+      
+      return () => { 
+        active = false;
+        stopPolling(); // 🔥 PARA POLLING AO SAIR DA TELA
+      };
+    }, [validateAndSetUser, registerForPushNotificationsAsync, fetchData, fetchWalletBalance, startPolling, stopPolling])
   );
 
-  // Configuração de listeners de notificações
+  // 🔥 NOVO: Pull to Refresh
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    const user = await validateAndSetUser();
+    if (user) {
+      await Promise.all([fetchData(user), fetchWalletBalance(user)]);
+    }
+    setRefreshing(false);
+  }, [validateAndSetUser, fetchData, fetchWalletBalance]);
+
+  // ✅ Listeners estáveis ATUALIZADOS para sincronização automática
   useEffect(() => {
-    notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+    // Listener para notificações push
+    notificationListener.current = Notifications.addNotificationReceivedListener(async (notification) => {
       showMessage({
         message: "Novo pedido recebido",
         description: notification.request.content.body,
@@ -147,97 +195,142 @@ const Home = () => {
         icon: "auto",
         duration: 3000,
       });
-      setNotification(notification);
+      
+      // 🔥 SINCRONIZA AUTOMATICAMENTE AO RECEBER NOTIFICAÇÃO
+      const user = await validateAndSetUser();
+      if (user) {
+        await fetchData(user);
+        await fetchWalletBalance(user);
+      }
     });
 
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
-      const { extraData } = response.notification.request.content.data;
+    // Listener para clique em notificação
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(async (response) => {
+      const extraData = response.notification.request.content.data?.extraData;
+      
+      // 🔥 SINCRONIZA ANTES DE NAVEGAR
+      const user = await validateAndSetUser();
+      if (user) {
+        await fetchData(user);
+        await fetchWalletBalance(user);
+      }
+      
       if (extraData) {
         navigation.navigate('OrderDetail', { extraData });
       }
     });
 
-    const unsubscribeNetInfo = NetInfo.addEventListener(state => {
-      if (state.isConnected) checkPendingNotifications();
+    const unsubscribeNetInfo = NetInfo.addEventListener((state) => {
+      // 🔥 SINCRONIZA AO RECUPERAR CONEXÃO
+      if (state.isConnected && !state.isInternetReachable) {
+        validateAndSetUser().then(user => {
+          if (user) {
+            fetchData(user);
+            fetchWalletBalance(user);
+          }
+        });
+      }
     });
 
     return () => {
-      notificationListener.current?.remove();
-      responseListener.current?.remove();
-      unsubscribeNetInfo();
-    };
-  }, []);
-
-  // Busca pedidos
-  const fetchData = async (user) => {
-    try {
-      const response = await api.get(`/orders/sellerview?seller=${user._id}`, {
-        headers: { authorization: `Bearer ${user.token}` },
-      });
-      if (response.status === 200) {
-        setOrders(response.data.orders);
-        setAvailableStatuses([...new Set(response.data.orders.map(o => o.status))]);
+      // 🔥 CORREÇÃO: Usar .remove() em vez de removeNotificationSubscription
+      if (notificationListener.current) {
+        notificationListener.current.remove();
       }
-    } catch (error) {
-      console.error(error);
-    }
-  };
+      if (responseListener.current) {
+        responseListener.current.remove();
+      }
+      unsubscribeNetInfo();
+      stopPolling(); // 🔥 GARANTE QUE POLLING SERÁ PARADO
+    };
+  }, [navigation, validateAndSetUser, fetchData, fetchWalletBalance, stopPolling]);
 
-  const handleStatusSelect = (status) => setSelectedStatus(status);
+  // ✅ Evita re-renderizações desnecessárias
+  const filteredOrders = useMemo(
+    () => (selectedStatus ? orders.filter(order => order.status === selectedStatus) : orders),
+    [orders, selectedStatus]
+  );
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth()+1).padStart(2,'0')}/${date.getFullYear()} ${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}:${String(date.getSeconds()).padStart(2,'0')}`;
+    return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth()+1).padStart(2,'0')}/${date.getFullYear()} ${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}`;
   };
 
-  const filteredOrders = selectedStatus ? orders.filter(order => order.status === selectedStatus) : orders;
+  const formatLastUpdate = (date) => {
+    if (!date) return '';
+    return `Última atualização: ${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
+  };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      {/* View para o fundo da StatusBar */}
-      <View style={{ height: StatusBar.currentHeight }} />
-      <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
-
-      <View style={styles.appBarWrapper}>
-        <View style={styles.headerRow}>
-          <Text style={styles.welcomeText('black', 30, 0)}>
-            <Text style={{ color: '#E85A4F' }}>visacasa+</Text>
-          </Text>
-          <Text style={styles.balanceText}>
-            <Text style={{fontSize: 10}}>Saldo:</Text> {walletBalance.toFixed(2)} MT
-          </Text>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
+      {/* 🔥 CORREÇÃO: View para StatusBar background */}
+      <View style={styles.statusBarBackground} />
+      
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingBottom: 20 }}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={['#E85A4F']}
+            tintColor="#E85A4F"
+          />
+        }
+      >
+        <View style={styles.header}>
+          <Text style={styles.welcomeText}><Text style={{ color: '#E85A4F' }}>Visacasa</Text></Text>
+          <Text style={styles.balanceText}>Saldo: {walletBalance.toFixed(2)} MT</Text>
+          {lastUpdate && (
+            <Text style={styles.lastUpdateText}>{formatLastUpdate(lastUpdate)}</Text>
+          )}
         </View>
 
         <View style={styles.appBar}>
           <Image source={require('../assets/default1.jpg')} style={styles.cover} />
-          <Text style={styles.greetingText}>{userData ? `Olá, ${userData?.name}` : 'Faça login'}</Text>
+          <Text style={styles.greetingText}>{userData ? `Olá, ${userData.name}` : 'Faça login'}</Text>
         </View>
 
-        {userData?.seller && (
-          <View style={styles.storeStatusContainer}>
-            <View
-              style={[
-                styles.storeStatusIndicator,
-                { backgroundColor: userData.seller.openstore ? '#4CAF50' : '#F44336' },
-              ]}
-            />
-            <Text style={styles.storeStatusText}>
-              {userData.seller.openstore ? 'Loja Aberta' : 'Loja Fechada'} - <Text style={styles.sellerName}>{userData?.seller?.name || ''}</Text>
-            </Text>
-          </View>
-        )}
-      </View>
-
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+       {userData?.seller && (
+  <View style={styles.storeStatusContainer}>
+    <View
+      style={[
+        styles.storeStatusIndicator,
+        { backgroundColor: userData.seller.openstore ? '#4CAF50' : '#F44336' },
+      ]}
+    />
+    <Text
+      style={[
+        styles.storeStatusText,
+        { color: userData.seller.openstore ? '#4CAF50' : '#F44336' },
+      ]}
+    >
+      {userData.seller.openstore ? 'Loja Aberta' : 'Loja Fechada'} -
+      <Text style={styles.sellerName}> {userData?.seller?.name || ''}</Text>
+    </Text>
+  </View>
+)}
+        
         <Text style={styles.sectionTitle}>Pedidos</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.statusScrollContainer}>
+        
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.statusScrollContainer}
+        >
           {availableStatuses.map((status) => (
             <TouchableOpacity
               key={status}
               style={[styles.statusButton, selectedStatus === status && styles.selectedStatusButton]}
-              onPress={() => handleStatusSelect(status)}
+              onPress={() => setSelectedStatus(status)}
             >
-              <Text style={styles.statusButtonText}>{status}</Text>
+              <Text style={[
+                styles.statusButtonText, 
+                selectedStatus === status && styles.selectedStatusText
+              ]}>
+                {status}
+              </Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -249,11 +342,9 @@ const Home = () => {
               style={styles.orderCard}
               onPress={() => navigation.navigate('OrderDetail', { order })}
             >
-              <View style={styles.orderIconContainer}>
-                <Ionicons name="cart-outline" size={25} style={styles.cartIcon} />
-              </View>
-              <View style={styles.orderDetails}>
-                <Text style={styles.orderText}>Código: {order.code}</Text>
+              <Ionicons name="cart-outline" size={24} color="#E85A4F" />
+              <View style={{ marginLeft: 12, flex: 1 }}>
+                <Text style={styles.orderTextCode}>Código: {order.code}</Text>
                 <Text style={styles.orderText}>Status: {order.status}</Text>
                 <Text style={styles.orderText}>Cliente: {order.user?.name}</Text>
                 <Text style={styles.orderText}>Data: {formatDate(order.createdAt)}</Text>
@@ -261,164 +352,160 @@ const Home = () => {
             </TouchableOpacity>
           ))
         ) : (
-          <Text style={{ textAlign: 'center', marginTop: 50 }}>Nenhum pedido encontrado.</Text>
+          <Text style={styles.noOrdersText}>Nenhum pedido encontrado.</Text>
         )}
       </ScrollView>
-
       <FlashMessage position="top" />
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#f8f9fb', // fundo claro moderno
+  safeArea: { 
+    flex: 1, 
+    backgroundColor: '#f8f9fb' 
   },
-  appBarWrapper: {
-    paddingHorizontal: 20,
-    paddingTop: 15,
-    paddingBottom: 20,
-    backgroundColor: '#fff',
-    borderBottomLeftRadius: 25,
-    borderBottomRightRadius: 25,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 5,
+  // 🔥 NOVO: Background para StatusBar
+  statusBarBackground: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 40, // Ajuste conforme necessário
+    backgroundColor: '#f8f9fb',
+    zIndex: 0,
   },
-  headerRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  header: { 
+    paddingHorizontal: 20, 
+    paddingVertical: 15, 
+    backgroundColor: '#fff', 
+    borderBottomLeftRadius: 25, 
+    borderBottomRightRadius: 25, 
+    elevation: 3,
+    marginTop: 10, // 🔥 Ajuste para acomodar a StatusBar
   },
-  welcomeText: (color, size, margin) => ({
-    fontSize: size,
-    color,
-    fontWeight: '900',
-    marginTop: margin,
-    letterSpacing: 1,
-  }),
-  balanceText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#374151',
-    backgroundColor: '#eef2ff',
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 20,
+  welcomeText: { 
+    fontSize: 28, 
+    fontWeight: '900' 
   },
-  appBar: {
-    marginTop: 15,
-    flexDirection: 'row',
-    alignItems: 'center',
+  balanceText: { 
+    fontSize: 16, 
+    fontWeight: '700', 
+    color: '#374151', 
+    marginTop: 5 
   },
-  cover: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    marginRight: 15,
-    borderWidth: 2,
-    borderColor: '#E85A4F',
+  lastUpdateText: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 3,
+    fontStyle: 'italic'
   },
-  greetingText: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#1f2937',
+  appBar: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    padding: 15 
+  },
+  cover: { 
+    width: 60, 
+    height: 60, 
+    borderRadius: 30, 
+    marginRight: 15, 
+    borderWidth: 2, 
+    borderColor: '#E85A4F' 
+  },
+  greetingText: { 
+    fontSize: 18, 
+    fontWeight: '700', 
+    color: '#1f2937' 
+  },
+  sectionTitle: { 
+    fontSize: 20, 
+    fontWeight: '800', 
+    margin: 15 
+  },
+  statusScrollContainer: {
+    paddingHorizontal: 8,
+  },
+  statusButton: { 
+    paddingVertical: 10, 
+    paddingHorizontal: 20, 
+    borderRadius: 25, 
+    backgroundColor: '#f3f4f6', 
+    marginHorizontal: 4,
+    marginVertical: 5
+  },
+  selectedStatusButton: { 
+    backgroundColor: '#E85A4F' 
+  },
+  statusButtonText: { 
+    color: '#111827', 
+    fontWeight: '600' 
+  },
+  selectedStatusText: {
+    color: 'white'
+  },
+  orderCard: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    backgroundColor: '#fff', 
+    marginHorizontal: 15, 
+    marginVertical: 8, 
+    padding: 15, 
+    borderRadius: 15, 
+    elevation: 2 
+  },
+  orderText: { 
+    fontSize: 14, 
+    color: '#374151' 
+  },
+  orderTextCode: {
+    fontWeight: '800'
+  },
+  storeStatusText: { 
+    fontSize: 14, 
+    fontWeight: '600', 
+    color: '#2563eb' 
+  },
+  storeStatusContainer: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    marginTop: 12, 
+    paddingVertical: 6, 
+    paddingHorizontal: 14, 
+    borderRadius: 20, 
+    backgroundColor: '#e5f6ff',
+    marginHorizontal: 15
+  },
+  noOrdersText: { 
+    textAlign: 'center', 
+    marginTop: 40, 
+    color: '#666',
+    fontSize: 16
   },
   storeStatusContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 12,
-    paddingVertical: 6,
-    paddingHorizontal: 14,
-    borderRadius: 20,
-    backgroundColor: '#e5f6ff',
-  },
-  storeStatusIndicator: {
-    width: 14,
-    height: 14,
-    borderRadius: 7,
-    marginRight: 8,
-  },
-  storeStatusText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#2563eb',
-  },
-  sellerName: { fontWeight: 'bold', color: '#111827' },
-  scrollContainer: { paddingBottom: 300 },
-  sectionTitle: {
-    fontSize: 22,
-    fontWeight: '800',
-    marginVertical: 12,
-    color: '#111827',
-  },
-  statusScrollContainer: { paddingBottom: 15 },
-  statusButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 25,
-    backgroundColor: '#f3f4f6',
-    marginRight: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 3,
-    elevation: 2,
-  },
-  selectedStatusButton: {
-    backgroundColor: '#E85A4F',
-    shadowColor: '#E85A4F',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-  },
-  statusButtonText: { color: '#111827', fontWeight: '600' },
-  orderCard: {
-    flexDirection: 'row',
-    padding: 20,
-    marginVertical: 8,
-    backgroundColor: '#fff',
-    borderRadius: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.03,
-    shadowRadius: 10,
-    elevation: 4,
-    alignItems: 'center',
-  },
-  orderIconContainer: {
-    width: 55,
-    height: 55,
-    borderRadius: 27.5,
-    backgroundColor: '#f0f4ff',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 15,
-    shadowColor: '#E85A4F',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  cartIcon: { color: '#E85A4F' },
-  orderDetails: { flex: 1 },
-  orderText: {
-    fontSize: 15,
-    marginBottom: 5,
-    color: '#374151',
-    fontWeight: '500',
-  },
-  noOrdersText: {
-    textAlign: 'center',
-    marginTop: 60,
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#9ca3af',
-  },
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'center',
+  marginTop: 8,
+  paddingHorizontal: 12,
+},
+
+storeStatusIndicator: {
+  width: 12,
+  height: 12,
+  borderRadius: 6,
+  marginRight: 8,
+},
+
+storeStatusText: {
+  fontWeight: '600',
+  fontSize: 15,
+},
+
+sellerName: {
+  fontWeight: '700',
+  color: '#333',
+},
 });
-
-
 
 export default Home;

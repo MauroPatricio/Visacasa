@@ -107,6 +107,7 @@ const ProductRow = React.memo(({ item, onPress }) => (
             `${item.price} MT`
           )}
         </Text>
+        <Text>Fornecedor: {item.seller?.seller?.name}</Text>
       </View>
     </View>
   </TouchableOpacity>
@@ -266,7 +267,7 @@ const Home = () => {
       return;
     }
 
-    const projectId = "92c183ff-d0ca-4dc4-a4ce-e7c112be9ee0";
+    const projectId = "7467ac64-89c0-432d-ae88-f427f7c65da9";
     const deviceToken = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
     updatePushToken(userData._id, deviceToken);
   };
@@ -328,8 +329,12 @@ responseListener.remove();
     setLoadingCategories(true);
     try {
       const response = await api.get('/products/categoriesWithCount');
+
       
       const list = response.data?.categories || [];
+
+
+
       
       // Adiciona productCount se não existir (para compatibilidade)
       const categoriesWithCount = list.map(category => ({
@@ -421,9 +426,7 @@ responseListener.remove();
 
   const loadCategoryProducts = async (categoryId, page = 1, append = false) => {
     if (loadingCatProducts && !append) return;
-    
-    console.log('Carregando produtos da categoria:', categoryId, 'Página:', page);
-    
+        
     // Se for carregar mais produtos (scroll), usar loading diferente
     if (append) {
       setLoadingMoreProducts(true);
@@ -600,7 +603,7 @@ responseListener.remove();
               {/* Produtos em Destaque */}
               {renderFeaturedProducts()}
 
-              <EstablishmentsView title='Tipos de Estabelecimentos' />
+              <EstablishmentsView title='Tipos de estabelecimentos' />
               <SellersView title='Fornecedores' description='Nossos fornecedores disponíveis para si' />
             </>
           }
@@ -620,55 +623,66 @@ responseListener.remove();
       )}
 
       {/* BottomSheet com produtos paginados da categoria */}
-      <BottomSheetComponent
-        isOpen={bottomSheetOpen}
-        toggleSheet={() => {
+<BottomSheetComponent
+  isOpen={bottomSheetOpen}
+  toggleSheet={() => {
+    setBottomSheetOpen(false);
+    bottomSheetRef.current?.close?.();
+  }}
+  ref={bottomSheetRef}
+  height={600} // ← aumenta um pouco para melhor experiência
+>
+  <View style={styles.bottomSheetContent}>
+    {/* Header do BottomSheet */}
+    <View style={styles.bottomSheetHeader}>
+      <Text style={styles.bottomSheetTitle}>
+        Produtos em {selectedCategory?.name}
+      </Text>
+      <Text style={styles.productCountText}>
+        {catProducts.length} de {selectedCategory?.productCount || selectedCategory?.count || 0} produtos
+      </Text>
+
+      {/* Botão de fechar fixo */}
+      <TouchableOpacity
+        style={styles.closeButton}
+        onPress={() => {
           setBottomSheetOpen(false);
           bottomSheetRef.current?.close?.();
         }}
-        ref={bottomSheetRef}
-        height={600}
       >
-        <View style={styles.bottomSheetContent}>
-          <View style={styles.bottomSheetHeader}>
-            <Text style={styles.bottomSheetTitle}>
-              Produtos em {selectedCategory?.name}
-            </Text>
-            <Text style={styles.productCountText}>
-              {catProducts.length} de {selectedCategory?.productCount || selectedCategory?.count || 0} produtos
-            </Text>
-          </View>
+        <Ionicons name="close" size={26} color="#fff" />
+      </TouchableOpacity>
+    </View>
 
-          {loadingCatProducts && catProducts.length === 0 ? (
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color="#E85A4F" />
-              <Text style={styles.loadingText}>Carregando produtos...</Text>
+    {/* Lista de produtos */}
+    {loadingCatProducts && catProducts.length === 0 ? (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#E85A4F" />
+        <Text style={styles.loadingText}>Carregando produtos...</Text>
+      </View>
+    ) : (
+      <FlatList
+        data={catProducts}
+        keyExtractor={(item) => String(item._id)}
+        renderItem={renderProductRow}
+        onEndReached={debouncedLoadMore}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={renderFooter}
+        ListEmptyComponent={
+          !loadingCatProducts && (
+            <View style={styles.emptyContainer}>
+              <Text style={styles.empty}>Nenhum produto nesta categoria.</Text>
             </View>
-          ) : (
-            <FlatList
-              data={catProducts}
-              keyExtractor={(item) => String(item._id)}
-              renderItem={renderProductRow}
-              onEndReached={debouncedLoadMore}
-              onEndReachedThreshold={0.5}
-              ListFooterComponent={renderFooter}
-              ListEmptyComponent={
-                !loadingCatProducts && (
-                  <View style={styles.emptyContainer}>
-                    <Text style={styles.empty}>Nenhum produto nesta categoria.</Text>
-                  </View>
-                )
-              }
-              initialNumToRender={10}
-              maxToRenderPerBatch={5}
-              windowSize={7}
-              updateCellsBatchingPeriod={50}
-              removeClippedSubviews={true}
-              contentContainerStyle={catProducts.length === 0 ? { flexGrow: 1 } : {}}
-            />
-          )}
-        </View>
-      </BottomSheetComponent>
+          )
+        }
+        contentContainerStyle={[
+          { paddingBottom: 90 }, // espaço extra para o botão flutuante
+          catProducts.length === 0 ? { flexGrow: 1 } : {}
+        ]}
+      />
+    )}
+  </View>
+</BottomSheetComponent>
 
       <FlashMessage position="top" />
 
@@ -770,13 +784,32 @@ const styles = StyleSheet.create({
   bottomSheetContent: {
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    padding: 16,
+    padding: 5,
     backgroundColor: '#fff',
     flex: 1,
   },
-  bottomSheetHeader: {
-    marginBottom: 16,
-  },
+ closeButton: {
+  position: 'absolute',
+  top: 10,
+  right: 10,
+  backgroundColor: '#E85A4F',
+  borderRadius: 20,
+  width: 36,
+  height: 36,
+  justifyContent: 'center',
+  alignItems: 'center',
+  elevation: 3,
+  zIndex: 10,
+},
+bottomSheetHeader: {
+  marginBottom: 16,
+  alignItems: 'center',
+  paddingTop: 15,
+  paddingHorizontal: 10,
+  borderBottomWidth: 1,
+  borderBottomColor: '#eee',
+},
+
   bottomSheetTitle: {
     fontSize: 20,
     fontWeight: 'bold',

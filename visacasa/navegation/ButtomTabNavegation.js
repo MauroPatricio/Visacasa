@@ -1,7 +1,8 @@
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import React, { memo } from 'react';
+import { View, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
+
 import Home from '../screens/Home';
 import Search from '../screens/Search';
 import Orders from '../screens/Orders';
@@ -11,136 +12,120 @@ import Profile from '../screens/Profile';
 const Tab = createBottomTabNavigator();
 
 const CustomTabBarButton = memo(({ children, onPress }) => (
-  <View
+  <TouchableOpacity
     style={styles.centerButtonWrapper}
     onPress={onPress}
     activeOpacity={0.9}
   >
-    <View style={styles.centerButton}>
-      {children}
-    </View>
-  </View>
+    <View style={styles.centerButton}>{children}</View>
+  </TouchableOpacity>
 ));
 
-
-
-
-const ButtomTabNavegation = () => {
+const BottomTabNavigation = () => {
   return (
-    <Tab.Navigator
-      screenOptions={{ 
-        tabBarHideOnKeyboard: true, 
+   <Tab.Navigator
+      screenOptions={{
+        tabBarShowLabel: false,
         headerShown: false,
-        tabBarStyle: styles.tabBar 
+        tabBarStyle: styles.tabBar,
+        // 🔥 CONFIGURAÇÕES DEFINITIVAS
+        tabBarHideOnKeyboard: true,
+        freezeOnBlur: true,
+        lazy: true,
+        // 🔥 REMOVE ANIMAÇÕES PROBLEMÁTICAS
+        animation: 'none',
+        animationEnabled: false,
       }}
     >
       <Tab.Screen
-        name="início"
+        name="Início"
         component={Home}
-        options={{ 
+        options={{
           tabBarIcon: ({ focused }) => (
             <Ionicons
               name={focused ? 'home' : 'home-outline'}
               size={24}
               color={focused ? '#E85A4F' : 'gray'}
             />
-          )
+          ),
         }}
       />
 
       <Tab.Screen
         name="Pesquisa"
         component={Search}
-        options={{ 
+        options={{
           tabBarIcon: ({ focused }) => (
             <Ionicons
               name={focused ? 'search' : 'search-outline'}
               size={24}
               color={focused ? '#E85A4F' : 'gray'}
             />
-          )
+          ),
         }}
       />
 
- <Tab.Screen
-  name=" "
-  component={RequestDeliv}
-  options={{
-    tabBarIcon: () => (
-      <Ionicons name='add' size={45} color="white" />
-    ),
-    tabBarButton: (props) => <CustomTabBarButton {...props} />,
-  }}
-/>
+      <Tab.Screen
+        name="NovoPedido"
+        component={RequestDeliv}
+        options={{
+          tabBarIcon: () => (
+            <Ionicons name="add" size={40} color="white" />
+          ),
+          tabBarButton: (props) => <CustomTabBarButton {...props} />,
+        }}
+    />
 
       <Tab.Screen
         name="Pedidos"
         component={Orders}
-        options={{ 
+        options={{
           tabBarIcon: ({ focused }) => (
             <Ionicons
               name={focused ? 'file-tray-full' : 'file-tray-full-outline'}
               size={24}
               color={focused ? '#E85A4F' : 'gray'}
             />
-          )
+          ),
         }}
       />
 
       <Tab.Screen
         name="Perfil"
         component={Profile}
-        options={{ 
+        options={{
           tabBarIcon: ({ focused }) => (
             <Ionicons
               name={focused ? 'person' : 'person-outline'}
               size={24}
               color={focused ? '#E85A4F' : 'gray'}
             />
-          )
+          ),
         }}
       />
     </Tab.Navigator>
-  )
+  );
 };
 
-export default ButtomTabNavegation;
+export default BottomTabNavigation;
 
-const styles = StyleSheet.create({ 
-  tabBar: {
-    position: 'absolute',
-    bottom: 10,
-    left: 20,
-    right: 20,
-    elevation: 5,
-    backgroundColor: '#fff',
-    borderRadius: 20,
+const styles = StyleSheet.create({
 
-
-    // height: 70,
-    // shadowColor: '#000',
-    // shadowOffset: { width: 0, height: 6 },
-    // shadowOpacity: 0.1,
-    // shadowRadius: 5,
+  centerButtonWrapper: { 
+    justifyContent: 'center', 
+    alignItems: 'center' 
   },
-
-  centerButtonWrapper: {
-    // top: -25,  // faz o botão flutuar acima da barra
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  centerButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 35,
-    backgroundColor: '#E85A4F',
-    justifyContent: 'center',
-    alignItems: 'center',
+  centerButton: { 
+    width: 50, 
+    height: 50, 
+    borderRadius: 35, 
+    backgroundColor: '#E85A4F', 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    elevation: 10,
     shadowColor: '#E85A4F',
-    // shadowOffset: { width: 0, height: 6 },
-    // shadowOpacity: 0.4,
-    // shadowRadius: 6,
-    elevation: 6,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
   },
 });

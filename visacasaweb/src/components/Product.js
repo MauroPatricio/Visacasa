@@ -5,6 +5,7 @@ import Badge from 'react-bootstrap/esm/Badge';
 import { useTranslation } from 'react-i18next';
 import { useContext, useEffect } from 'react';
 import { Store } from '../Store';
+import '../index.css';
 
 function Product(props) {
   const { product, seller } = props;
@@ -21,13 +22,13 @@ function Product(props) {
   return (
     <>
       {product && (
-        <Card className="product zoom-image" >
+        <Card className="" >
                       {product && product.onSale &&  <span className="sale"><b>{t('onsale')}</b></span>}
-                      {product && product.onSale &&  <span className="sale-percentage"><b>{product.onSalePercentage*100}%</b></span>}
+                      {product && product.onSale &&  <span className="sale-percentage"><b>{product.onSalePercentage}%</b></span>}
 
           <Link to={`/products/${product._id}`}>
            
-          <Card.Img variant="top" style={{height: '190px'}} src={product.image} alt="Card image" />
+          <Card.Img variant="top" src={product.image} alt="Card image" />
           </Link>
           {product.countInStock === 0 
             && (
@@ -82,7 +83,7 @@ function Product(props) {
         <Card className="product zoom-image">
           <Link to={seller.seller ? `/seller/${seller._id}` : ''}>
             
-                      <Card.Img variant="top" style={{height: '190px'}} src={seller.seller.logo} alt="Card image" />
+                      <Card.Img variant="top" src={seller.seller.logo} alt="Card image" />
 
           </Link>
           <div className="product-info small ">

@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import LanguageSwitcher from './../LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPhone, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPhone } from '@fortawesome/free-solid-svg-icons';
 
 
 
@@ -90,7 +90,7 @@ export default function Footer() {
             alt="Nhiquela" ></img>   
         </div>
             <div className="col-md-3 col-lg-4 col-xl-3 mx-auto mb-4">
-          <h6 className="text-uppercase fw-bold">VisaCasa</h6>
+          <h6 className="text-uppercase fw-bold">Nhiquela+</h6>
           <hr
               className="mb-4 mt-0 d-inline-block mx-auto"
               style={{backgroundColor: '#7c4dff', width: '60px', height: '2px'}}
@@ -124,6 +124,13 @@ export default function Footer() {
           <p>
             <Link to="/returnpolicy" className="text-white link-none">{t('returnpolicy')}</Link>
           </p>
+          <p>
+            <Link to="/privacy" className="text-white link-none">{t('privacy')}</Link>
+          </p>
+
+          <p>
+            <Link to="/aboutus" className="text-white link-none">{t('aboutus')}</Link>
+          </p>
           
         </div>
 
@@ -136,7 +143,6 @@ export default function Footer() {
               />
           <p> <FontAwesomeIcon icon={faPhone} ></FontAwesomeIcon>{' '}{t('hotline')}: +258 853600036<br/> </p>
           <p> +258 853600036<br/> </p>
-          <p> +258 879300036<br/></p>
           <p>{t('emaillang')}<br/></p>         
           <p> {t('mozambique')},{t('maputocity')}, Malhangalene</p>
 

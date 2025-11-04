@@ -75,7 +75,6 @@ import ForgetPasswordScreen from './screens/ForgetPasswordScreen';
 import ResetPasswordScreen from './screens/ResetPasswordScreen';
 import DeliveryOptionScreen from './screens/DeliveryOptionScreen';
 import axios from 'axios';
-import PaybackInfoAndSecurity from './components/PaybackInfoAndSecurity';
 import AdicionalInfoHeader from './components/AdicionalInfoHeader';
 import ScrollTopButton from './components/ScrollTopButton';
 import SearchSellersScreen from './screens/SearchSellersScreen';
@@ -94,9 +93,16 @@ import RequestDelivermanConfirmScreen from './screens/RequestDelivermanConfirmSc
 import RequestDelivermanProgressScreen from './screens/RequestDelivermanProgressScreen';
 import RequestDelivermanHistoryByUserScreen from './screens/RequestDelivermanHistoryByUserScreen';
 import RequestDelivermanHistoryByAdminScreen from './screens/RequestDelivermanHistoryByAdminScreen';
+import AboutUs from './screens/AboutUs';
+import Privacy from './screens/Privacy';
+import LoginPopup from './components/LoginPopup';
+import EstablishmentListScreen from './screens/EstablishmentListScreen';
+import EstablishmentCreateScreen from './screens/EstablishmentCreateScreen';
+import EstablishmentEditScreen from './screens/EstablishmentEditScreen';
+import Broadcast from './screens/Broadcast';
 
 
-export  function App() {
+export function App() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
 
   const { cart, userInfo } = state;
@@ -104,7 +110,7 @@ export  function App() {
 
   const { t } = useTranslation();
 
- 
+
   const toggleExpanded = () => {
     setExpanded(!expanded);
   };
@@ -114,18 +120,18 @@ export  function App() {
   };
 
 
-  useEffect(()=>{
+  useEffect(() => {
 
 
-    const refresh = async () =>{
+    const refresh = async () => {
 
-      if(userInfo){
+      if (userInfo) {
 
         try {
-          const {data} = await axios.get(`/api/orders/sellerview?seller=${userInfo._id}`, {
+          const { data } = await axios.get(`/api/orders/sellerview?seller=${userInfo._id}`, {
             headers: { authorization: `Bearer ${userInfo.token}` },
-          });    
-          ctxDispatch({type: 'ORDERS_BY_SELLER', payload: data.orders});
+          });
+          ctxDispatch({ type: 'ORDERS_BY_SELLER', payload: data.orders });
         } catch (err) {
           toast.error(getError(err));
         }
@@ -134,21 +140,21 @@ export  function App() {
     refresh();
 
 
-  
-  },[userInfo, ctxDispatch])
+
+  }, [userInfo, ctxDispatch])
 
   return (
     <BrowserRouter>
       <div className="d-flex flex-column site-background">
         <Helmet>
-          <title>VisaCasa</title>
+          <title>NHIQUELA+</title>
         </Helmet>
         <ToastContainer position="top-right" autoClose={3000} />
 
-         <header >
+        <header >
           <Navbar
-             expanded={expanded}
-             bg="light"
+            expanded={expanded}
+            bg="light"
             variant="light"
             expand="lg"
             fixed="top"
@@ -156,39 +162,39 @@ export  function App() {
             <Container>
               <LinkContainer to="/" >
                 <Navbar.Brand className="Navbar-Brand"  >
-                VisaCasa
+                  NHIQUELA+
                 </Navbar.Brand>
               </LinkContainer>
               <SearchBox />
               <Navbar.Toggle
-                 onClick={toggleExpanded}
+                onClick={toggleExpanded}
                 aria-controls="basic-navbar-nav"
               />
               <Link to="/cart" className="nav-link black-icon hide-icon-screen">
-                    <FontAwesomeIcon icon={faCartShopping}></FontAwesomeIcon>
-                    {cart.cartItems.length > 0 && (
-                      <Badge
-                        bg="danger"
-                        variant="danger"
-                        className="cart-number"
-                      >
-                        {cart.cartItems.reduce(
-                          (prev, current) => prev + current.quantity,
-                          0
-                        )}
-                      </Badge>
+                <FontAwesomeIcon icon={faCartShopping}></FontAwesomeIcon>
+                {cart.cartItems.length > 0 && (
+                  <Badge
+                    bg="danger"
+                    variant="danger"
+                    className="cart-number"
+                  >
+                    {cart.cartItems.reduce(
+                      (prev, current) => prev + current.quantity,
+                      0
                     )}
-                  </Link>
+                  </Badge>
+                )}
+              </Link>
 
-                 
-              <Navbar.Collapse  id="collapse basic-navbar-nav">
-                <Nav  className="mr-auto nav-cart w-100 justify-content-end">
+
+              <Navbar.Collapse id="collapse basic-navbar-nav">
+                <Nav className="mr-auto nav-cart w-100 justify-content-end">
                   {userInfo ? (
                     <NavDropdown title={userInfo.name} id="basic-nav-dropdown">
                       <LinkContainer to="/profile">
                         <NavDropdown.Item>{t('profile')}</NavDropdown.Item>
                       </LinkContainer>
-                    
+
                       {userInfo && !userInfo.isDeliveryMan && (
                         <LinkContainer to="/orderHistory">
                           <NavDropdown.Item>{t('myorders')}</NavDropdown.Item>
@@ -196,26 +202,26 @@ export  function App() {
                       )}
 
                       {userInfo && userInfo.isDeliveryMan && (
-                                              <LinkContainer to="/delivery/orderlist">
-                                                <NavDropdown.Item>
-                                                {t('orderstodeliver')}
-                                                  
-                                                </NavDropdown.Item>
-                                              </LinkContainer>
-                                            )}
+                        <LinkContainer to="/delivery/orderlist">
+                          <NavDropdown.Item>
+                            {t('orderstodeliver')}
 
-
-                        <LinkContainer to="/requestdelivermanhistory">
-                          <NavDropdown.Item>{t('deliveryrequesthistory')}</NavDropdown.Item>
+                          </NavDropdown.Item>
                         </LinkContainer>
+                      )}
 
 
-                        <LinkContainer to="/allrequestdelivermanhistory">
-                          <NavDropdown.Item>{t('alldeliveryrequesthistory')}</NavDropdown.Item>
-                        </LinkContainer>
+                      <LinkContainer to="/requestdelivermanhistory">
+                        <NavDropdown.Item>{t('deliveryrequesthistory')}</NavDropdown.Item>
+                      </LinkContainer>
 
-                 
-                    
+
+                      <LinkContainer to="/allrequestdelivermanhistory">
+                        <NavDropdown.Item>{t('alldeliveryrequesthistory')}</NavDropdown.Item>
+                      </LinkContainer>
+
+
+
                       <LinkContainer to="/signin">
                         <NavDropdown.Item onClick={signOutHandler}>
                           <b>{t('logout')}</b>
@@ -223,9 +229,9 @@ export  function App() {
                       </LinkContainer>
                     </NavDropdown>
 
-                    
+
                   ) : (<>
-                  
+
                     {/* { <Nav.Link as={Link} to="/requestdeliverman"><b className='link'>{t('requestdeliverman')}</b></Nav.Link>} */}
 
                     <Link className="nav-link" to="/signin">
@@ -242,13 +248,13 @@ export  function App() {
                       </LinkContainer>
                       <LinkContainer to="/orderlist/seller">
                         <NavDropdown.Item>{t('orderclients')}
-                        <Badge
-                        bg="danger"
-                        variant="danger"
-                        className="cart-number"
-                      >
-                        {cart.ordersBySeller && cart.ordersBySeller.length > 0 && cart.ordersBySeller.length}
-                      </Badge>
+                          <Badge
+                            bg="danger"
+                            variant="danger"
+                            className="cart-number"
+                          >
+                            {cart.ordersBySeller && cart.ordersBySeller.length > 0 && cart.ordersBySeller.length}
+                          </Badge>
                         </NavDropdown.Item>
                       </LinkContainer>
                       <LinkContainer to="/orderhistorybycustomer/seller">
@@ -294,19 +300,28 @@ export  function App() {
                       <LinkContainer to="/support">
                         <NavDropdown.Item>{t('Support')}</NavDropdown.Item>
                       </LinkContainer>
+                       <LinkContainer to="/broadcast">
+                        <NavDropdown.Item>{t('broadcast')}</NavDropdown.Item>
+                      </LinkContainer>
                       <LinkContainer to="/admin/sellerstopay">
                         <NavDropdown.Item>{t('sellerstopay')}</NavDropdown.Item>
                       </LinkContainer>
                       <LinkContainer to="/admin/deliverstopay">
                         <NavDropdown.Item>{t('deliverstopay')}</NavDropdown.Item>
                       </LinkContainer>
-                  
-                    </NavDropdown>
-        
-        )}
-              {/* {userInfo && <Nav.Link as={Link} to="/requestdeliverman"><b className='link'>{t('requestdeliveryman')}</b></Nav.Link>} */}
 
-                            
+                          <LinkContainer to="/admin/tipoestabelecimentos">
+                        <NavDropdown.Item>{t('tipoestabelecimento')}</NavDropdown.Item>
+                      </LinkContainer>
+
+                  
+
+                    </NavDropdown>
+
+                  )}
+                  {/* {userInfo && <Nav.Link as={Link} to="/requestdeliverman"><b className='link'>{t('requestdeliveryman')}</b></Nav.Link>} */}
+
+
 
                   <Link to="/cart" className="nav-link  hide-cart">
                     <FontAwesomeIcon icon={faCartShopping}></FontAwesomeIcon>
@@ -324,320 +339,349 @@ export  function App() {
                     )}
                   </Link>
 
-                
+
 
 
                 </Nav>
               </Navbar.Collapse>
-              
+
             </Container>
           </Navbar>
-        </header> 
-         <main style={{ marginTop: '30px' }} >
-      <PaybackInfoAndSecurity/>
+        </header>
 
-      <AdicionalInfoHeader/>
+        <div className="main-content">
 
-          <Container className={expanded ? 'collapse-open' : ''}>
-            <Routes>
-              <Route path="/" element={<HomeScreen />} />
-              <Route path="/products/:id" element={<ProductScreen />} />
-              <Route path="/cart" element={<CartScreen />} />
-              <Route path="/signin" element={<SignInScreen />} />
-              <Route path="/signup" element={<SignupScreen />} />
-          
-              <Route
-                path="/terms"
-                element={
+          <main  >
+            {/* <PaybackInfoAndSecurity/> */}
+
+            <AdicionalInfoHeader />
+
+            <Container className={expanded ? 'collapse-open' : ''}>
+              <Routes>
+                <Route path="/" element={<HomeScreen />} />
+                <Route path="/products/:id" element={<ProductScreen />} />
+                <Route path="/cart" element={<CartScreen />} />
+                <Route path="/signin" element={<SignInScreen />} />
+                <Route path="/signup" element={<SignupScreen />} />
+
+                <Route
+                  path="/terms"
+                  element={
                     <Terms />
-                }
-              />
-<Route
-                path="/howtobeseller"
-                element={
+                  }
+                />
+                <Route
+                  path="/howtobeseller"
+                  element={
                     <HowToBeSeller />
-                }
-              />
+                  }
+                />
 
-            <Route
-                path="/help"
-                element={
+                <Route
+                  path="/help"
+                  element={
                     <Help />
-                }
-              />
-              <Route
-                path="/address"
-                element={
+                  }
+                />
+                <Route
+                  path="/address"
+                  element={
                     <AddressScreen />
-                }
-              />
+                  }
+                />
 
-              <Route
-                path="/deliveryoption"
-                element={
+                <Route
+                  path="/deliveryoption"
+                  element={
                     <DeliveryOptionScreen />
-                }
-              />
+                  }
+                />
 
-<Route
-                path="/requestdeliverman"
-                element={
+                <Route
+                  path="/requestdeliverman"
+                  element={
                     <RequestDeliverman />
-                }
-              />
+                  }
+                />
 
 
-<Route
-                path="/requestdelivermanconfirm"
-                element={
+                <Route
+                  path="/requestdelivermanconfirm"
+                  element={
                     <RequestDelivermanConfirmScreen />
-                }
-              />
+                  }
+                />
 
-<Route
-                path="/requestdelivermanprogress/:id"
-                element={
+                <Route
+                  path="/requestdelivermanprogress/:id"
+                  element={
                     <RequestDelivermanProgressScreen />
-                }
-              />
+                  }
+                />
+
+                <Route
+                  path="/aboutus"
+                  element={
+                    <AboutUs />
+                  }
+                />
 
 
-<Route
-                path="/requestdelivermanhistory"
-                element={
+                <Route
+                  path="/requestdelivermanhistory"
+                  element={
                     <RequestDelivermanHistoryByUserScreen />
-                }
-              />
+                  }
+                />
 
-<Route
-                path="/allrequestdelivermanhistory"
-                element={
+                <Route
+                  path="/allrequestdelivermanhistory"
+                  element={
                     <RequestDelivermanHistoryByAdminScreen />
-                }
-              />
+                  }
+                />
 
 
 
 
-              <Route
-                path="/payment"
-                element={
+                <Route
+                  path="/payment"
+                  element={
                     <PaymentMethodScreen />
-                }
-              />
-                
-              <Route
-                path="/placeorder"
-                element={
+                  }
+                />
+
+                <Route
+                  path="/placeorder"
+                  element={
                     <PlaceOrderScreen />
-                }
-              />
-              <Route
-                path="/orderHistory"
-                element={
-                  <ProtectedRoute>
-                    <OrderHistoryScreen />
-                  </ProtectedRoute>
-                }
-              />
+                  }
+                />
+                <Route
+                  path="/orderHistory"
+                  element={
+                    <ProtectedRoute>
+                      <OrderHistoryScreen />
+                    </ProtectedRoute>
+                  }
+                />
 
-              <Route path="/seller/:id" element={<SellerScreen />} />
-              <Route
-                path="/profile"
-                element={
-                  <ProtectedRoute>
-                    <ProfileScreen />
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="/search" element={<SearchScreen />} />
-              <Route path="/sellers" element={<SearchSellersScreen />} />
-              <Route path="/onsale" element={<SearchOnSaleScreen />} />
-
-              <Route
-                path="/categoryList/"
-                element={
-                  <ProtectedRoute>
-                    <CategoryListScreen />
-                  </ProtectedRoute>
-                }
-              />
-
-
-             <Route
-                path="/colorList/"
-                element={
-                  <ProtectedRoute>
-                    <ColorListScreen />
-                  </ProtectedRoute>
-                }
-              />
-
-            <Route
-                path="/sizeList/"
-                element={
-                  <ProtectedRoute>
-                    <SizeListScreen />
-                  </ProtectedRoute>
-                }
-              />
-
-
-<Route
-                path="/size/:id"
-                element={
-                  <ProtectedRoute>
-                    <SizeEditScreen />
-                  </ProtectedRoute>
-                }
-              />
-
-
-        <Route
-                path="/color/create"
-                element={
-                  <ProtectedRoute>
-                    <ColorCreateScreen/>
-                  </ProtectedRoute>
-                }
-              />
-
-
-          <Route
-                path="/color/:id"
-                element={
-                  <ProtectedRoute>
-                    <ColorEditScreen />
-                  </ProtectedRoute>
-                }
-              />
-
-
-          <Route
-                path="/size/create"
-                element={
-                  <ProtectedRoute>
-                    <SizeCreateScreen/>
-                  </ProtectedRoute>
-                }
-              />
-
-
-
-            <Route
-                path="/qualitytypeList/"
-                element={
-                  <ProtectedRoute>
-                    <QualityTypeListScreen />
-                  </ProtectedRoute>
-                }
-              />
-
-<Route
-                path="/qualitytype/create"
-                element={
-                  <ProtectedRoute>
-                    <QualityTypeCreateScreen />
-                  </ProtectedRoute>
-                }
-              />
-
-<Route
-                path="/qualitytype/:id"
-                element={
-                  <ProtectedRoute>
-                    <QualityTypeEditScreen />
-                  </ProtectedRoute>
-                }
-              />
-
-
-<Route
-                path="/conditionstatusList/"
-                element={
-                  <ProtectedRoute>
-                    <ConditionStatusListScreen />
-                  </ProtectedRoute>
-                }
-              />
-
-<Route
-                path="/conditionstatus/create"
-                element={
-                  <ProtectedRoute>
-                    <ConditionStatusCreateScreen />
-                  </ProtectedRoute>
-                }
-              />
-
-<Route
-                path="/conditionstatus/:id"
-                element={
-                  <ProtectedRoute>
-                    <ConditionStatusEditScreen />
-                  </ProtectedRoute>
-                }
-              />
-
-            <Route
-                path="/documentTypeList/"
-                element={
-                  <ProtectedRoute>
-                    <DocumentTypeListScreen />
-                  </ProtectedRoute>
-                }
-              />
+                <Route path="/seller/:id" element={<SellerScreen />} />
+                <Route
+                  path="/profile"
+                  element={
+                    <ProtectedRoute>
+                      <ProfileScreen />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="/search" element={<SearchScreen />} />
+                <Route path="/sellers" element={<SearchSellersScreen />} />
+                <Route path="/onsale" element={<SearchOnSaleScreen />} />
 
                 <Route
-                path="/document/create"
-                element={
-                  <ProtectedRoute>
-                    <DocumentTypeCreateScreen />
-                  </ProtectedRoute>
-                }
-              />
-
-        <Route
-                path="/document/:id"
-                element={
-                  <ProtectedRoute>
-                    <DocumentTypeEditScreen />
-                  </ProtectedRoute>
-                }
-              />
+                  path="/categoryList/"
+                  element={
+                    <ProtectedRoute>
+                      <CategoryListScreen />
+                    </ProtectedRoute>
+                  }
+                />
 
 
+                <Route
+                  path="/colorList/"
+                  element={
+                    <ProtectedRoute>
+                      <ColorListScreen />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/sizeList/"
+                  element={
+                    <ProtectedRoute>
+                      <SizeListScreen />
+                    </ProtectedRoute>
+                  }
+                />
 
 
-<Route
-                path="/provinceList/"
-                element={
-                  <ProtectedRoute>
-                    <ProvinceListScreen />
-                  </ProtectedRoute>
-                }
-              />
+                <Route
+                  path="/size/:id"
+                  element={
+                    <ProtectedRoute>
+                      <SizeEditScreen />
+                    </ProtectedRoute>
+                  }
+                />
 
-              <Route
-                path="/forget-password"
-                element={
+
+                <Route
+                  path="/color/create"
+                  element={
+                    <ProtectedRoute>
+                      <ColorCreateScreen />
+                    </ProtectedRoute>
+                  }
+                />
+
+
+                <Route
+                  path="/tipoestabelecimento/create"
+                  element={
+                    <ProtectedRoute>
+                      <EstablishmentCreateScreen />
+                    </ProtectedRoute>
+                  }
+                />
+
+                  <Route
+                  path="/tipoestabelecimento/:id"
+                  element={
+                    <ProtectedRoute>
+                      <EstablishmentEditScreen />
+                    </ProtectedRoute>
+                  }
+                />
+
+
+                <Route
+                  path="/color/:id"
+                  element={
+                    <ProtectedRoute>
+                      <ColorEditScreen />
+                    </ProtectedRoute>
+                  }
+                />
+
+
+                <Route
+                  path="/size/create"
+                  element={
+                    <ProtectedRoute>
+                      <SizeCreateScreen />
+                    </ProtectedRoute>
+                  }
+                />
+
+
+
+                <Route
+                  path="/qualitytypeList/"
+                  element={
+                    <ProtectedRoute>
+                      <QualityTypeListScreen />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/qualitytype/create"
+                  element={
+                    <ProtectedRoute>
+                      <QualityTypeCreateScreen />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/qualitytype/:id"
+                  element={
+                    <ProtectedRoute>
+                      <QualityTypeEditScreen />
+                    </ProtectedRoute>
+                  }
+                />
+
+
+                <Route
+                  path="/conditionstatusList/"
+                  element={
+                    <ProtectedRoute>
+                      <ConditionStatusListScreen />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/conditionstatus/create"
+                  element={
+                    <ProtectedRoute>
+                      <ConditionStatusCreateScreen />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/conditionstatus/:id"
+                  element={
+                    <ProtectedRoute>
+                      <ConditionStatusEditScreen />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/documentTypeList/"
+                  element={
+                    <ProtectedRoute>
+                      <DocumentTypeListScreen />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/document/create"
+                  element={
+                    <ProtectedRoute>
+                      <DocumentTypeCreateScreen />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/document/:id"
+                  element={
+                    <ProtectedRoute>
+                      <DocumentTypeEditScreen />
+                    </ProtectedRoute>
+                  }
+                />
+
+
+
+
+                <Route
+                  path="/provinceList/"
+                  element={
+                    <ProtectedRoute>
+                      <ProvinceListScreen />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/forget-password"
+                  element={
                     <ForgetPasswordScreen />
-                }
-              />
+                  }
+                />
 
-            <Route
-                path="/reset-password/:token"
-                element={
+                <Route
+                  path="/reset-password/:token"
+                  element={
                     <ResetPasswordScreen />
-                }
-              />
+                  }
+                />
 
-<Route
-                path="/email-sent"
-                element={
+                <Route
+                  path="/email-sent"
+                  element={
                     <EmailSentScreen />
-                }
-              />
+                  }
+                />
 
 
 
@@ -645,195 +689,222 @@ export  function App() {
 
 
                 <Route
-                path="/province/create"
-                element={
-                  <ProtectedRoute>
-                    <ProvinceCreateScreen />
-                  </ProtectedRoute>
-                }
-              />
+                  path="/province/create"
+                  element={
+                    <ProtectedRoute>
+                      <ProvinceCreateScreen />
+                    </ProtectedRoute>
+                  }
+                />
 
-<Route
-                path="/province/:id"
-                element={
-                  <ProtectedRoute>
-                    <ProvinceEditScreen />
-                  </ProtectedRoute>
-                }
-              />
-
-
-
-          <Route
-                path="/category/create"
-                element={
-                  <ProtectedRoute>
-                    <CategoryCreateScreen />
-                  </ProtectedRoute>
-                }
-              />
-
-<Route
-                path="/category/:id"
-                element={
-                  <ProtectedRoute>
-                    <CategoryEditScreen />
-                  </ProtectedRoute>
-                }
-              />
-
-              <Route
-                path="/order/:id"
-                element={
-                  <ProtectedRoute>
-                    <OrderScreen />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/dashboard"
-                element={
-                  <AdminRoute>
-                    <DashboardScreen />
-                  </AdminRoute>
-                }
-              />
+                <Route
+                  path="/province/:id"
+                  element={
+                    <ProtectedRoute>
+                      <ProvinceEditScreen />
+                    </ProtectedRoute>
+                  }
+                />
 
 
-<Route
-                path="/support"
-                element={
-                  <AdminRoute>
-                    <SupportScreen />
-                  </AdminRoute>
-                }
-              />
 
-              <Route
-                exact
-                path="/productlist/seller"
-                element={
-                  <SellerRoute>
-                    <ProductSellerScreen />
-                  </SellerRoute>
-                }
-              />
+                <Route
+                  path="/category/create"
+                  element={
+                    <ProtectedRoute>
+                      <CategoryCreateScreen />
+                    </ProtectedRoute>
+                  }
+                />
 
-            <Route
-                path="/product/create"
-                element={
+                <Route
+                  path="/category/:id"
+                  element={
+                    <ProtectedRoute>
+                      <CategoryEditScreen />
+                    </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/order/:id"
+                  element={
+                    <ProtectedRoute>
+                      <OrderScreen />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/dashboard"
+                  element={
+                    <AdminRoute>
+                      <DashboardScreen />
+                    </AdminRoute>
+                  }
+                />
+
+
+                <Route
+                  path="/support"
+                  element={
+                    <AdminRoute>
+                      <SupportScreen />
+                    </AdminRoute>
+                  }
+                />
+
+                <Route
+                  exact
+                  path="/productlist/seller"
+                  element={
+                    <SellerRoute>
+                      <ProductSellerScreen />
+                    </SellerRoute>
+                  }
+                />
+
+                <Route
+                  path="/product/create"
+                  element={
                     <ProductCreateScreen />
-                }
-              />
+                  }
+                />
 
-              <Route
-                path="/admin/productlist"
-                element={
-                  <AdminRoute>
-                    <ProductListScreen />
-                  </AdminRoute>
-                }
-              />
+                <Route
+                  path="/admin/productlist"
+                  element={
+                    <AdminRoute>
+                      <ProductListScreen />
+                    </AdminRoute>
+                  }
+                />
 
-              <Route
-                path="/admin/product/:id"
-                element={
+                <Route
+                  path="/admin/product/:id"
+                  element={
                     <ProductEditScreen />
-                }
-              />
+                  }
+                />
 
-              <Route
-                exact
-                path="/orderlist/seller"
-                element={
-                  <SellerRoute>
-                    <OrderListBySellerScreen />
-                  </SellerRoute>
-                }
-              />
+                <Route
+                  exact
+                  path="/orderlist/seller"
+                  element={
+                    <SellerRoute>
+                      <OrderListBySellerScreen />
+                    </SellerRoute>
+                  }
+                />
 
-            <Route
-                exact
-                path="/orderhistorybycustomer/seller"
-                element={
-                  <SellerRoute>
-                    <OrderHistoryBySellerScreen />
-                  </SellerRoute>
-                }
-              />
-              <Route
-                path="/delivery/orderlist"
-                element={
+                <Route
+                  exact
+                  path="/orderhistorybycustomer/seller"
+                  element={
+                    <SellerRoute>
+                      <OrderHistoryBySellerScreen />
+                    </SellerRoute>
+                  }
+                />
+                <Route
+                  path="/delivery/orderlist"
+                  element={
                     <OrderListScreen />
-                }
-              />
+                  }
+                />
 
-          <Route
-                path="/admin/orderlist"
-                element={
+                <Route
+                  path="/admin/orderlist"
+                  element={
                     <OrderAdminListScreen />
-                }
-              />
+                  }
+                />
 
-              <Route
-                path="/admin/userlist"
-                element={
-                  <AdminRoute>
-                    <UserListScreen />
-                  </AdminRoute>
-                }
-              />
-               <Route
-                path="/admin/sellerstopay"
-                element={
-                  <AdminRoute>
-                    <SellersToPayListScreen />
-                  </AdminRoute>
-                }
-              />
-               <Route
-                path="/admin/deliverstopay"
-                element={
-                  <AdminRoute>
-                    <DeliverersToPayListScreen />
-                  </AdminRoute>
-                }
-              />
-              <Route
-                path="/api/users/:id"
-                element={
-                  <AdminRoute>
-                    <UserEditScreen />
-                  </AdminRoute>
-                }
-              />
+                <Route
+                  path="/admin/userlist"
+                  element={
+                    <AdminRoute>
+                      <UserListScreen />
+                    </AdminRoute>
+                  }
+                />
+                <Route
+                  path="/admin/sellerstopay"
+                  element={
+                    <AdminRoute>
+                      <SellersToPayListScreen />
+                    </AdminRoute>
+                  }
+                />
+                <Route
+                  path="/admin/deliverstopay"
+                  element={
+                    <AdminRoute>
+                      <DeliverersToPayListScreen />
+                    </AdminRoute>
+                  }
+                />
+                <Route
+                  path="/api/users/:id"
+                  element={
+                    <AdminRoute>
+                      <UserEditScreen />
+                    </AdminRoute>
+                  }
+                />
 
-<Route
-                path="/benefits"
-                element={
+                                <Route path="/admin/tipoestabelecimentos" element={
+                                                      <AdminRoute>
+                                  <EstablishmentListScreen />
+                                                      </AdminRoute>
+
+                                  } />
+
+
+                <Route
+                  path="/benefits"
+                  element={
                     <NhiquelaBenef />
-                }
-              />  
+                  }
+                />
 
-            <Route
-                path="/returnpolicy"
-                element={
+                 <Route
+                  path="/broadcast"
+                  element={
+                    <Broadcast />
+                  }
+                />
+
+                <Route
+                  path="/returnpolicy"
+                  element={
                     <ReturnPolicy />
-                }
-              />  
-            </Routes>  
+                  }
+                />
+
+                <Route
+                  path="/privacy"
+                  element={
+                    <Privacy />
+                  }
+                />
 
 
-                  
-            <ScrollTopButton />
 
-            {userInfo&&<ChatBox  userInfo={userInfo}/>}
-          </Container> 
-        </main> 
-      <footer className='center'>
+              </Routes>
 
-        <Footer></Footer>
-              </footer> 
+
+
+              <ScrollTopButton />
+
+              {userInfo && <ChatBox userInfo={userInfo} />}
+            </Container>
+            <LoginPopup />
+          </main>
+        </div>
+        <footer className='center'>
+
+          <Footer></Footer>
+        </footer>
       </div>
     </BrowserRouter>
   );

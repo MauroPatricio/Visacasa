@@ -11,13 +11,11 @@ const welcome = () => {
   return (
 
     <View>
-        <View style={{paddingBottom:30}}>
+      <View style={styles.container}>
                 <Text style={styles.welcomeText('black', 30, 0)}><Text style={{ color: '#E85A4F' }}>Visa</Text>Casa</Text>
 
-              <Text style={styles.welcomeText2('black', 11, 0)}>MATERIAIS DE CONSTRUÇÃO</Text>
-            
-            </View>
-      
+        <Text style={styles.welcomeText2('black', 11, 0)}>Materiais de construção</Text>
+      </View>
       <View style={styles.searchContainer}>
         <TouchableOpacity>
           <Feather name="search" size={24}
@@ -27,7 +25,7 @@ const welcome = () => {
           <TextInput
             style={styles.searchInput}
             value=""
-            onPressIn={() => { navigation.navigate("Search") }}
+            onPressIn={() => { navigation.navigate('Pesquisa') }}
             placeholder='O que deseja para hoje?'
           />
         </View>

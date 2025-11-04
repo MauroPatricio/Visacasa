@@ -1,44 +1,23 @@
 import axios from 'axios';
-import React, { useContext, useEffect, useState } from 'react';
-
+import React, { useContext, useEffect, useState, useReducer } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { getError } from '../utils';
 import Rating from './Rating';
 import Card from 'react-bootstrap/Card';
-import { useReducer } from 'react';
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faList, fas } from '@fortawesome/free-solid-svg-icons';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
-import { FaUsers, FaSortAlphaDownAlt, FaMoneyBillWaveAlt, FaSearchLocation, FaStarHalfAlt} from 'react-icons/fa';
-import { ImPriceTags} from 'react-icons/im';
+import { faList, faPlus, faCaretDown } from '@fortawesome/free-solid-svg-icons';
+import { FaUsers, FaSortAlphaDownAlt, FaMoneyBillWaveAlt, FaSearchLocation, FaStarHalfAlt } from 'react-icons/fa';
+import { ImPriceTags } from 'react-icons/im';
 import { useTranslation } from 'react-i18next';
 import { Store } from '../Store';
 
-
-
+// 🔹 Reducer para gerenciar categorias e províncias
 const reducer = (state, action) => {
   switch (action.type) {
-    case 'CATEGORIES_REQUEST':
-      return { ...state, loadingCategories: true };
-
     case 'CATEGORIES_SUCCESS':
-      return { ...state, loadingCategories: false, categories: action.payload.categories };
-
-    case 'CATEGORIES_FAIL':
-      return { ...state, loadingCategories: false };
-
-      case 'PROVINCE_REQUEST':
-        return { ...state, loadingProvinces: true };
-  
-      case 'PROVINCE_SUCCESS':
-        return { ...state, loadingProvinces: false, provinces: action.payload.provinces };
-  
-      case 'PROVINCE_FAIL':
-        return { ...state, loadingProvinces: false };
-
+      return { ...state, categories: action.payload.categories };
+    case 'PROVINCE_SUCCESS':
+      return { ...state, provinces: action.payload.provinces };
     default:
       return state;
   }
@@ -49,272 +28,117 @@ export default function CategoriesFilter() {
   const searchParams = new URLSearchParams(search);
   const category = searchParams.get('category') || 'all';
   const province = searchParams.get('province') || 'all';
-  const query = searchParams.get('query') || 'all';
   const price = searchParams.get('price') || 'all';
   const rating = searchParams.get('rating') || 'all';
   const order = searchParams.get('order') || 'newest';
   const page = searchParams.get('page') || 1;
-  const seller = searchParams.get('seller') || 'all';
-  const onsale = searchParams.get('onsale') || false;
   const { t } = useTranslation();
-
-
-
-  const [isMaximized, setIsMaximized] = useState(false);
-  const [showComponent, setShowComponent] = useState(false);
-  const [showHeader, setShowHeader] = useState(false);
-
-
-  library.add(fas);
-
-
-  const [{ categories, loadingCategories, provinces, loadingProvinces}, dispatch] = useReducer(reducer, {
-    categories: [],
-    loadingCategories: true,
-    loadingProvinces: true,
-    error: '',
-  });
-
-
   const { state } = useContext(Store);
+  const { changelng } = state;
 
-  const {changelng} = state;
+  // 🔹 Estado para abrir/fechar o filtro
+  const [isOpen, setIsOpen] = useState(window.innerWidth > 540);
 
-
-  const prices = [
-    {
-      id: 1,
-      name: t('from100to500'),
-      value: '100-500',
-    },
-    { id: 2, name: t('from500to5000'), value: '500-5000' },
-    { id: 3, name: t('from5000to10000'), value: '5000-10000' },
-    { id: 4, name: t('from10000to20000'), value: '10000-20000' },
-    { id: 5, name: t('from20000up'), value: '20000-100000' },
-
-  ];
-
-  const ratings = [
-    { id: 1, name: t('morethan4stars'), rating: 4 },
-    { id: 2, name: t('morethan3stars'), rating: 3 },
-    { id: 3, name: t('morethan2stars'), rating: 2 },
-    { id: 4, name: t('morethan1stars'), rating: 1 },
-  ];
-
+  // 🔹 Ajusta o estado com base no tamanho da tela
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-  
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        dispatch({ type: 'CATEGORIES_REQUEST' });
-        const { data } = await axios.get('/api/categories');
-        dispatch({ type: 'CATEGORIES_SUCCESS', payload: data });
-      } catch (err) {
-        dispatch({ type: 'CATEGORIES_FAIL', payload: getError(err) });
-      }
-    };
-    if (loadingCategories) {
-      fetchData();
-    }
-  }, [categories, loadingCategories]);
-
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        dispatch({ type: 'PROVINCE_REQUEST' });
-        const { data } = await axios.get('/api/provinces');
-        dispatch({ type: 'PROVINCE_SUCCESS', payload: data });
-      } catch (err) {
-        dispatch({ type: 'PROVINCE_FAIL', payload: getError(err) });
-      }
-    };
-    if (loadingProvinces) {
-      fetchData();
-    }
-  }, [loadingProvinces]);
-
-
-  useEffect(() => {
-    function handleResize() {
-      if (window.innerWidth <= 540) {
-        setShowHeader(true);
-        setShowComponent(false)
-      } else {
-        setShowHeader(false);
-        setShowComponent(true)
-      }
-    }
-    handleResize();
+    const handleResize = () => setIsOpen(window.innerWidth > 540);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // 🔹 Função para alternar a visibilidade do filtro
+  const toggleFilter = () => setIsOpen(!isOpen);
 
+  // 🔹 Estados de categorias e províncias com reducer
+  const [{ categories, provinces }, dispatch] = useReducer(reducer, {
+    categories: [],
+    provinces: [],
+  });
+
+  // 🔹 Busca categorias e províncias
+  useEffect(() => {
+    const fetchData = async () => {
+      const { data } = await axios.get('/api/categories');
+      dispatch({ type: 'CATEGORIES_SUCCESS', payload: data });
+    };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const { data } = await axios.get('/api/provinces');
+      dispatch({ type: 'PROVINCE_SUCCESS', payload: data });
+    };
+    fetchData();
+  }, []);
+
+  // 🔹 Gera URLs para os filtros
   const getFilterUrl = (filter) => {
-    const filterCategory = filter.category || category;
-    const filterProvince = filter.province || province;
-    const filterQuery = filter.query || query;
-    const filterPrice = filter.price || price;
-    const filterRating = filter.rating || rating;
-    const filterOrder = filter.order || order;
-    const filterPage = filter.page || page;
-    return `/search?category=${filterCategory}&query=${filterQuery}&price=${filterPrice}&rating=${filterRating}&order=${filterOrder}&page=${filterPage}&province=${filterProvince}`;
+    return `/search?category=${filter.category || category}&price=${filter.price || price}&rating=${filter.rating || rating}&order=${filter.order || order}&page=${filter.page || page}&province=${filter.province || province}`;
   };
 
-  const getSellers = (filter)=>{
-    const filterPage = filter.page || page;
-
-    return `/sellers?sellers=sellers&page=${filterPage}`;
-
-  }
-
-  const getOnsale = (filter)=>{
-    const filterPage = filter.page || page;
-    return `/onsale?onsale=onsale&page=${filterPage}`;
-  }
-  
-  const handleToggleMaximized = () => {
-    setIsMaximized(!isMaximized);
-    setShowComponent(!showComponent);
-  };
-
+  const getSellersUrl = () => `/sellers?sellers=sellers&page=${page}`;
+  const getOnSaleUrl = () => `/onsale?onsale=onsale&page=${page}`;
 
   return (
-    <div>
-      <Card>
-      {showHeader &&   <Card.Header >
-        <FontAwesomeIcon icon={faPlus}  className='show-close-button' onClick={handleToggleMaximized} style={{marginLeft: '255px'}}></FontAwesomeIcon>
+    <Card>
+      {/* 🔹 Cabeçalho do Filtro (Sempre visível) */}
+      <Card.Header onClick={toggleFilter} style={{ cursor: 'pointer', fontWeight: 'bold', textAlign: 'center' }}>
+        <FontAwesomeIcon icon={faList} /> {t('searchfilters')} <FontAwesomeIcon icon={isOpen ? faCaretDown : faPlus} />
+      </Card.Header>
 
-      </Card.Header>}
-      {!showComponent && <h6 style={{marginLeft: '10px', marginTop: '10px'}} onClick={handleToggleMaximized}  ><FontAwesomeIcon icon={faList} /> Filtros de Pesquisa           <FontAwesomeIcon icon={faCaretDown} /> </h6>}
-        {showComponent && 
-        <Card.Body style={{marginLeft: '10px'}}>
+      {/* 🔹 Corpo do Filtro (Só aparece se estiver aberto) */}
+      {isOpen && (
+        <Card.Body>
+          {/* 🔹 Fornecedores */}
+          <Link to={getSellersUrl()} className='text-bold link-none'>
+            <h6><FaUsers /> {t('allsuppliers')}</h6>
+          </Link>
 
-<div>
-          <Link
-              to={getSellers({ seller: 'all' })}
-              className={seller === 'all' ? 'text-bold  link-none' : 'text-bold link-none'}
-            >
-            <h6><FaUsers/> {t('allsuppliers')}</h6>
-            </Link>     
+          {/* 🔹 Promoções */}
+          <Link to={getOnSaleUrl()} className='text-bold link-none'>
+            <h6><ImPriceTags /> {t('onsale')}</h6>
+          </Link>
 
-  </div>
-          <div className='padding-sale'>
-                  <Link
-                      to={getOnsale({ onsale: true })}
-                      className={onsale === true ? 'text-bold  link-none' : 'text-bold link-none'}
-                    >
-                    <h6><ImPriceTags/> {t('onsale')}</h6>
-                  </Link>
-          </div>
-         
-
-
-
-            <h6><FaSortAlphaDownAlt/> {t('categories')}:</h6>
-          <div>
-            <Link
-              className={
-                'all' === category ? 'text-bold link-none' : 'link-none'
-              }
-              to={getFilterUrl({ category: 'all' })}
-            >
-             <li key={1}> {t('allcategories')}</li>
-            </Link>
-            {categories &&
-              categories.map((c) => (
-                <li key={c._id}>
-                  <Link
-                    className={
-                      c._id === category ? 'text-bold link-none' : 'link-none'
-                    }
-                    to={getFilterUrl({ category: c._id })}
-                  >
-                    
-                  {changelng=='pt'?c.nome:c.name}
-                  </Link>
-                </li>
-              ))}
-          </div>
-          <br />
-          <div>
-            <h6><FaMoneyBillWaveAlt/> {t('intervalpricing')}:</h6>
-            <Link
-              className={'all' === price ? 'text-bold link-none' : 'link-none'}
-              to={getFilterUrl({ price: 'all' })}
-            >
-              <li key={1}> {t('allprices')}</li>
-
-            </Link>
-
-            {prices.map((p) => (
-              <li key={p.id}>
-                <Link
-                  className={
-                    p.value === price ? 'text-bold link-none' : 'link-none'
-                  }
-                  to={getFilterUrl({ price: p.value })}
-                >
-                  {p.name}
+          {/* 🔹 Categorias */}
+          <h6><FaSortAlphaDownAlt /> {t('categories')}:</h6>
+          <ul>
+            <li>
+              <Link to={getFilterUrl({ category: 'all' })} className='text-bold link-none'>{t('allcategories')}</Link>
+            </li>
+            {categories.map((c) => (
+              <li key={c._id}>
+                <Link to={getFilterUrl({ category: c._id })} className='link-none'>
+                  {changelng === 'pt' ? c.nome : c.name}
                 </Link>
               </li>
             ))}
-          </div>
-          <br/>
-          <h6><FaSearchLocation/> {t('location')}:</h6>
-          <div>
-            <Link
-              className={
-                'all' === province ? 'text-bold link-none' : 'link-none'
-              }
-              to={getFilterUrl({ province: 'all' })}
-            >
-              <li key={1}> {t('alllocations')}</li>
-            </Link>
-            {provinces &&
-              provinces.map((p) => (
-                <li key={p._id}>
-                  <Link
-                    className={
-                      p._id === province ? 'text-bold link-none' : 'link-none'
-                    }
-                    to={getFilterUrl({ province: p._id })}
-                  >
-                    {p.name}
-                  </Link>
-                </li>
-              ))}
-          </div>
-          <br />
-          <div>
-            <h6><FaStarHalfAlt/> {t('scores')}</h6>
+          </ul>
 
-            {ratings.map((r) => (
-              <Link
-                key={r.id}
-                className={r === rating ? 'text-bold link' : 'link'}
-                to={getFilterUrl({ rating: r.rating })}
-              >
-                <Rating caption={' & acima'} rating={r.rating}></Rating>
-              </Link>
+          {/* 🔹 Intervalo de Preços */}
+          <h6><FaMoneyBillWaveAlt /> {t('intervalpricing')}:</h6>
+          <Link to={getFilterUrl({ price: 'all' })} className='text-bold link-none'>
+            <li>{t('allprices')}</li>
+          </Link>
+
+          {/* 🔹 Localização */}
+          <h6><FaSearchLocation /> {t('location')}:</h6>
+          <Link to={getFilterUrl({ province: 'all' })} className='text-bold link-none'>
+            <li>{t('alllocations')}</li>
+          </Link>
+          <ul>
+            {provinces.map((p) => (
+              <li key={p._id}>
+                <Link to={getFilterUrl({ province: p._id })} className='link-none'>{p.name}</Link>
+              </li>
             ))}
+          </ul>
 
-            <Link
-              to={getFilterUrl({ rating: 'all' })}
-              className={rating === 'all' ? 'text-bold' : ''}
-            >
-              <Rating caption={' & acima'} rating={0}></Rating>
-            </Link>
-          </div>
-         
-  
-           
+          {/* 🔹 Avaliação */}
+          <h6><FaStarHalfAlt /> {t('scores')}</h6>
+          <Rating caption=' & acima' rating={0} />
         </Card.Body>
-        }
-      </Card>
-    </div>
+      )}
+    </Card>
   );
 }

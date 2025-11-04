@@ -338,6 +338,9 @@ navegate('/cart')
                       </Form.Select>
                   </Form.Group>
                   </ListGroup.Item>} */}
+
+
+
                   <ListGroup.Item>
                   <Form.Group className="mb-3" controlId="Cor">
                    <Form.Label>{t('color')}:</Form.Label>
@@ -433,7 +436,7 @@ navegate('/cart')
                                                     {product && product.onSale && <span>{t('onsale')}</span> }
                                                     </Col>
                                                     <Col>
-                                                    {product && product.onSale && <Badge bg='success'><span>{product.onSalePercentage*100}% {t('discount')}</span> </Badge>}
+                                                    {product && product.onSale && <Badge bg='success'><span>{product.onSalePercentage}% {t('discount')}</span> </Badge>}
                                                     </Col>
                                 </Row>
                     </ListGroup.Item>

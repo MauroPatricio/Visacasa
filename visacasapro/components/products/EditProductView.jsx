@@ -519,7 +519,7 @@ const checkIfUserExist = async () => {
         </Formik>
       ) : (
         <Text style={styles.notAccepted}>
-          A sua conta ainda não foi autorizada para poder expor os seus produtos. Para mais informações, por favor contacte a visacasa pelo(s) contacto(s) 853600036/879300036.
+          A sua conta ainda não foi autorizada para poder expor os seus produtos. Para mais informações, por favor contacte a V pelo(s) contacto(s) 853600036/879300036.
         </Text>
       )}
     </ScrollView>
