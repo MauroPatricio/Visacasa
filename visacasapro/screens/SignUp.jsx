@@ -42,7 +42,6 @@ const validationSchema = Yup.object().shape({
     name: Yup.string().trim().required('O nome do estabelecimento é obrigatório'),
     description: Yup.string().trim().required('A descrição do estabelecimento é obrigatória'),
     address: Yup.string().trim().required('O endereço do estabelecimento é obrigatório'),
-        logo: Yup.string().trim().required('A logo do estabelecimento é obrigatória'),
 
     phoneNumberAccount: Yup.string()
       .trim()
@@ -152,7 +151,7 @@ const SignUp = () => {
 
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
+        allowsEditing: false,
         aspect: [1, 1],
         quality: 0.7,
       });
@@ -246,10 +245,16 @@ const SignUp = () => {
       values.seller.latitude = location.coords.latitude;
       values.seller.longitude = location.coords.longitude;
       values.isSeller = true;
-      values.seller.logo=image
+      values.seller.logo=image;
+
+      if(!values.seller.logo){
+                 Alert.alert('Erro', 'A logo do estabelecimento é obrigatória!');
+                      return;
+
+      }
 
      
-      
+ 
 
       // ⏳ 3️⃣ Mostra loader
       setLoading(true);
