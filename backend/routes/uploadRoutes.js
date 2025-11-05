@@ -21,7 +21,6 @@ uploadRouter.post('/',  upload.single('file'),async (req, res) => {
         ],
         maxFileSize: 5000000, // Limit to 5MB
       }
- 
     const streamUpload = (req) => {
     return new Promise((resolve, reject)=>{
         const stream = cloudinary.uploader.upload_stream(imgOptions,(error, result)=>{

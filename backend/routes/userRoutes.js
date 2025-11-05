@@ -469,7 +469,6 @@ expressAsyncHandler(async(req, res)=>{
     user.token = token 
     await user.save();
 
-    console.log(`${baseUrl()}/reset-password/${token}`)
 
 // Composicao do texto
 const text = `<p>Por favor click no link abaixo para resetar a sua senha</p>
@@ -491,7 +490,6 @@ transporter.sendMail(mailOptions, function (error, info) {
     res.status(404).send({message: 'Email não enviado'})
 
   } else {
-    console.log('Email sent:', info.response);
     res.send({ message: 'Email enviado com Sucesso' });
   }
 });
@@ -697,6 +695,7 @@ userRouter.post(
       const userExist = await User.findOne({ phoneNumber: req.body.phoneNumber });
       const emailExist = await User.findOne({ email: req.body.email });
 
+
       if (emailExist) {
         return res.status(409).send({ message: 'Já existe um email idêntico registrado' });
       }
@@ -710,7 +709,7 @@ userRouter.post(
           isSeller: req.body.isSeller,
         });
 
-
+console.log(req.body.seller?.logo)
         if (newUser.isSeller) {
           newUser.seller = {
             name: req.body.sellerName || req.body.seller?.name,
@@ -747,7 +746,6 @@ userRouter.post(
 
       res.status(409).send({ message: 'Número de registo existente' });
     } catch (error) {
-            console.log(error)
       console.error('Erro no registro de usuário:', error);
       res.status(500).send({ message: 'Erro interno no registro' });
     }
