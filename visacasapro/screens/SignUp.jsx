@@ -12,7 +12,8 @@ import {
   KeyboardAvoidingView,
   Platform,
   Keyboard,
-  ActivityIndicator
+  ActivityIndicator,
+  Alert
 } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
@@ -33,15 +34,16 @@ const validationSchema = Yup.object().shape({
   password: Yup.string().min(6, 'A senha deve conter no mínimo 6 dígitos').required('A senha é obrigatória'),
   phoneNumber: Yup.string()
     .trim()
-    .matches(/^8[2-7][0-9]{7}$/, 'Número inválido. Deve começar com 82-87 e ter 9 dígitos.')
+    .matches(/^8[2-7][0-9]{7}$/, 'Número inválido. Deve possuir 9 dígitos.')
     .required('Número de telefone é obrigatório'),
   confirmPassword: Yup.string().oneOf([Yup.ref('password'), null], 'As senhas não coincidem').required('Confirmação é obrigatória'),
   checkedTerms: Yup.boolean().oneOf([true], 'Você deve aceitar os termos e condições'),
   seller: Yup.object().shape({
     name: Yup.string().trim().required('O nome do estabelecimento é obrigatório'),
-    logo: Yup.string().trim().required('A Logo é obrigatória'),
     description: Yup.string().trim().required('A descrição do estabelecimento é obrigatória'),
     address: Yup.string().trim().required('O endereço do estabelecimento é obrigatório'),
+        logo: Yup.string().trim().required('A logo do estabelecimento é obrigatória'),
+
     phoneNumberAccount: Yup.string()
       .trim()
       .matches(/^8[4-5][0-9]{7}$/, 'O telefone deve ter 9 dígitos e começar com 84 ou 85.')
@@ -160,14 +162,18 @@ const SignUp = () => {
         return;
       }
 
+      
+
       const imageUri = result.assets[0].uri;
       setImage(imageUri);
       setImageUploading(true);
 
       const uploadedUrl = await uploadImage(imageUri);
+
       if (uploadedUrl) {
         setFieldValue('seller.logo', uploadedUrl);
         setFieldTouched('seller.logo', true);
+                
         Toast.show({ 
           type: 'success', 
           text1: 'Logo carregada com sucesso!' 
@@ -240,6 +246,10 @@ const SignUp = () => {
       values.seller.latitude = location.coords.latitude;
       values.seller.longitude = location.coords.longitude;
       values.isSeller = true;
+      values.seller.logo=image
+
+     
+      
 
       // ⏳ 3️⃣ Mostra loader
       setLoading(true);

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, StatusBar } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import * as Device from 'expo-device';
@@ -12,10 +12,9 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 import api from './hooks/createConnectionApi';
 import { store } from './store';
-import { View, StatusBar } from 'react-native';
+import { enableScreens } from 'react-native-screens';
 
-
-// Importação de telas
+// Screens
 import ButtomTabNavegation from './navegation/ButtomTabNavegation';
 import ProductDetail from './components/products/ProductDetail';
 import NewProduct from './screens/NewProduct';
@@ -42,19 +41,17 @@ import WalletScreen from './screens/WalletScreen';
 import WalletWithdrawScreen from './screens/WalletWithdrawScreen';
 import WithdrawalRequestsScreen from './components/WithdrawalRequests';
 import { navigationRef, navigate } from './navegation/RootNavigation';
-import { enableScreens } from 'react-native-screens';
-
 
 const Stack = createNativeStackNavigator();
 
-// 🔔 Configuração para notificações em foreground
+enableScreens();
 
+// 🔔 Configuração do handler de notificações
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-    shouldShowBanner: true,    // Mostra banner da notificação
-    shouldShowList: true,      // Adiciona à lista de notificações
-    shouldPlaySound: true,     // Som da notificação
-    shouldSetBadge: true,      // Badge no app
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
   }),
 });
 
@@ -63,16 +60,11 @@ export default function App() {
   const notificationReceivedListener = useRef();
 
   useEffect(() => {
-    // 🔧 Criação do canal Android
-    enableScreens();
-
     if (Platform.OS === 'android') {
       Notifications.setNotificationChannelAsync('order-updates', {
         name: 'Atualizações de Pedido',
         importance: Notifications.AndroidImportance.HIGH,
         sound: 'default',
-        vibrationPattern: [0, 250, 250, 250],
-        lightColor: '#FF231F7C',
       });
     }
 
@@ -94,17 +86,19 @@ export default function App() {
         }
       }
 
-      // Notificação em foreground
-      notificationReceivedListener.current = Notifications.addNotificationReceivedListener(notification => {
+      // Quando app está em foreground
+      notificationReceivedListener.current = Notifications.addNotificationReceivedListener((notification) => {
         Toast.show({
           type: 'info',
-          text1: notification.request.content.title,
-          text2: notification.request.content.body,
+          text1: notification.request.content.title || 'Nova notificação',
+          text2: notification.request.content.body || '',
+          position: 'top',
+          visibilityTime: 4000,
         });
       });
 
       // Quando usuário toca na notificação
-      notificationResponseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+      notificationResponseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
         const data = response.notification?.request?.content?.data;
         if (data?.orderId && navigationRef.isReady()) {
           navigate('OrderDetail', { orderId: data.orderId });
@@ -121,18 +115,22 @@ export default function App() {
   }, []);
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <StatusBar backgroundColor="white" style="dark" />
-      <NavigationContainer ref={navigationRef}>
-        <Provider store={store}>
-          <SafeAreaProvider>
+    <Provider store={store}>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <SafeAreaProvider>
+          <NavigationContainer ref={navigationRef}>
+            <StatusBar backgroundColor="white" barStyle="dark-content" />
+
             <KeyboardAvoidingView
-              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-              keyboardVerticalOffset={Platform.OS === 'ios' ? -64 : 0}
+              behavior={Platform.OS === 'ios' ? 'padding' : undefined}
               style={{ flex: 1 }}
             >
               <Stack.Navigator>
-                <Stack.Screen name="BottomNavigation" component={ButtomTabNavegation} options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="BottomNavigation"
+                  component={ButtomTabNavegation}
+                  options={{ headerShown: false }}
+                />
                 <Stack.Screen name="ProductDetail" component={ProductDetail} options={{ headerShown: false }} />
                 <Stack.Screen name="NewProduct" component={NewProduct} options={{ headerShown: false }} />
                 <Stack.Screen name="ProductListSeller" component={ProductListSeller} options={{ headerShown: false }} />
@@ -153,27 +151,23 @@ export default function App() {
                 <Stack.Screen name="EditProduct" component={EditProductView} options={{ headerShown: false }} />
                 <Stack.Screen name="Cart" component={Cart} options={{ headerShown: false }} />
                 <Stack.Screen name="WithdrawalRequests" component={WithdrawalRequestsScreen} options={{ headerShown: false }} />
-                <Stack.Screen name="Wallet" component={WalletScreen} />
-                <Stack.Screen name="TopUp" component={TopUpScreen} />
-                <Stack.Screen name="Pay" component={PayWithWallet} />
-                <Stack.Screen name="withdraw" component={WalletWithdrawScreen} />
+                <Stack.Screen name="Wallet" component={WalletScreen} options={{ headerShown: false }} />
+                <Stack.Screen name="TopUp" component={TopUpScreen} options={{ headerShown: false }} />
+                <Stack.Screen name="Pay" component={PayWithWallet} options={{ headerShown: false }} />
+                <Stack.Screen name="withdraw" component={WalletWithdrawScreen} options={{ headerShown: false }} />
               </Stack.Navigator>
-
-              <Toast
-                  position="top"
-                  topOffset={60}
-                  visibilityTime={4000}
-                  autoHide
-                />
             </KeyboardAvoidingView>
-          </SafeAreaProvider>
-        </Provider>
-      </NavigationContainer>
-    </GestureHandlerRootView>
+          </NavigationContainer>
+
+          {/* ✅ Toast dentro do SafeAreaProvider e fora da Navigation */}
+          <Toast />
+        </SafeAreaProvider>
+      </GestureHandlerRootView>
+    </Provider>
   );
 }
 
-// Função auxiliar para registrar notificações push
+// 🔧 Registro de notificações
 async function registerForPushNotificationsAsync() {
   if (!Device.isDevice) {
     alert('Use um dispositivo físico para notificações.');
@@ -194,7 +188,7 @@ async function registerForPushNotificationsAsync() {
   }
 
   const tokenData = await Notifications.getExpoPushTokenAsync({
-    projectId: "3955dd7f-ad17-497a-966b-33dfae1b0b18",
+    projectId: '3955dd7f-ad17-497a-966b-33dfae1b0b18',
   });
 
   return tokenData.data;
