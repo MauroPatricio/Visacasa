@@ -10,8 +10,6 @@ const welcome = () => {
     <View>
       <View style={{paddingBottom:30}}>
         <Text style={styles.welcomeText('black', 30, 0)}><Text style={{ color: '#E85A4F' }}>Visa</Text>Casa</Text>
-
-        <Text style={styles.welcomeText2('black', 11, 0)}>Materiais de construção</Text>
       </View>
       {/* <View style={styles.searchContainer}>
         <TouchableOpacity>

@@ -151,7 +151,7 @@ const SignUp = () => {
 
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: false,
+        allowsEditing: fa,
         aspect: [1, 1],
         quality: 0.7,
       });
