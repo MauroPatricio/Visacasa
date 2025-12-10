@@ -24,6 +24,16 @@
         "foregroundImage": "./assets/visacasa2.png",
         "backgroundColor": "#ffffff"
       },
+	  
+	     "notification": {
+      "icon": "./assets/visacasa2.png",
+      "color": "#E85A4F",
+      "androidMode": "default",
+      "androidCollapsedTitle": "Visacasa",
+      "androidGoogleServicesFile": "./google-services.json",
+      "androidShowBadge": true
+
+    },
       "permissions": [
         "CAMERA",
         "ACCESS_FINE_LOCATION",

@@ -55,11 +55,14 @@ const DeliveryDetailsScreen = () => {
   const [distanceToPay, setDistanceToPay] = useState(0);
   const [totalToPay, setTotalToPay] = useState(subtotal);
 
-  // --- Animação teclado ---
+  // --- Keyboard Animated ---
   const keyboardOffset = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    const keyboardShow = Keyboard.addListener('keyboardWillShow', (e) => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+
+    const keyboardShow = Keyboard.addListener(showEvent, (e) => {
       Animated.timing(keyboardOffset, {
         toValue: e.endCoordinates.height,
         duration: e.duration || 250,
@@ -67,7 +70,8 @@ const DeliveryDetailsScreen = () => {
         useNativeDriver: false,
       }).start();
     });
-    const keyboardHide = Keyboard.addListener('keyboardWillHide', () => {
+
+    const keyboardHide = Keyboard.addListener(hideEvent, () => {
       Animated.timing(keyboardOffset, {
         toValue: 0,
         duration: 250,
@@ -75,6 +79,7 @@ const DeliveryDetailsScreen = () => {
         useNativeDriver: false,
       }).start();
     });
+
     return () => {
       keyboardShow.remove();
       keyboardHide.remove();
@@ -82,16 +87,16 @@ const DeliveryDetailsScreen = () => {
   }, [keyboardOffset]);
 
   // --- Header ---
-  const HeaderWithBack = ({ title, navigation }) => (
+  const HeaderWithBack = ({ title }) => (
     <View style={styles.header}>
       <TouchableOpacity onPress={() => navigation.goBack()}>
-        <Ionicons name="chevron-back-circle" size={35} color="#E85A4F" />
+        <Ionicons name="chevron-back-circle" size={35} color="#7F00FF" />
       </TouchableOpacity>
       <Text style={styles.headerTitle}>{title}</Text>
     </View>
   );
 
-  // --- Localização ---
+  // --- Location ---
   useEffect(() => {
     let locationSubscription;
 
@@ -123,7 +128,7 @@ const DeliveryDetailsScreen = () => {
     return () => locationSubscription?.remove();
   }, []);
 
-  // --- Localização manual ---
+  // --- Manual Location ---
   useEffect(() => {
     if (permissionDenied && manualLocation.latitude && manualLocation.longitude) {
       setUserLocation({
@@ -133,7 +138,7 @@ const DeliveryDetailsScreen = () => {
     }
   }, [manualLocation, permissionDenied]);
 
-  // --- Distância ---
+  // --- Distance ---
   useEffect(() => {
     if (userLocation) {
       const dist = haversine(userLocation, sellerLocation, { unit: 'km' });
@@ -153,7 +158,7 @@ const DeliveryDetailsScreen = () => {
     setTotalToPay(subtotal + newDistanceToPay);
   }, [isUserWantDelivery, distance, subtotal]);
 
-  // --- Atualizar Redux ---
+  // --- Redux Update with Debounce ---
   const updateRedux = useCallback(
     debounce((addr, total, deliv) => {
       const deliveryAddress = {
@@ -182,19 +187,19 @@ const DeliveryDetailsScreen = () => {
     navigation.replace('PaymentMethod');
   }, [navigation, userLocation]);
 
-return (
+  return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView
         style={{ flex: 1, backgroundColor: '#fff' }}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
         <ScrollView
-          contentContainerStyle={{ flexGrow: 1, justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 20 }}
+          contentContainerStyle={{ paddingHorizontal: 16, paddingVertical: 20 }}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <Animated.View style={{ flex: 1, paddingBottom: keyboardOffset }}>
-            <HeaderWithBack title="Detalhes do Endereço de Entrega" navigation={navigation} />
+          <Animated.View style={{ paddingBottom: keyboardOffset }}>
+            <HeaderWithBack title="Detalhes do Endereço de Entrega" />
 
             <StatusLocation userLocation={userLocation} distance={distance} />
 
@@ -315,23 +320,22 @@ const FinalizeButton = React.memo(({ onPress, disabled }) => (
 ));
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: '#fff' },
   input: { borderWidth: 1, borderColor: '#ccc', borderRadius: 8, padding: 12, marginVertical: 10, fontSize: 16 },
   header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 10 },
   headerTitle: { fontSize: 20, fontWeight: 'bold', marginLeft: 10, color: '#333' },
   locationText: { textAlign: 'center', marginBottom: 10, fontSize: 16, color: '#666' },
   distanceText: { textAlign: 'center', fontWeight: '600', marginBottom: 20, fontSize: 16, color: '#000' },
   toggleContainerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginVertical: 12 },
-  switchText: { fontWeight: '600', fontSize: 18, color: '#E85A4F' },
+  switchText: { fontWeight: '600', fontSize: 18, color: '#7F00FF' },
   toggleButtons: { flexDirection: 'row', gap: 8 },
   toggleButtonSmall: { paddingVertical: 6, paddingHorizontal: 12, borderRadius: 8 },
   toggleButtonTextSmall: { color: '#FFF', fontWeight: 'bold', fontSize: 14 },
   statusText: { fontSize: 16, textAlign: 'center', marginVertical: 12 },
   summary: { marginVertical: 20, padding: 16, backgroundColor: '#F5F5F5', borderRadius: 15 },
   summaryText: { fontSize: 16, fontWeight: '600' },
-  priceText: { fontSize: 16, fontWeight: '900', color: '#E85A4F' },
+  priceText: { fontSize: 16, fontWeight: '900', color: '#7F00FF' },
   summaryRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },
-  button: { backgroundColor: '#E85A4F', paddingVertical: 16, borderRadius: 30, alignItems: 'center', marginVertical: 20 },
+  button: { backgroundColor: '#7F00FF', paddingVertical: 16, borderRadius: 30, alignItems: 'center', marginVertical: 20 },
   buttonText: { color: '#fff', fontWeight: '700', fontSize: 18 },
   loadingOverlay: { position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.3)' },
   loadingText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },

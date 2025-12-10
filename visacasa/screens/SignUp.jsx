@@ -1,5 +1,15 @@
 import React, { useState, useReducer } from 'react';
-import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import BackBtn from '../components/BackBtn';
 import Button from '../components/Button';
@@ -7,9 +17,9 @@ import { Formik } from 'formik';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import * as Yup from 'yup';
 import api from '../hooks/createConnectionApi';
-import Toast from 'react-native-toast-message';
+import { useToast } from 'react-native-toast-notifications';
 
-
+// --- Validação ---
 const validationSchema = Yup.object().shape({
   name: Yup.string()
     .trim()
@@ -33,8 +43,8 @@ const validationSchema = Yup.object().shape({
     .min(6, 'A senha deve conter pelo menos 6 dígitos')
     .required('A senha é obrigatória'),
 });
-  
 
+// --- Reducer para loading e erro ---
 const formReducer = (state, action) => {
   switch (action.type) {
     case 'SET_LOADING':
@@ -49,125 +59,150 @@ const formReducer = (state, action) => {
 const SignUp = ({ navigation }) => {
   const [hideText, setHideText] = useState(true);
   const [state, dispatch] = useReducer(formReducer, { loading: false, error: null });
+  const toast = useToast();
 
   const submitRegistration = async (values) => {
     dispatch({ type: 'SET_LOADING', payload: true });
+
     try {
       const response = await api.post('/users/signup', values);
+
       if (response.status === 200) {
-        Toast.show({
+        toast.show('Número registrado com sucesso!', {
           type: 'success',
-          text1: 'Número registrado com sucesso!',
-          text1Style: { color: 'green', fontSize: 16 }
+          placement: 'top',
+          duration: 4000,
+          animationType: 'slide-in',
         });
+
         navigation.replace('Login');
       }
     } catch (error) {
-      dispatch({ type: 'SET_ERROR', payload: error.response?.data?.message || 'Erro ao cadastrar' });
-      Toast.show({
-        type: 'error',
-        text1: 'Erro ao cadastrar',
-        text2: error.response?.data?.message || 'Tente novamente mais tarde.',
-        text2Style: { color: 'red', fontSize: 16 }
+      const errorMessage = error.response?.data?.message || 'Erro ao cadastrar';
+
+      toast.show(errorMessage, {
+        type: 'danger',
+        placement: 'top',
+        duration: 4000,
+        animationType: 'slide-in',
       });
+
+      dispatch({ type: 'SET_ERROR', payload: errorMessage });
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }
   };
 
   return (
-    <ScrollView style={{ backgroundColor: 'white' }}>
-      <SafeAreaView style={{ marginHorizontal: 10 }}>
-        <View>
-          <BackBtn onPress={() => navigation.replace('Login')} />
-          <Image source={require('../assets/visacasa2.png')} style={styles.cover} />
-          <Text style={styles.title}>NOVO REGISTO</Text>
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: 'white' }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <ScrollView
+        contentContainerStyle={{ paddingHorizontal: 10, paddingBottom: 30 }}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <SafeAreaView>
+          <View>
+            <BackBtn onPress={() => navigation.replace('Login')} />
 
-          <Formik
-            initialValues={{ phoneNumber: '', password: '', name: '', email: '' }}
-            validationSchema={validationSchema}
-            onSubmit={(values) => submitRegistration(values)}
-          >
-            {({ handleChange, handleBlur, touched, handleSubmit, values, errors, isValid, setFieldTouched }) => (
-              <View>
-                <View style={styles.wrapper}>
-                  <Text style={styles.label}>Nome e apelido</Text>
-                  <View style={styles.inputWrapper(touched.name ? '#E85A4F' : '#ccc')}>
-                    <MaterialCommunityIcons name="face-man" size={20} color="black" style={styles.iconStyle} />
-                    <TextInput
-                      placeholder="Nome e apelido"
-                      onFocus={() => setFieldTouched('name')}
-                      style={styles.input}
-                      value={values.name}
-                      onChangeText={handleChange('name')}
-                    />
+            <Image source={require('../assets/visacasa2.png')} style={styles.cover} />
+
+            <Text style={styles.title}>NOVO REGISTO</Text>
+
+            <Formik
+              initialValues={{ phoneNumber: '', password: '', name: '', email: '' }}
+              validationSchema={validationSchema}
+              onSubmit={(values) => submitRegistration(values)}
+            >
+              {({ handleChange, handleBlur, touched, handleSubmit, values, errors, isValid, setFieldTouched }) => (
+                <View>
+
+                  {/* Nome */}
+                  <View style={styles.wrapper}>
+                    <Text style={styles.label}>Nome e apelido</Text>
+                    <View style={styles.inputWrapper(touched.name ? '#E85A4F' : '#ccc')}>
+                      <MaterialCommunityIcons name="face-man" size={20} color="black" style={styles.iconStyle} />
+                      <TextInput
+                        placeholder="Nome e apelido"
+                        onFocus={() => setFieldTouched('name')}
+                        style={styles.input}
+                        value={values.name}
+                        onChangeText={handleChange('name')}
+                      />
+                    </View>
+                    {touched.name && errors.name && <Text style={styles.errorMessage}>{errors.name}</Text>}
                   </View>
-                  {touched.name && errors.name && <Text style={styles.errorMessage}>{errors.name}</Text>}
-                </View>
 
-                <View style={styles.wrapper}>
-                  <Text style={styles.label}>Número de telefone</Text>
-                  <View style={styles.inputWrapper(touched.phoneNumber ? '#E85A4F' : '#ccc')}>
-                    <MaterialCommunityIcons name="phone" size={20} color="black" style={styles.iconStyle} />
-                    <TextInput
-                      placeholder="Insira o número de telefone"
-                      onFocus={() => setFieldTouched('phoneNumber')}
-                      style={styles.input}
-                      value={values.phoneNumber}
-                      onChangeText={handleChange('phoneNumber')}
-                      maxLength={9}
-                    />
+                  {/* Telefone */}
+                  <View style={styles.wrapper}>
+                    <Text style={styles.label}>Número de telefone</Text>
+                    <View style={styles.inputWrapper(touched.phoneNumber ? '#E85A4F' : '#ccc')}>
+                      <MaterialCommunityIcons name="phone" size={20} color="black" style={styles.iconStyle} />
+                      <TextInput
+                        placeholder="Insira o número de telefone"
+                        onFocus={() => setFieldTouched('phoneNumber')}
+                        style={styles.input}
+                        value={values.phoneNumber}
+                        onChangeText={handleChange('phoneNumber')}
+                        maxLength={9}
+                      />
+                    </View>
+                    {touched.phoneNumber && errors.phoneNumber && <Text style={styles.errorMessage}>{errors.phoneNumber}</Text>}
                   </View>
-                  {touched.phoneNumber && errors.phoneNumber && <Text style={styles.errorMessage}>{errors.phoneNumber}</Text>}
-                </View>
 
-                <View style={styles.wrapper}>
-                  <Text style={styles.label}>Email</Text>
-                  <View style={styles.inputWrapper(touched.email ? '#E85A4F' : '#ccc')}>
-                    <MaterialCommunityIcons name="email" size={20} color="black" style={styles.iconStyle} />
-                    <TextInput
-                      placeholder="Seu email"
-                      onFocus={() => setFieldTouched('email')}
-                      style={styles.input}
-                      value={values.email}
-                      onChangeText={handleChange('email')}
-                    />
+                  {/* Email */}
+                  <View style={styles.wrapper}>
+                    <Text style={styles.label}>Email</Text>
+                    <View style={styles.inputWrapper(touched.email ? '#E85A4F' : '#ccc')}>
+                      <MaterialCommunityIcons name="email" size={20} color="black" style={styles.iconStyle} />
+                      <TextInput
+                        placeholder="Seu email"
+                        onFocus={() => setFieldTouched('email')}
+                        style={styles.input}
+                        value={values.email}
+                        onChangeText={handleChange('email')}
+                      />
+                    </View>
+                    {touched.email && errors.email && <Text style={styles.errorMessage}>{errors.email}</Text>}
                   </View>
-                  {touched.email && errors.email && <Text style={styles.errorMessage}>{errors.email}</Text>}
-                </View>
 
-                <View style={styles.wrapper}>
-                  <Text style={styles.label}>Senha</Text>
-                  <View style={styles.inputWrapper(touched.password ? '#E85A4F' : '#ccc')}>
-                    <MaterialCommunityIcons name="lock" size={20} color="black" style={styles.iconStyle} />
-                    <TextInput
-                      placeholder="Sua senha"
-                      secureTextEntry={hideText}
-                      onFocus={() => setFieldTouched('password')}
-                      style={styles.input}
-                      value={values.password}
-                      onChangeText={handleChange('password')}
-                    />
-                    <TouchableOpacity onPress={() => setHideText(!hideText)} style={styles.eyeButton}>
-                      <MaterialCommunityIcons name={hideText ? 'eye-outline' : 'eye-off-outline'} size={22} color="black" />
-                    </TouchableOpacity>
+                  {/* Senha */}
+                  <View style={styles.wrapper}>
+                    <Text style={styles.label}>Senha</Text>
+                    <View style={styles.inputWrapper(touched.password ? '#E85A4F' : '#ccc')}>
+                      <MaterialCommunityIcons name="lock" size={20} color="black" style={styles.iconStyle} />
+                      <TextInput
+                        placeholder="Sua senha"
+                        secureTextEntry={hideText}
+                        onFocus={() => setFieldTouched('password')}
+                        style={styles.input}
+                        value={values.password}
+                        onChangeText={handleChange('password')}
+                      />
+                      <TouchableOpacity onPress={() => setHideText(!hideText)} style={styles.eyeButton}>
+                        <MaterialCommunityIcons name={hideText ? 'eye-outline' : 'eye-off-outline'} size={22} color="black" />
+                      </TouchableOpacity>
+                    </View>
+                    {touched.password && errors.password && <Text style={styles.errorMessage}>{errors.password}</Text>}
                   </View>
-                  {touched.password && errors.password && <Text style={styles.errorMessage}>{errors.password}</Text>}
-                </View>
 
-                <Button
-                  title="Registar"
-                  onPress={handleSubmit}
-                  isValid={isValid ? '#E85A4F' : 'red'}
-                  loader={state.loading}
-                  disabled={state.loading || !isValid}
-                />
-              </View>
-            )}
-          </Formik>
-        </View>
-      </SafeAreaView>
-    </ScrollView>
+                  {/* Botão */}
+                  <Button
+                    title="Registar"
+                    onPress={handleSubmit}
+                    isValid={isValid ? '#E85A4F' : 'red'}
+                    loader={state.loading}
+                    disabled={state.loading || !isValid}
+                  />
+                </View>
+              )}
+            </Formik>
+          </View>
+        </SafeAreaView>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 

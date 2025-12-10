@@ -8,14 +8,14 @@ import {
   Modal,
   ActivityIndicator,
   Dimensions,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   Keyboard,
   TouchableWithoutFeedback,
+  Alert,
 } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch, useSelector } from 'react-redux';
@@ -37,6 +37,7 @@ import {
 } from '../features/basketSlice';
 import * as Notifications from 'expo-notifications';
 import { sendOrderNotificationToUser } from '../utils/notificationUtils';
+import { Animated, Easing } from 'react-native';
 
 const validationSchema = Yup.object().shape({
   customerNumber: Yup.string()
@@ -58,28 +59,44 @@ const MpesaScreen = () => {
   const iva = useSelector(selectIva);
   const deliveryPrice = useSelector(selectDeliverPrice);
   const dispatch = useDispatch();
-
   const navigation = useNavigation();
 
-  const showAlert = (title, message, onConfirm) => {
-    Alert.alert(title, message, [
-      { text: 'OK', onPress: onConfirm ? onConfirm : () => {}, style: 'default' }
-    ], { cancelable: false });
-  };
+  // --- Animated Keyboard Offset ---
+  const keyboardOffset = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    const configurarNotificacoes = async () => {
-      const { status } = await Notifications.getPermissionsAsync();
-      if (status !== 'granted') await Notifications.requestPermissionsAsync();
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+
+    const showListener = Keyboard.addListener(showEvent, (e) => {
+      Animated.timing(keyboardOffset, {
+        toValue: e.endCoordinates.height,
+        duration: e.duration || 250,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: false,
+      }).start();
+    });
+
+    const hideListener = Keyboard.addListener(hideEvent, () => {
+      Animated.timing(keyboardOffset, {
+        toValue: 0,
+        duration: 250,
+        easing: Easing.out(Easing.ease),
+        useNativeDriver: false,
+      }).start();
+    });
+
+    return () => {
+      showListener.remove();
+      hideListener.remove();
     };
-    configurarNotificacoes();
   }, []);
 
+  // --- Verificar usuário ---
   const checkIfUserExist = async () => {
     try {
       const storedUserData = await AsyncStorage.getItem('userData');
       const storedUserId = await AsyncStorage.getItem('id');
-
       if (storedUserData && storedUserId) {
         const parsedUserData = JSON.parse(storedUserData);
         if (parsedUserData._id === storedUserId) setUserData(parsedUserData);
@@ -90,6 +107,12 @@ const MpesaScreen = () => {
   };
 
   useEffect(() => { checkIfUserExist(); }, []);
+
+  const showAlert = (title, message, onConfirm) => {
+    Alert.alert(title, message, [
+      { text: 'OK', onPress: onConfirm ? onConfirm : () => {}, style: 'default' }
+    ], { cancelable: false });
+  };
 
   const checkStockBeforeOrder = (items) => {
     for (let item of items) {
@@ -180,51 +203,53 @@ const MpesaScreen = () => {
             <Modal visible={loader} animationType="fade" transparent>
               <View style={styles.modalOverlay}>
                 <View style={styles.modalContent}>
-                  <ActivityIndicator size="large" color="#E85A4F" />
+                  <ActivityIndicator size="large" color="#7F00FF" />
                   <Text style={styles.loadingText}>Processando pagamento...</Text>
                 </View>
               </View>
             </Modal>
 
-            <View style={styles.icons}>
-              <TouchableOpacity onPress={() => navigation.replace('PaymentMethod')}>
-                <Ionicons name="chevron-back-circle" size={35} style={styles.back} />
-              </TouchableOpacity>
-            </View>
+            <Animated.View style={{ flex: 1, paddingBottom: keyboardOffset }}>
+              <View style={styles.icons}>
+                <TouchableOpacity onPress={() => navigation.replace('PaymentMethod')}>
+                  <Ionicons name="chevron-back-circle" size={35} style={styles.back} />
+                </TouchableOpacity>
+              </View>
 
-            <Formik
-              initialValues={{ customerNumber: '' }}
-              validationSchema={validationSchema}
-              onSubmit={(values) => makeThePayment(values)}
-            >
-              {({ handleChange, handleBlur, touched, handleSubmit, values, errors, isValid }) => (
-                <View style={styles.container}>
-                  <Image source={require('../assets/Mpesa.png')} style={styles.cover} />
+              <Formik
+                initialValues={{ customerNumber: '' }}
+                validationSchema={validationSchema}
+                onSubmit={(values) => makeThePayment(values)}
+              >
+                {({ handleChange, handleBlur, touched, handleSubmit, values, errors, isValid }) => (
+                  <View style={styles.container}>
+                    <Image source={require('../assets/Mpesa.png')} style={styles.cover} />
 
-                  <Text style={styles.label}>
-                    <MaterialCommunityIcons name="cellphone" size={20} color="grey" /> Número de telefone:
-                  </Text>
-                  <TextInput
-                    style={styles.input}
-                    value={values.customerNumber}
-                    onChangeText={handleChange('customerNumber')}
-                    onBlur={handleBlur('customerNumber')}
-                    placeholder="Informe o número "
-                    keyboardType="numeric"
-                  />
-                  {touched.customerNumber && errors.customerNumber && (
-                    <Text style={styles.errorMessage}>{errors.customerNumber}</Text>
-                  )}
+                    <Text style={styles.label}>
+                      <MaterialCommunityIcons name="cellphone" size={20} color="grey" /> Número de telefone:
+                    </Text>
+                    <TextInput
+                      style={styles.input}
+                      value={values.customerNumber}
+                      onChangeText={handleChange('customerNumber')}
+                      onBlur={handleBlur('customerNumber')}
+                      placeholder="Informe o número"
+                      keyboardType="numeric"
+                    />
+                    {touched.customerNumber && errors.customerNumber && (
+                      <Text style={styles.errorMessage}>{errors.customerNumber}</Text>
+                    )}
 
-                  <Text style={styles.label}>Total a pagar:</Text>
-                  <Text style={styles.amount}>
-                    {isUserWantDelivery ? totalToPay.toFixed(2) : (totalToPay - deliveryPrice).toFixed(2)} MT
-                  </Text>
+                    <Text style={styles.label}>Total a pagar:</Text>
+                    <Text style={styles.amount}>
+                      {isUserWantDelivery ? totalToPay.toFixed(2) : (totalToPay - deliveryPrice).toFixed(2)} MT
+                    </Text>
 
-                  <Button loader={loader} title="Pagar" onPress={handleSubmit} isValid={isValid ? '#E85A4F' : 'red'} />
-                </View>
-              )}
-            </Formik>
+                    <Button loader={loader} title="Pagar" onPress={handleSubmit} isValid={isValid ? '#7F00FF' : 'red'} />
+                  </View>
+                )}
+              </Formik>
+            </Animated.View>
           </ScrollView>
         </SafeAreaView>
       </TouchableWithoutFeedback>
@@ -237,11 +262,11 @@ export default MpesaScreen;
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: 'white' },
   icons: { position: 'absolute', top: 15, left: 25, zIndex: 10 },
-  back: { color: '#E85A4F' },
+  back: { color: '#7F00FF' },
   cover: { width: 300, height: 200, marginBottom: 20, alignSelf: 'center', borderRadius: 20 },
   container: {
     paddingHorizontal: 20,
-    paddingVertical: 50,
+    paddingVertical: 20,
     backgroundColor: '#fff',
     borderRadius: 10,
     marginHorizontal: 20,
@@ -257,5 +282,5 @@ const styles = StyleSheet.create({
   amount: { fontSize: 18, fontWeight: 'bold', color: '#4CAF50', marginTop: 5, marginBottom: 20 },
   modalOverlay: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.4)' },
   modalContent: { width: Dimensions.get('window').width * 0.8, backgroundColor: 'white', padding: 30, borderRadius: 20, alignItems: 'center', elevation: 10 },
-  loadingText: { marginTop: 20, fontSize: 16, fontWeight: '600', color: '#E85A4F' },
+  loadingText: { marginTop: 20, fontSize: 16, fontWeight: '600', color: '#7F00FF' },
 });

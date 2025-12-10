@@ -6,12 +6,16 @@ import { Badge } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToBasket, removeFromBasket, selectBasketItemsWithId, addSellers, removeSeller, getItemsBySellerId } from '../../features/basketSlice';
 import BasketIcon from '../BasketIcon';
+import { useToast } from 'react-native-toast-notifications';
+
 
 const ProductDetail = () => {
   const route = useRoute();
   const item = route.params?.item || {};
   const navigation = useNavigation();
   const itemData = item?.item !== undefined ? item?.item : item;
+    const toast = useToast(); // ← inicializa o toast
+
 
   const {
     _id,
@@ -63,6 +67,12 @@ const ProductDetail = () => {
       quantity: currentQuantity + count + 1,
     }));
     dispatch(addSellers({ seller }));
+    toast.show(`${nome} adicionado ao carrinho!`, {
+      type: 'success',
+      placement: 'top',
+      duration: 3000,
+      animationType: 'slide-in',
+    });
   };
 
   const removeItem = () => {
@@ -75,6 +85,12 @@ const ProductDetail = () => {
         dispatch(removeSeller({ sellerId: seller._id }));
       }
     }
+     toast.show(`${nome} removido do carrinho!`, {
+      type: 'warning',
+      placement: 'top',
+      duration: 3000,
+      animationType: 'slide-in',
+    });
   };
 
   return (
@@ -212,7 +228,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     elevation: 5,
   },
-  seller: { fontSize: 15, color: '#E85A4F', marginBottom: 4 },
+  seller: { fontSize: 15, color: '#7F00FF', marginBottom: 4 },
   title: { fontSize: 26, fontWeight: 'bold', color: '#222', marginBottom: 10 },
 
   priceRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
@@ -243,7 +259,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   counterButton: {
-    backgroundColor: '#E85A4F',
+    backgroundColor: '#7F00FF',
     borderRadius: 10,
     padding: 10,
     marginHorizontal: 20,

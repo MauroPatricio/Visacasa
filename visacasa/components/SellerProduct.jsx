@@ -15,6 +15,7 @@ import {
   addSellers,
 } from '../features/basketSlice';
 import { createSelector } from '@reduxjs/toolkit';
+import { useToast } from 'react-native-toast-notifications';
 
 const SellerProduct = ({
   id,
@@ -49,6 +50,7 @@ const SellerProduct = ({
   );
   const items = useSelector((state) => selectItems(state));
   const dispatch = useDispatch();
+    const toast = useToast(); // ← inicializa o toast
 
   const toggleExpand = () => {
     Animated.timing(animation, {
@@ -78,11 +80,24 @@ const SellerProduct = ({
       quantity: items.length + 1,
     }));
     dispatch(addSellers({ seller }));
+
+      toast.show(`${nome} adicionado ao carrinho!`, {
+      type: 'success',
+      placement: 'top',
+      duration: 3000,
+      animationType: 'slide-in',
+    });
   };
 
   const removeItem = () => {
     if (items.length === 0) return;
     dispatch(removeFromBasket({ _id: id }));
+      toast.show(`${nome} removido do carrinho!`, {
+      type: 'warning',
+      placement: 'top',
+      duration: 3000,
+      animationType: 'slide-in',
+    });
   };
 
   const cardHeight = animation.interpolate({
@@ -160,11 +175,11 @@ const SellerProduct = ({
         {isExpanded && (
           <View style={styles.actions}>
             <TouchableOpacity onPress={removeItem} disabled={items.length === 0}>
-              <MinusCircleIcon size={40} color={items.length > 0 ? '#E85A4F' : 'gray'} />
+              <MinusCircleIcon size={40} color={items.length > 0 ? '#7F00FF' : 'gray'} />
             </TouchableOpacity>
             <Text style={styles.quantity}>{items.length}</Text>
             <TouchableOpacity onPress={addItemToBasket} disabled={items.length >= countInStock}>
-              <PlusCircleIcon size={40} color={items.length < countInStock ? '#E85A4F' : 'gray'} />
+              <PlusCircleIcon size={40} color={items.length < countInStock ? '#7F00FF' : 'gray'} />
             </TouchableOpacity>
           </View>
         )}
@@ -283,7 +298,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     marginTop: 6,
-    color: '#E85A4F',
+    color: '#7F00FF',
   },
   actions: {
     marginTop: 14,
