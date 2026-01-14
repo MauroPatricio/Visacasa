@@ -30,7 +30,7 @@
       "color": "#E85A4F",
       "androidMode": "default",
       "androidCollapsedTitle": "Visacasa",
-      "androidGoogleServicesFile": null,
+      "androidGoogleServicesFile": "./google-services.json",
       "androidShowBadge": true
 
     },
