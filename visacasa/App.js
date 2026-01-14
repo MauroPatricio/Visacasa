@@ -18,7 +18,7 @@ import api from './hooks/createConnectionApi';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 // --- SCREENS ---
-import ButtomTabNavegation from './navegation/ButtomTabNavegation';
+import BottomTabNavigation from './navigation/BottomTabNavigation';
 import ProductDetail from './components/products/ProductDetail';
 import NewProducts from './screens/NewProducts';
 import ProductList from './components/products/ProductList';
@@ -127,7 +127,7 @@ export default function App() {
 
   return (
     <ToastProvider>
-      <StatusBar backgroundColor="#7F00FF" style="light" />
+      <StatusBar backgroundColor="#E85A4F" style="light" />
 
       <Provider store={store}>
         <SafeAreaProvider>
@@ -136,7 +136,7 @@ export default function App() {
 
 
               <Stack.Navigator screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="BottomNavigation" component={ButtomTabNavegation} />
+                <Stack.Screen name="BottomNavigation" component={BottomTabNavigation} />
                 <Stack.Screen name="ProductDetail" component={ProductDetail} />
                 <Stack.Screen name="ProductList" component={NewProducts} />
                 <Stack.Screen name="ProductList2" component={ProductList} />

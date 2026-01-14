@@ -635,34 +635,33 @@ userRouter.post(
   '/signinseller',
   expressAsyncHandler(async (req, res) => {
     const { phoneNumber, password, deviceToken } = req.body;
-    let user = null;
 
-    // 🔍 Buscar apenas usuários que sejam vendedores (isSeller: true)
-    if (phoneNumber.includes('@')) {
-      user = await User.findOne({ email: phoneNumber, isSeller: true });
-    } else if (!isNaN(phoneNumber)) {
-      user = await User.findOne({ phoneNumber, isSeller: true });
-    } else {
-      return res.status(400).send({ message: 'Número de telefone inválido' });
-    }
-       // Verificação de senha
-    if(user){
-      const isPasswordCorrect = bcrypt.compareSync(password, user?.password);
-  
-  
-        if (!isPasswordCorrect) {
-        return res.status(401).send({ message: 'Senha inválida' });
-      }
-    }
 
+
+    // Buscar usuário vendedor
+    const isEmail = phoneNumber.includes('@');
+    const query = isEmail
+      ? { email: phoneNumber, isSeller: true }
+      : { phoneNumber, isSeller: true };
+
+    const user = await User.findOne(query);
+
+    // ❌ Usuário não existe
     if (!user) {
       return res.status(401).send({ message: 'Usuário não encontrado ou não é vendedor' });
     }
 
-    if (user?.isBanned) {
+    // ❌ Conta banida
+    if (user.isBanned) {
       return res.status(401).send({
         message: 'Esta conta foi BANIDA! Por favor, contacte o administrador.',
       });
+    }
+
+    // ❌ Senha errada
+    const isPasswordCorrect = bcrypt.compareSync(password, user.password);
+    if (!isPasswordCorrect) {
+      return res.status(401).send({ message: 'Senha inválida' });
     }
 
     // Atualizar token do dispositivo, se fornecido
@@ -670,23 +669,23 @@ userRouter.post(
       user.deviceToken = deviceToken;
       await user.save();
     }
-    // ✅ Resposta com dados do usuário e token
-    res.status(200).send({
+
+    // Sucesso → devolve dados completos
+    return res.status(200).send({
       _id: user._id,
       email: user.email,
+      name: user.name,
+      phoneNumber: user.phoneNumber,
       isAdmin: user.isAdmin,
       isApproved: user.isApproved,
       isBanned: user.isBanned,
-      isDeliveryMan: user.isDeliveryMan,
       isSeller: user.isSeller,
-      name: user.name,
-      phoneNumber: user.phoneNumber,
+      isDeliveryMan: user.isDeliveryMan,
       seller: user.seller,
       token: generateToken(user),
     });
   })
 );
-
 
 userRouter.post(
   '/signup',

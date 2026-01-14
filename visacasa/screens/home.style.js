@@ -6,50 +6,51 @@ const styles = StyleSheet.create({
         fontSize: 40
     },
     appBarWrapper: {
-        marginHorizontal: 22,
-        marginTop: 10,
-
+        paddingHorizontal: 15,
+        paddingTop: 10,
+        backgroundColor: 'white',
     },
     appBar: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-
+        paddingVertical: 10,
     },
     location: {
-        fontSize: 15,
-        textAlign: 'center',
-        fontWeight: "500"
+        fontSize: 16,
+        fontWeight: "700",
+        color: '#1F2937',
+        flex: 1,
+        marginLeft: 12,
     },
     locationView: {
         flexDirection: "row",
-        // // justifyContent: "space-between",
         alignItems: "center",
-        paddingLeft: '12%'
     },
     cartCount: {
         position: "absolute",
-        bottom: 16,
-        width: 16,
-        height: 16,
-        borderRadius: 8,
+        top: -5,
+        right: -5,
+        width: 18,
+        height: 18,
+        borderRadius: 9,
         alignItems: "center",
         backgroundColor: '#E85A4F',
         justifyContent: 'center',
+        borderWidth: 2,
+        borderColor: 'white',
         zIndex: 999,
-
     },
     cartNumber: {
-        fontWeight: '600',
-        fontSize: 10,
+        fontWeight: '700',
+        fontSize: 9,
         color: 'white',
-
     },
     cover: {
-        width: 40,
-        height: 40,
-        borderRadius: 120,
-
+        width: 45,
+        height: 45,
+        borderRadius: 22.5,
+        backgroundColor: '#F3F4F6',
     }
 })
 

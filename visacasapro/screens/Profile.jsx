@@ -9,22 +9,27 @@ import {
   Switch,
   ActivityIndicator,
   Modal,
+  SafeAreaView,
+  Dimensions,
 } from 'react-native';
 import React, { useState, useCallback } from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
+import { AntDesign, MaterialCommunityIcons, Ionicons, Feather } from "@expo/vector-icons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../hooks/createConnectionApi';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
+
+const { width } = Dimensions.get('window');
 
 const Profile = () => {
   const navigation = useNavigation();
-  
+
   const [userData, setUserData] = useState(null);
   const [userLogin, setUserLogin] = useState(false);
   const [isStoreOpen, setIsStoreOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [updatingStore, setUpdatingStore] = useState(false); // novo estado
+  const [updatingStore, setUpdatingStore] = useState(false);
 
   const [pendingCount, setPendingCount] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -32,8 +37,8 @@ const Profile = () => {
   const fetchPendingWithdrawals = async () => {
     if (userData?.token) {
       try {
-        const response = await api.get('/wallet/pending', { 
-          headers: { Authorization: `Bearer ${userData.token}` } 
+        const response = await api.get('/wallet/pending', {
+          headers: { Authorization: `Bearer ${userData.token}` }
         });
         setPendingCount(response.data.length || 0);
       } catch (error) {
@@ -91,256 +96,439 @@ const Profile = () => {
   };
 
   const logout = () => {
-    Alert.alert("Sair", "Tem a certeza que deseja sair?", [
-      { text: "Cancelar" },
-      { text: "Continuar", onPress: () => userLogout() },
+    Alert.alert("Sair", "Tem a certeza que deseja sair da conta?", [
+      { text: "Cancelar", style: 'cancel' },
+      { text: "Continuar", onPress: () => userLogout(), style: 'destructive' },
     ]);
   };
 
-const toggleStoreStatus = async () => {
-  setUpdatingStore(true);
-  try {
-    const id = await AsyncStorage.getItem('id');
-    const newStatus = !isStoreOpen;
+  const toggleStoreStatus = async () => {
+    setUpdatingStore(true);
+    try {
+      const id = await AsyncStorage.getItem('id');
+      const newStatus = !isStoreOpen;
 
-    const response = await api.patch(
-      `/users/seller-status/${id}`,
-      { isOpenStore: newStatus },
-      { headers: { Authorization: `Bearer ${userData.token}` } }
-    );
+      const response = await api.patch(
+        `/users/seller-status/${id}`,
+        { isOpenStore: newStatus },
+        { headers: { Authorization: `Bearer ${userData.token}` } }
+      );
 
-    if (response?.status === 200) {
-      setIsStoreOpen(newStatus);
-      const updatedUser = {
-        ...userData,
-        seller: { ...userData.seller, openstore: newStatus }
-      };
-      await AsyncStorage.setItem('userData', JSON.stringify(updatedUser));
-      setUserData(updatedUser);
-    } else {
-      Alert.alert('Erro', 'Falha ao atualizar o estado da loja.');
+      if (response?.status === 200) {
+        setIsStoreOpen(newStatus);
+        const updatedUser = {
+          ...userData,
+          seller: { ...userData.seller, openstore: newStatus }
+        };
+        await AsyncStorage.setItem('userData', JSON.stringify(updatedUser));
+        setUserData(updatedUser);
+      } else {
+        Alert.alert('Erro', 'Falha ao atualizar o estado da loja.');
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar estado da loja:', error);
+      Alert.alert('Erro', 'Não foi possível atualizar o estado da loja.');
+    } finally {
+      setUpdatingStore(false);
     }
-  } catch (error) {
-    console.error('Erro ao atualizar estado da loja:', error);
-    Alert.alert('Erro', 'Não foi possível atualizar o estado da loja.');
-  } finally {
-    setUpdatingStore(false);
-  }
-};
+  };
 
   if (isLoading) {
     return (
-      <>
-        <StatusBar backgroundColor='white' />
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#E85A4F" />
-          <Text style={{ marginTop: 60 }}>Carregando...</Text>
-        </View>
-      </>
+      <View style={styles.loadingContainer}>
+        <StatusBar style="dark" />
+        <ActivityIndicator size="large" color="#E85A4F" />
+        <Text style={styles.loadingText}>Sincronizando dados...</Text>
+      </View>
     );
   }
 
   return (
-    <>
-      <ScrollView style={{ backgroundColor: '#F3F4F6' }}>
-        <View style={styles.header}>
-          <Image source={require('../assets/visacasa2.png')} style={styles.cover} />
-          <View style={styles.profileWrapper}>
-            <Image source={require('../assets/default1.jpg')} style={styles.profile} />
-            <Text style={styles.name}>
-              {userLogin ? userData.name : "Por favor faça o login!"}
-            </Text>
-            {!userLogin ? (
-              <TouchableOpacity style={styles.loginBtn} onPress={() => navigation.navigate('Login')}>
-                <Text style={styles.loginText}>Entrar</Text>
-              </TouchableOpacity>
-            ) : (
-              <View style={styles.phoneTag}>
-                <Text style={styles.phoneText}>{userData?.phoneNumber}</Text>
+    <View style={styles.container}>
+      <StatusBar style="light" />
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
+        {/* Header Section */}
+        <LinearGradient
+          colors={['#E85A4F', '#D3483E']}
+          style={styles.headerGradient}
+        >
+          <SafeAreaView>
+            <View style={styles.headerContent}>
+              <View style={styles.profileInfoRow}>
+                <View style={styles.avatarContainer}>
+                  <Image
+                    source={userData?.seller?.logo ? { uri: userData.seller.logo } : require('../assets/default1.jpg')}
+                    style={styles.avatar}
+                  />
+                  <View style={styles.activeIndicator} />
+                </View>
+                <View style={styles.textInfo}>
+                  <Text style={styles.greeting}>Bem-vindo,</Text>
+                  <Text style={styles.userName} numberOfLines={1}>
+                    {userLogin ? (userData?.seller?.name || userData?.name) : "Fazer Login"}
+                  </Text>
+                  <View style={styles.roleTag}>
+                    <MaterialCommunityIcons name="shield-check" size={14} color="#FFF" />
+                    <Text style={styles.roleText}>{isAdmin ? 'Administrador' : 'Parceiro PRO'}</Text>
+                  </View>
+                </View>
               </View>
-            )}
-          </View>
-        </View>
+            </View>
+          </SafeAreaView>
+        </LinearGradient>
 
-        {userLogin && (
-          <View style={styles.card}>
-            <View style={styles.menuItem}>
-              <MaterialCommunityIcons name="store" size={28} color="#E85A4F" />
-              <Text style={styles.menuText}>Loja Aberta</Text>
+        <View style={styles.mainContent}>
+
+          {/* Stats/Quick Actions Card */}
+          <View style={styles.statsCard}>
+            <View style={styles.operationStatus}>
+              <View>
+                <Text style={styles.statLabel}>Estado da Operação</Text>
+                <Text style={[styles.statValue, { color: isStoreOpen ? '#10B981' : '#EF4444' }]}>
+                  {isStoreOpen ? 'Loja Aberta' : 'Loja Fechada'}
+                </Text>
+              </View>
               <Switch
                 value={isStoreOpen}
                 onValueChange={toggleStoreStatus}
-                trackColor={{ false: "#ccc", true: "#E85A4F" }}
-                thumbColor={isStoreOpen ? "#fff" : "#f4f3f4"}
+                trackColor={{ false: "#D1D5DB", true: "#FECACA" }}
+                thumbColor={isStoreOpen ? "#E85A4F" : "#F3F4FB"}
+                ios_backgroundColor="#D1D5DB"
               />
             </View>
           </View>
-        )}
 
-        {userLogin && (
-          <View style={styles.card}>
-            <TouchableOpacity onPress={() => navigation.navigate('Wallet')}>
-              <View style={styles.menuItem}>
-                <MaterialCommunityIcons name="wallet" size={28} color="#E85A4F" />
-                <Text style={styles.menuText}>Minha Carteira</Text>
-              </View>
+          {/* Wallet Highlight */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Financeiro</Text>
+            <TouchableOpacity
+              style={styles.menuCard}
+              activeOpacity={0.7}
+              onPress={() => navigation.navigate('Wallet')}
+            >
+              <LinearGradient
+                colors={['#FFFFFF', '#F9FAFB']}
+                style={styles.menuCardGradient}
+              >
+                <View style={styles.iconCircle}>
+                  <Ionicons name="wallet-outline" size={24} color="#E85A4F" />
+                </View>
+                <View style={styles.menuCardText}>
+                  <Text style={styles.menuCardTitle}>Minha Carteira</Text>
+                  <Text style={styles.menuCardSub}>Consulte saldo e histórico</Text>
+                </View>
+                <Feather name="chevron-right" size={20} color="#9CA3AF" />
+              </LinearGradient>
             </TouchableOpacity>
           </View>
-        )}
 
-        {isAdmin && (
-          <View style={styles.card}>
-            <TouchableOpacity onPress={() => navigation.navigate('WithdrawalRequests')}>
-              <View style={styles.menuItem}>
-                <MaterialCommunityIcons name="bank-transfer" size={28} color="#E85A4F" />
-                <Text style={styles.menuText}>Autorizar Levantamentos</Text>
-                {pendingCount > 0 && (
-                  <View style={styles.badge}>
-                    <Text style={styles.badgeText}>{pendingCount}</Text>
+          {/* Admin Section */}
+          {isAdmin && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Administração</Text>
+              <TouchableOpacity
+                style={styles.menuCard}
+                activeOpacity={0.7}
+                onPress={() => navigation.navigate('WithdrawalRequests')}
+              >
+                <LinearGradient
+                  colors={['#FFFFFF', '#F9FAFB']}
+                  style={styles.menuCardGradient}
+                >
+                  <View style={[styles.iconCircle, { backgroundColor: '#FEE2E2' }]}>
+                    <MaterialCommunityIcons name="bank-transfer" size={24} color="#EF4444" />
                   </View>
-                )}
-              </View>
+                  <View style={styles.menuCardText}>
+                    <Text style={styles.menuCardTitle}>Autorizar Levantamentos</Text>
+                    <Text style={[styles.menuCardSub, pendingCount > 0 && { color: '#EF4444', fontWeight: '700' }]}>
+                      {pendingCount > 0 ? `${pendingCount} solicitações pendentes` : 'Tudo em dia'}
+                    </Text>
+                  </View>
+                  {pendingCount > 0 && (
+                    <View style={styles.countBadge}>
+                      <Text style={styles.countText}>{pendingCount}</Text>
+                    </View>
+                  )}
+                  <Feather name="chevron-right" size={20} color="#9CA3AF" />
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {/* Settings Section */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Preferências</Text>
+
+            <TouchableOpacity style={styles.listItem} activeOpacity={0.6}>
+              <Ionicons name="person-outline" size={22} color="#4B5563" />
+              <Text style={styles.listText}>Sintonizar Perfil</Text>
+              <Feather name="chevron-right" size={18} color="#D1D5DB" />
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.listItem} activeOpacity={0.6}>
+              <Ionicons name="help-circle-outline" size={22} color="#4B5563" />
+              <Text style={styles.listText}>Ajuda & FAQ</Text>
+              <Feather name="chevron-right" size={18} color="#D1D5DB" />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.listItem, { borderBottomWidth: 0 }]}
+              activeOpacity={0.6}
+              onPress={logout}
+            >
+              <Ionicons name="log-out-outline" size={22} color="#EF4444" />
+              <Text style={[styles.listText, { color: '#EF4444' }]}>Terminar Sessão</Text>
             </TouchableOpacity>
           </View>
-        )}
 
-        <View style={styles.card}>
-          <TouchableOpacity onPress={logout}>
-            <View style={styles.menuItem}>
-              <AntDesign name="logout" size={28} color="#E85A4F" />
-              <Text style={styles.menuText}>Sair</Text>
-            </View>
-          </TouchableOpacity>
+          <View style={styles.legalInfo}>
+            <Text style={styles.versionText}>VisacasaPRO v2.4.0</Text>
+            <Text style={styles.copyrightText}>© 2024 Visacasa. Todos os direitos reservados.</Text>
+          </View>
         </View>
 
-        <View style={{ marginBottom: 200 }} />
+        <View style={{ height: 100 }} />
       </ScrollView>
 
-      {/* 🔒 Overlay de bloqueio durante atualização */}
-      <Modal transparent visible={updatingStore}>
+      {/* Loading Modal */}
+      <Modal transparent visible={updatingStore} animationType="fade">
         <View style={styles.overlay}>
           <View style={styles.overlayBox}>
             <ActivityIndicator size="large" color="#E85A4F" />
-            <Text style={{ color: '#333', marginTop: 10, fontWeight: '500' }}>
-              Actualizando estado da loja...
-            </Text>
+            <Text style={styles.overlayText}>Atualizando estado...</Text>
           </View>
         </View>
       </Modal>
-    </>
+    </View>
   );
 };
 
-
-export default React.memo(Profile);
-
 const styles = StyleSheet.create({
-  header: {
-    backgroundColor: '#fff',
-    marginBottom: 20,
-    elevation: 4,
+  container: {
+    flex: 1,
+    backgroundColor: '#F9FAFB',
   },
-  cover: {
-    height: 200,
-    width: "100%",
-    resizeMode: "cover",
+  scrollContent: {
+    flexGrow: 1,
   },
-  profileWrapper: {
-    alignItems: "center",
-    marginTop: -60,
-    paddingBottom: 20,
+  headerGradient: {
+    paddingBottom: 40,
+    borderBottomLeftRadius: 35,
+    borderBottomRightRadius: 35,
   },
-  profile: {
-    height: 120,
-    width: 120,
-    borderRadius: 60,
-    borderWidth: 4,
-    borderColor: "#fff",
-    elevation: 5,
+  headerContent: {
+    paddingHorizontal: 25,
+    paddingTop: 20,
   },
-  name: {
-    fontWeight: "700",
-    fontSize: 20,
-    marginVertical: 10,
-    color: "#333",
+  profileInfoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 10,
   },
-  loginBtn: {
-    backgroundColor: "#E85A4F",
-    paddingVertical: 10,
-    paddingHorizontal: 30,
+  avatarContainer: {
+    position: 'relative',
+  },
+  avatar: {
+    width: 80,
+    height: 80,
     borderRadius: 25,
-    elevation: 3,
+    borderWidth: 3,
+    borderColor: 'rgba(255,255,255,0.4)',
   },
-  loginText: {
-    color: "#fff",
-    fontWeight: "600",
-    fontSize: 16,
+  activeIndicator: {
+    position: 'absolute',
+    bottom: 2,
+    right: 2,
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: '#10B981',
+    borderWidth: 3,
+    borderColor: '#E85A4F',
   },
-  phoneTag: {
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#E85A4F",
+  textInfo: {
+    marginLeft: 20,
+    flex: 1,
+  },
+  greeting: {
+    fontSize: 14,
+    color: 'rgba(255,255,255,0.8)',
+    fontWeight: '500',
+  },
+  userName: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    marginVertical: 4,
+  },
+  roleTag: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+    alignSelf: 'flex-start',
+    gap: 6,
+  },
+  roleText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    textTransform: 'uppercase',
+  },
+  mainContent: {
+    marginTop: -25,
     paddingHorizontal: 20,
-    paddingVertical: 8,
-    borderRadius: 20,
-    elevation: 2,
   },
-  phoneText: {
-    fontWeight: "600",
-    color: "#E85A4F",
+  statsCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 24,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.05,
+    shadowRadius: 15,
+    elevation: 8,
   },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    marginHorizontal: 16,
-    marginBottom: 16,
-    elevation: 3,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-  },
-  menuItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 12,
+  operationStatus: {
+    flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
   },
-  menuText: {
-    flex: 1,
-    marginLeft: 15,
-    fontSize: 16,
-    fontWeight: "500",
-    color: "#333",
+  statLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#6B7280',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: '#F3F4F6',
+  statValue: {
+    fontSize: 18,
+    fontWeight: '800',
+    marginTop: 4,
+  },
+  section: {
+    marginTop: 30,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#1F2937',
+    marginBottom: 15,
+    marginLeft: 5,
+  },
+  menuCard: {
+    borderRadius: 20,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.03,
+    shadowRadius: 10,
+    elevation: 3,
+  },
+  menuCardGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+  },
+  iconCircle: {
+    width: 48,
+    height: 48,
+    borderRadius: 16,
+    backgroundColor: '#FFF1F0',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  badge: {
-  backgroundColor: 'red',
-  borderRadius: 10,
-  paddingHorizontal: 6,
-  paddingVertical: 2,
-  justifyContent: 'center',
-  alignItems: 'center',
-},
-badgeText: {
-  color: '#fff',
-  fontSize: 12,
-  fontWeight: 'bold',
-},
- overlay: {
+  menuCardText: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    marginLeft: 16,
+  },
+  menuCardTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#1F2937',
+  },
+  menuCardSub: {
+    fontSize: 12,
+    color: '#6B7280',
+    marginTop: 2,
+  },
+  countBadge: {
+    backgroundColor: '#EF4444',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 10,
+    marginRight: 10,
+  },
+  countText: {
+    color: '#FFF',
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  listItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 18,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+    paddingHorizontal: 5,
+  },
+  listText: {
+    flex: 1,
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#4B5563',
+    marginLeft: 15,
+  },
+  legalInfo: {
+    marginTop: 40,
+    alignItems: 'center',
+  },
+  versionText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#9CA3AF',
+  },
+  copyrightText: {
+    fontSize: 11,
+    color: '#D1D5DB',
+    marginTop: 6,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+  },
+  loadingText: {
+    marginTop: 15,
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#6B7280',
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.6)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   overlayBox: {
     backgroundColor: '#fff',
-    padding: 30,
-    borderRadius: 12,
+    padding: 25,
+    borderRadius: 20,
     alignItems: 'center',
-    elevation: 10,
+    width: width * 0.7,
+  },
+  overlayText: {
+    color: '#1F2937',
+    marginTop: 15,
+    fontWeight: '700',
+    fontSize: 15,
   },
 });
+
+export default React.memo(Profile);

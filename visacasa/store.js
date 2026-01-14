@@ -4,6 +4,7 @@ import sellerReducer from "./features/sellerSlice";
 import navReducer from "./features/navSlice";
 import favoriteReducer from "./features/favoriteSlice";
 import comparisonReducer from "./features/comparisonSlice";
+import userReducer from "./features/userSlice";
 
 export const store = configureStore({
   reducer: {
@@ -12,5 +13,6 @@ export const store = configureStore({
     nav: navReducer,
     favorites: favoriteReducer,
     comparison: comparisonReducer,
+    user: userReducer,
   }
 })

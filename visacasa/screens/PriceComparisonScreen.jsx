@@ -40,6 +40,12 @@ const PriceComparisonScreen = () => {
             return;
         }
 
+        if (!user?._id) {
+            toast.show('Faça login para salvar suas comparações', { type: 'warning' });
+            navigation.navigate('Login');
+            return;
+        }
+
         try {
             dispatch(setLoading(true));
 

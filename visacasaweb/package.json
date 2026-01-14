@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "homepage": "https://.",
+  "homepage": ".",
   "proxy": "http://localhost:5000",
   "version": "0.1.0",
   "private": true,
@@ -14,11 +14,9 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "^14.4.3",
-    "axios": "^1.4.0",
+    "axios": "^1.7.9",
     "bootstrap": "^5.2.3",
     "bson": "^5.2.0",
-    "expo": "^50.0.21",
-    "expo-cli": "^6.3.10",
     "firebase": "^10.13.1",
     "font-awesome": "^4.7.0",
     "html2pdf.js": "^0.10.1",
@@ -48,7 +46,7 @@
     "redux": "^4.2.1",
     "redux-thunk": "^2.4.2",
     "slick-carousel": "^1.8.1",
-    "socket.io-client": "^4.6.1",
+    "socket.io-client": "^4.8.1",
     "web-vitals": "^3.3.1"
   },
   "engines": {
@@ -79,7 +77,6 @@
     ]
   },
   "devDependencies": {
-    "@types/react-native": "^0.73.0",
     "npm-force-resolutions": "0.0.10",
     "webpack-bundle-analyzer": "^4.10.2"
   },

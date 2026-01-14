@@ -39,6 +39,8 @@ import notificationRouter from './routes/notificationRoutes.js';
 import paymentRouterEmola from './routes/paymentEmolaRoutes.js';
 import walletRouter from './routes/walletRoutes.js';
 import subcategoryRouter from './routes/subcategoryRoutes.js';
+import priceComparisonRouter from './routes/priceComparisonRoutes.js';
+import favoriteRouter from './routes/favoriteRoutes.js';
 
 
 // Carregando variáveis de ambiente
@@ -105,6 +107,8 @@ app.use('/api/carts', cartRoutes);
 app.use('/api/notifications', notificationRouter);
 
 app.use('/api/wallet', walletRouter);
+app.use('/api/comparisons', priceComparisonRouter);
+app.use('/api/favorites', favoriteRouter);
 
 
 // **Configuração do diretório e frontend**
@@ -114,7 +118,8 @@ app.use(express.static(path.join(__dirname, '/frontend/build')));
 
 
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname+'/frontend/build/index.html'));});
+  res.sendFile(path.join(__dirname + '/frontend/build/index.html'));
+});
 
 // Middleware de erro
 app.use((err, req, res, next) => {
@@ -284,7 +289,7 @@ async function paySupplier(sellerNumber, priceForSeller, order, maxAttempts = 2,
     attempt++;
     try {
       const referenceCode = randomString(5);
-      mpesa.initializeApi({ 
+      mpesa.initializeApi({
         baseUrl: config.MPESA_API_HOST,
         apiKey: config.MPESA_API_KEY,
         publicKey: config.MPESA_PUBLIC_KEY,
@@ -305,17 +310,17 @@ async function paySupplier(sellerNumber, priceForSeller, order, maxAttempts = 2,
         lastError = new Error(response?.data);
         console.log(`Tentativa ${attempt} Pedido: ${order.code} falhou: ${lastError}`);
 
-        await new Promise(r => setTimeout(r, delay)); 
+        await new Promise(r => setTimeout(r, delay));
       }
     } catch (err) {
       lastError = err;
       console.log(lastError)
       console.log(`Tentativa ${attempt} Pedido: ${order.code} deu erro: ${lastError.output_ResponseDesc}`);
 
-      await new Promise(r => setTimeout(r, delay)); 
+      await new Promise(r => setTimeout(r, delay));
     }
   }
-  
+
   throw lastError;
 }
 
@@ -325,14 +330,14 @@ async function salvarPagamento(data) {
   return await pagamento.save();
 }
 
-function randomString(codeLength){
-    const chars =
+function randomString(codeLength) {
+  const chars =
     "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890";
-    const randomArray = Array.from(
-        { length: codeLength },
-        (v, k) => chars[Math.floor(Math.random() * chars.length)]
-      );
-      
-    const randomString = randomArray.join("");
-    return randomString;
+  const randomArray = Array.from(
+    { length: codeLength },
+    (v, k) => chars[Math.floor(Math.random() * chars.length)]
+  );
+
+  const randomString = randomArray.join("");
+  return randomString;
 }

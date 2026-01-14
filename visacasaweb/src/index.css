@@ -56,7 +56,7 @@ main {
 }
 
 .rating span {
-  color: #7F00FF;
+  color: #E85A4F;
 }
 
 .product-info button {
@@ -72,7 +72,7 @@ main {
 
 .nhiquela-name {
   font-weight: bold;
-  color: #7F00FF;
+  color: #E85A4F;
 }
 
 .img-thumbnail {
@@ -83,7 +83,7 @@ main {
 /* Navbar Styles */
 .Navbar-Brand {
   font-weight: bold;
-  color: #7F00FF;
+  color: #E85A4F;
 }
 
 .navbar {
@@ -126,14 +126,14 @@ input::-webkit-inner-spin-button {
 }
 
 .steps > div.active {
-  border-bottom: 0.2rem solid #7F00FF;
-  color: #7F00FF;
+  border-bottom: 0.2rem solid #E85A4F;
+  color: #E85A4F;
 }
 
 /* Link Styles */
 .link {
   text-decoration: none;
-  color: #7F00FF;
+  color: #E85A4F;
 }
 
 .link-none {
@@ -166,7 +166,7 @@ input::-webkit-inner-spin-button {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background-color: #7F00FF;
+  background-color: #E85A4F;
   color: white;
   border: none;
   border-radius: 50%;
@@ -189,7 +189,7 @@ table {
 /* Delivery Info Styles */
 .delivery-info {
   text-align: center;
-  color: #7F00FF;
+  color: #E85A4F;
   padding: 10px;
 }
 
@@ -215,7 +215,7 @@ table {
   }
 
   .info-icon-home {
-    color: #7F00FF;
+    color: #E85A4F;
     font-size: 3rem;
     margin-right: 5px;
   }
@@ -254,7 +254,7 @@ table {
   }
 
   .info-icon-home {
-    color: #7F00FF;
+    color: #E85A4F;
     font-size: 2rem;
     margin-right: 2px;
   }
@@ -280,7 +280,7 @@ table {
 
   .delivery-info {
     text-align: center;
-    color: #7F00FF;
+    color: #E85A4F;
   }
 
   .card-img-top {
@@ -318,13 +318,13 @@ table {
 }
 
 .customButtom {
-  background-color: #7F00FF;
+  background-color: #E85A4F;
   border: none;
   color: white;
 }
 
 .text_color {
-  color: #7F00FF;
+  color: #E85A4F;
 }
 
 .color-transparent {
@@ -363,7 +363,7 @@ table {
   position: absolute;
   top: 10px;
   left: 2px;
-  background-color: #7F00FF;
+  background-color: #E85A4F;
   color: #fff;
   width: 100px;
   height: 22px;
@@ -378,7 +378,7 @@ table {
   position: absolute;
   top: 10px;
   right: 2px;
-  background-color: #7F00FF;
+  background-color: #E85A4F;
   color: #fff;
   width: 40px;
   height: 22px;
@@ -421,7 +421,7 @@ table {
   bottom: 30px;
   right: 30px;
   z-index: 999;
-  background-color: #7F00FF;
+  background-color: #E85A4F;
   color: white;
   border: none;
   border-radius: 50%;

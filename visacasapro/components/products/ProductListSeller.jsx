@@ -1,20 +1,32 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { 
-  View, Text, StyleSheet, FlatList, TouchableOpacity, 
-  ActivityIndicator, SafeAreaView, Image, Alert 
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  ActivityIndicator,
+  SafeAreaView,
+  Image,
+  Alert,
+  Dimensions,
+  StatusBar as RNStatusBar
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons, Feather } from "@expo/vector-icons";
 import api from '../../hooks/createConnectionApi';
-// import FastImage from 'react-native-fast-image'; // <- use se instalar cache
+import { LinearGradient } from 'expo-linear-gradient';
+import { StatusBar } from 'expo-status-bar';
+
+const { width } = Dimensions.get('window');
 
 const ProductListSeller = () => {
   const [userData, setUserData] = useState(null);
   const [productsOfSeller, setProductsOfSeller] = useState([]);
   const [userLogin, setUserLogin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [page, setPage] = useState(1); // paginação
+  const [page, setPage] = useState(1);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
   const navigation = useNavigation();
 
@@ -25,7 +37,7 @@ const ProductListSeller = () => {
   useFocusEffect(
     useCallback(() => {
       if (userData) {
-        fetchData(1, true); // recarrega do zero quando volta
+        fetchData(1, true);
       }
     }, [userData])
   );
@@ -60,7 +72,7 @@ const ProductListSeller = () => {
       if (storedUserData && storedUserId) {
         const parsedUserData = JSON.parse(storedUserData);
         if (parsedUserData._id === storedUserId) {
-          setUserData(parsedUserData); 
+          setUserData(parsedUserData);
           setUserLogin(true);
         } else {
           setIsLoading(false);
@@ -77,8 +89,8 @@ const ProductListSeller = () => {
     try {
       const confirm = await new Promise((resolve) => {
         Alert.alert(
-          'Confirmação',
-          'Tem certeza que deseja apagar este produto?',
+          'Remover Produto',
+          'Tem certeza que deseja apagar este item permanentemente?',
           [
             { text: 'Cancelar', style: 'cancel', onPress: () => resolve(false) },
             { text: 'Apagar', style: 'destructive', onPress: () => resolve(true) },
@@ -100,100 +112,147 @@ const ProductListSeller = () => {
     }
   };
 
-const handleToggleStatus = async (product) => {
-  try {
-    const response = await api.patch(
-      `products/${product._id}/toggle-status`,
-      {},
-      { headers: { Authorization: `Bearer ${userData.token}` } }
-    );
-
-    if (response.status === 200) {
-      setProductsOfSeller(prev =>
-        prev.map(p =>
-          p._id === product._id ? { ...p, isActive: response.data.product.isActive } : p
-        )
+  const handleToggleStatus = async (product) => {
+    try {
+      const response = await api.patch(
+        `products/${product._id}/toggle-status`,
+        {},
+        { headers: { Authorization: `Bearer ${userData.token}` } }
       );
+
+      if (response.status === 200) {
+        setProductsOfSeller(prev =>
+          prev.map(p =>
+            p._id === product._id ? { ...p, isActive: response.data.product.isActive } : p
+          )
+        );
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar status:', error);
+      Alert.alert('Erro', 'Não foi possível alterar o status do produto.');
     }
-  } catch (error) {
-    console.error('Erro ao atualizar status:', error);
-    Alert.alert('Erro', 'Não foi possível alterar o status do produto.');
-  }
-};
+  };
 
   const renderProduct = ({ item: product }) => (
-    <TouchableOpacity 
-      style={styles.card}
-      onPress={() => navigation.navigate('ProductSellerDetail', { product })}
-    >
-      <View style={styles.statusBar} />
-      <View style={styles.iconWrapper}>
-        {product.image ? (
-          // <FastImage source={{ uri: product.image }} style={styles.productImage} resizeMode={FastImage.resizeMode.cover}/>
-          <Image source={{ uri: product.image }} style={styles.productImage} />
-        ) : (
-          <Ionicons name="cube-outline" style={styles.productIcon} />
-        )}
-      </View>
-
-      <View style={styles.content}>
-        <Text style={styles.code}>{product?.nome}</Text>
-        <Text style={styles.createAt}>{product?.countInStock} unidade(s)</Text>
-        <Text style={styles.createAt}>{product?.price} MT</Text>
-        <Text style={[styles.statusText, { color: product?.isActive ? 'green' : 'red' }]}>
-          {product?.isActive ? 'Produto visível na loja' : 'Produto oculto para os clientes'}
-        </Text>
-
-        <View style={styles.buttonRow}>
-          <TouchableOpacity
-            style={styles.editButton}
-            onPress={() => navigation.navigate('NewProduct', { productToEdit: product })}
-          >
-            <Ionicons name="create-outline" size={20} color="#fff" />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.deleteButton}
-            onPress={() => handleDelete(product._id)}
-          >
-            <Ionicons name="trash-outline" size={20} color="#fff" />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={product.isActive ? styles.deactivateButton : styles.activateButton}
-            onPress={() => handleToggleStatus(product)}
-          >
-            <Ionicons name={product.isActive ? "eye-off" : "eye"} size={20} color="#fff" />
-            <Text style={styles.buttonText}>
-              {product.isActive ? "Inati." : "Ativar"}
+    <View style={styles.cardContainer}>
+      <TouchableOpacity
+        style={styles.card}
+        activeOpacity={0.9}
+        onPress={() => navigation.navigate('ProductSellerDetail', { product })}
+      >
+        <View style={styles.imageSection}>
+          {product.image ? (
+            <Image source={{ uri: product.image }} style={styles.productImage} />
+          ) : (
+            <View style={styles.placeholderImg}>
+              <Ionicons name="cube-outline" size={40} color="#CBD5E1" />
+            </View>
+          )}
+          <View style={[styles.statusBadge, { backgroundColor: product?.isActive ? '#DCFCE7' : '#FEE2E2' }]}>
+            <View style={[styles.statusDot, { backgroundColor: product?.isActive ? '#22C55E' : '#EF4444' }]} />
+            <Text style={[styles.statusBadgeText, { color: product?.isActive ? '#166534' : '#991B1B' }]}>
+              {product?.isActive ? 'Público' : 'Oculto'}
             </Text>
-          </TouchableOpacity>
+          </View>
         </View>
+
+        <View style={styles.infoSection}>
+          <Text style={styles.productName} numberOfLines={1}>{product?.nome}</Text>
+          <View style={styles.stockRow}>
+            <Feather name="package" size={12} color="#64748B" />
+            <Text style={styles.stockText}>{product?.countInStock} disponível(is)</Text>
+          </View>
+
+          <View style={styles.priceContainer}>
+            <Text style={styles.priceValue}>
+              {Number(product?.price || 0).toLocaleString('pt-MZ', { minimumFractionDigits: 2 })}
+            </Text>
+            <Text style={styles.currency}> MT</Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+
+      <View style={styles.actionToolbar}>
+        <TouchableOpacity
+          style={styles.toolBtn}
+          onPress={() => navigation.navigate('NewProduct', { productToEdit: product })}
+        >
+          <Feather name="edit-3" size={18} color="#1E90FF" />
+          <Text style={[styles.toolBtnText, { color: '#1E90FF' }]}>Editar</Text>
+        </TouchableOpacity>
+
+        <View style={styles.divider} />
+
+        <TouchableOpacity
+          style={styles.toolBtn}
+          onPress={() => handleToggleStatus(product)}
+        >
+          <Ionicons name={product.isActive ? "eye-off-outline" : "eye-outline"} size={18} color="#4B5563" />
+          <Text style={styles.toolBtnText}>{product.isActive ? 'Ocultar' : 'Mostrar'}</Text>
+        </TouchableOpacity>
+
+        <View style={styles.divider} />
+
+        <TouchableOpacity
+          style={styles.toolBtn}
+          onPress={() => handleDelete(product._id)}
+        >
+          <Feather name="trash-2" size={18} color="#EF4444" />
+          <Text style={[styles.toolBtnText, { color: '#EF4444' }]}>Remover</Text>
+        </TouchableOpacity>
       </View>
-    </TouchableOpacity>
+    </View>
   );
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView style={styles.container}>
+      <StatusBar style="dark" />
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={28} color="#333" />
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backBtn}
+        >
+          <Ionicons name="chevron-back" size={24} color="#1F2937" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Meus produtos</Text>
-        <View style={{ width: 28 }} />
+        <Text style={styles.headerTitle}>Gerir Inventário</Text>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('NewProduct')}
+          style={styles.headerAddBtn}
+        >
+          <Ionicons name="add" size={24} color="#E85A4F" />
+        </TouchableOpacity>
       </View>
 
-      {isLoading ? (
-        <ActivityIndicator size="large" color="#1E90FF" style={{ marginTop: 20 }}/>
+      <View style={styles.summaryBar}>
+        <Text style={styles.summaryTitle}>{productsOfSeller.length}</Text>
+        <Text style={styles.summaryText}>Produtos registados</Text>
+      </View>
+
+      {isLoading && page === 1 ? (
+        <View style={styles.loaderBox}>
+          <ActivityIndicator size="large" color="#E85A4F" />
+          <Text style={styles.loaderText}>Sincronizando produtos...</Text>
+        </View>
       ) : (
         <FlatList
           data={productsOfSeller}
           keyExtractor={(item) => item._id}
           renderItem={renderProduct}
-          contentContainerStyle={styles.scroll}
-          ListEmptyComponent={<Text style={styles.empty}>Nenhum produto encontrado.</Text>}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <MaterialCommunityIcons name="package-variant-closed" size={80} color="#D1D5DB" />
+              <Text style={styles.emptyTitle}>Sem produtos</Text>
+              <Text style={styles.emptySub}>Comece a vender adicionando o seu primeiro produto.</Text>
+            </View>
+          }
           ListFooterComponent={
-            isFetchingMore ? <ActivityIndicator size="small" color="#1E90FF"/> : <View style={{ paddingBottom: 100 }}/>
+            isFetchingMore ? (
+              <ActivityIndicator size="small" color="#E85A4F" style={{ marginVertical: 20 }} />
+            ) : (
+              <View style={{ height: 120 }} />
+            )
           }
           onEndReached={() => fetchData(page + 1)}
           onEndReachedThreshold={0.5}
@@ -202,159 +261,244 @@ const handleToggleStatus = async (product) => {
 
       <TouchableOpacity
         style={styles.floatingButton}
+        activeOpacity={0.8}
         onPress={() => navigation.navigate('NewProduct')}
       >
-        <Ionicons name="add" size={28} color="#fff" />
+        <LinearGradient
+          colors={['#E85A4F', '#D3483E']}
+          style={styles.fabGradient}
+        >
+          <Ionicons name="add" size={30} color="#fff" />
+        </LinearGradient>
       </TouchableOpacity>
     </SafeAreaView>
   );
 };
 
-export default ProductListSeller;
-
-
-const styles = StyleSheet.create({  
-  safe: {
+const styles = StyleSheet.create({
+  container: {
     flex: 1,
-    backgroundColor: '#F2F4F8',
+    backgroundColor: '#F9FAFB',
   },
   header: {
-    flexDirection:'row',
-    alignItems:'center',
-    justifyContent:'space-between',
-    paddingHorizontal: 16,
-    paddingTop: 20,
-    paddingBottom: 10,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#ddd',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingTop: 10,
+    paddingBottom: 15,
+    backgroundColor: '#FFF',
+  },
+  backBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: '#F3F4F6',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight:'bold',
-    color: '#333',
+    fontWeight: '800',
+    color: '#1F2937',
   },
-  scroll: {
-    padding: 16,
-  },
-  card: {
-    flexDirection:'row',
-    alignItems:'center',
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-    overflow:'hidden',
-  },
-  statusBar: {
-    width: 6,
-    height:'100%',
-    borderTopLeftRadius: 12,
-    borderBottomLeftRadius: 12,
-    marginRight: 16,
-    backgroundColor: '#E85A4F',
-  },
-  iconWrapper: {
-    backgroundColor: '#edf2ff',
-    padding: 12,
-    borderRadius: 50,
-    marginRight: 16,
-    alignItems:'center',
-    justifyContent:'center',
-  },
-  productIcon: {
-    fontSize: 24,
-    color: '#E85A4F',
-  },
-  productImage: {
+  headerAddBtn: {
     width: 40,
     height: 40,
-    borderRadius: 20,
+    borderRadius: 12,
+    backgroundColor: '#FFF1F0',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  content: {
-    flex: 1,
+  summaryBar: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    paddingHorizontal: 25,
+    paddingVertical: 10,
+    backgroundColor: '#FFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+    gap: 8,
   },
-  code: {
-    fontSize: 16,
-    fontWeight:'bold',
-    color: '#333',
-    marginBottom: 4,
+  summaryTitle: {
+    fontSize: 24,
+    fontWeight: '900',
+    color: '#E85A4F',
   },
-  createAt: {
+  summaryText: {
     fontSize: 14,
-    color: '#888',
+    color: '#6B7280',
+    fontWeight: '600',
+  },
+  listContent: {
+    padding: 20,
+  },
+  cardContainer: {
+    backgroundColor: '#FFF',
+    borderRadius: 24,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 3,
+    overflow: 'hidden',
+  },
+  card: {
+    flexDirection: 'row',
+    padding: 15,
+  },
+  imageSection: {
+    position: 'relative',
+  },
+  productImage: {
+    width: 90,
+    height: 90,
+    borderRadius: 18,
+    backgroundColor: '#F3F4F6',
+  },
+  placeholderImg: {
+    width: 90,
+    height: 90,
+    borderRadius: 18,
+    backgroundColor: '#F1F5F9',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  statusBadge: {
+    position: 'absolute',
+    bottom: -8,
+    alignSelf: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+    gap: 4,
+    borderWidth: 2,
+    borderColor: '#FFF',
+  },
+  statusDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+  },
+  statusBadgeText: {
+    fontSize: 9,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+  },
+  infoSection: {
+    flex: 1,
+    marginLeft: 15,
+    justifyContent: 'center',
+  },
+  productName: {
+    fontSize: 16,
+    fontWeight: '800',
+    color: '#1F2937',
     marginBottom: 4,
   },
-  empty: {
-    textAlign:'center',
-    color: '#555',
-    marginTop: 20,
-    fontSize: 16,
+  stockRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 8,
   },
-  buttonRow: {
-  flexDirection: 'row',
-  marginTop: 8,
-  gap: 10,
-},
-editButton: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  backgroundColor: '#007bff',
-  paddingVertical: 6,
-  paddingHorizontal: 12,
-  borderRadius: 8,
-},
-deleteButton: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  backgroundColor: '#dc3545',
-  paddingVertical: 6,
-  paddingHorizontal: 12,
-  borderRadius: 8,
-},
-buttonText: {
-  color: '#fff',
-  marginLeft: 6,
-  fontSize: 14,
-  fontWeight: 'bold',
-},
-floatingButton: {
-  position: 'absolute',
-  right: 20,
-  bottom: 80,
-  backgroundColor: '#1E90FF',
-  width: 56,
-  height: 56,
-  borderRadius: 28,
-  alignItems: 'center',
-  justifyContent: 'center',
-  elevation: 6,
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.25,
-  shadowRadius: 4,
-},
+  stockText: {
+    fontSize: 12,
+    color: '#64748B',
+    fontWeight: '600',
+  },
+  priceContainer: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+  },
+  priceValue: {
+    fontSize: 18,
+    fontWeight: '900',
+    color: '#E85A4F',
+  },
+  currency: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#E85A4F',
+  },
+  actionToolbar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F9FAFB',
+    borderTopWidth: 1,
+    borderTopColor: '#F3F4F6',
+    paddingVertical: 12,
+  },
+  toolBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+  },
+  toolBtnText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#4B5563',
+  },
+  divider: {
+    width: 1,
+    height: 20,
+    backgroundColor: '#E5E7EB',
+  },
+  loaderBox: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loaderText: {
+    marginTop: 15,
+    fontSize: 14,
+    color: '#6B7280',
+    fontWeight: '600',
+  },
+  emptyContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 80,
+    paddingHorizontal: 40,
+  },
+  emptyTitle: {
+    fontSize: 20,
+    fontWeight: '900',
+    color: '#1F2937',
+    marginTop: 20,
+  },
+  emptySub: {
+    fontSize: 14,
+    color: '#9CA3AF',
+    textAlign: 'center',
+    marginTop: 10,
+    lineHeight: 20,
+  },
+  floatingButton: {
+    position: 'absolute',
+    right: 25,
+    bottom: 40,
+    width: 65,
+    height: 65,
+    borderRadius: 32.5,
+    elevation: 8,
+    shadowColor: '#E85A4F',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+  },
+  fabGradient: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 32.5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
 
-activateButton: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  backgroundColor: '#28a745', // verde
-  paddingVertical: 6,
-  paddingHorizontal: 12,
-  borderRadius: 8,
-},
-deactivateButton: {
-  flexDirection: 'row',
-  alignItems: 'center',
-  backgroundColor: '#6c757d', // cinza escuro
-  paddingVertical: 6,
-  paddingHorizontal: 12,
-  borderRadius: 8,
-},
-
-});  
+export default ProductListSeller;

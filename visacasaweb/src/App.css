@@ -8,8 +8,8 @@ body {
 
 /* Main Color Theme */
 :root {
-  --main-color: #7F00FF;
-  --accent-color: #5A00CC;
+  --main-color: #E85A4F;
+  --accent-color: #D3483E;
   --light-color: #E8E1FF;
   --text-color: #333;
   --bg-color: #ffffff;
@@ -21,6 +21,7 @@ body {
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -86,7 +87,8 @@ form .form-control:focus {
 }
 
 /* Icons */
-.fa-mobile, .fa-lock {
+.fa-mobile,
+.fa-lock {
   color: var(--main-color);
   font-size: 20px;
 }
@@ -113,9 +115,17 @@ form .form-control:focus {
 
 /* Pulse animation */
 @keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.05);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 /* Links */
@@ -162,8 +172,13 @@ form .form-control:focus {
 
 /* Logo animation */
 @keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Modal */
@@ -236,52 +251,72 @@ form .form-control:focus {
   }
 }
 
-.link-none{
-  text-decoration: none; /* Remove o sublinhado */
-  color: inherit; /* Mantém a cor do texto padrão */
+.link-none {
+  text-decoration: none;
+  /* Remove o sublinhado */
+  color: inherit;
+  /* Mantém a cor do texto padrão */
 }
+
 .navbar {
-  background: rgba(255, 255, 255, 0.95) !important; /* Fundo branco com leve transparência */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Sombra sutil para destacar */
-  padding: 12px 20px; /* Espaçamento interno */
-  transition: all 0.3s ease-in-out; /* Transição suave */
+  background: rgba(255, 255, 255, 0.95) !important;
+  /* Fundo branco com leve transparência */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  /* Sombra sutil para destacar */
+  padding: 12px 20px;
+  /* Espaçamento interno */
+  transition: all 0.3s ease-in-out;
+  /* Transição suave */
 }
 
 .navbar-light .navbar-nav .nav-link {
-  color: #333 !important; /* Cor do texto */
-  font-weight: 600; /* Negrito para maior destaque */
-  padding: 10px 15px; /* Melhor espaçamento entre os itens */
+  color: #333 !important;
+  /* Cor do texto */
+  font-weight: 600;
+  /* Negrito para maior destaque */
+  padding: 10px 15px;
+  /* Melhor espaçamento entre os itens */
   transition: color 0.3s ease-in-out, transform 0.2s ease-in-out;
 }
 
 .navbar-light .navbar-nav .nav-link:hover {
-  color: #007bff !important; /* Azul moderno no hover */
-  transform: translateY(-2px); /* Efeito de elevação sutil */
+  color: #007bff !important;
+  /* Azul moderno no hover */
+  transform: translateY(-2px);
+  /* Efeito de elevação sutil */
 }
 
 .navbar-toggler {
-  border: none; /* Remove bordas do botão do menu */
+  border: none;
+  /* Remove bordas do botão do menu */
   outline: none;
 }
 
 .navbar-toggler:focus {
-  box-shadow: none; /* Remove o efeito de foco padrão */
+  box-shadow: none;
+  /* Remove o efeito de foco padrão */
 }
 
 /* 🔹 Ajuste para evitar sobreposição no conteúdo abaixo do Navbar */
 .main-content {
-  margin-top: 80px; /* Ajuste conforme a altura do Navbar */
+  margin-top: 80px;
+  /* Ajuste conforme a altura do Navbar */
 }
 
 @media (max-width: 991px) {
   .navbar {
-    padding: 10px 15px; /* Ajuste para telas menores */
+    padding: 10px 15px;
+    /* Ajuste para telas menores */
   }
+
   .navbar-nav {
-    text-align: center; /* Centraliza os itens no modo mobile */
+    text-align: center;
+    /* Centraliza os itens no modo mobile */
   }
+
   .main-content {
-    margin-top: 100px; /* Ajuste maior para telas menores se necessário */
+    margin-top: 100px;
+    /* Ajuste maior para telas menores se necessário */
   }
 }
 
@@ -304,7 +339,8 @@ h2 {
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
-  flex-wrap: wrap; /* Permite quebrar para telas menores */
+  flex-wrap: wrap;
+  /* Permite quebrar para telas menores */
 }
 
 input {
@@ -332,15 +368,17 @@ button:hover {
   border-collapse: collapse;
 }
 
-.tipo-table th, .tipo-table td {
+.tipo-table th,
+.tipo-table td {
   border: 1px solid #ddd;
   padding: 8px;
   text-align: left;
 }
 
 .tipo-table th {
-  background-color: #7F00FF;
-  color: white; /* Alterado para branco */
+  background-color: #E85A4F;
+  color: white;
+  /* Alterado para branco */
 }
 
 .delete-btn {
@@ -358,15 +396,20 @@ button:hover {
 /* Responsividade para telas menores */
 @media (max-width: 600px) {
   .form-container {
-    flex-direction: column; /* Faz os itens ficarem em coluna */
+    flex-direction: column;
+    /* Faz os itens ficarem em coluna */
     align-items: center;
   }
 
-  input, button {
-    width: 100%; /* Faz os elementos ocuparem toda a largura */
+  input,
+  button {
+    width: 100%;
+    /* Faz os elementos ocuparem toda a largura */
   }
 
-  .tipo-table th, .tipo-table td {
-    padding: 6px; /* Reduz espaço interno para melhor adaptação */
+  .tipo-table th,
+  .tipo-table td {
+    padding: 6px;
+    /* Reduz espaço interno para melhor adaptação */
   }
 }

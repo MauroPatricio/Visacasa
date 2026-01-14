@@ -23,42 +23,40 @@ const styles = StyleSheet.create({
     searchContainer: {
         flexDirection: "row",
         justifyContent: "center",
-        backgroundColor: "#E6E6FA",
-        borderRadius: 112,
-        marginVertical: 9,
-        // marginTop: 21
-        marginLeft: 12,
-        marginRight: 12
-
+        backgroundColor: "#F3F4F6", // Light modern gray
+        borderRadius: 15,
+        marginVertical: 15,
+        marginHorizontal: 15,
+        height: 50,
+        alignItems: 'center',
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 10,
+        elevation: 2,
     },
     searchIcon: {
-        marginHorizontal: 10,
-        color: "#4B0082",
-        alignItems: "center",
-        marginTop: 7,
-        alignContent: "center"
+        marginHorizontal: 15,
+        color: "#E85A4F", // Matches principal color
     },
     searchWrapper: {
         flex: 1,
-        backgroundColor: "#E6E6FA",
-        marginRight: 5,
-        borderRadius: 2,
-
+        height: '100%',
+        justifyContent: 'center',
     },
     searchInput: {
-        // width: "100%",
-        paddingHorizontal: 12,
-        padding: 6,
-        fontWeight: "500",
-
+        fontSize: 14,
+        fontWeight: "400",
+        color: '#333',
     },
     searchBtn: {
-        width: 50,
-        // height: "100%",
+        width: 45,
+        height: 45,
         borderRadius: 12,
+        justifyContent: 'center',
         alignItems: "center",
-        marginTop: 5,
-        padding: 6,
+        backgroundColor: '#E85A4F',
+        marginRight: 4,
     }
 
 })

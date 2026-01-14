@@ -15,7 +15,7 @@ import { store } from './store';
 import { enableScreens } from 'react-native-screens';
 
 // Screens
-import ButtomTabNavegation from './navegation/ButtomTabNavegation';
+import BottomTabNavigation from './navigation/BottomTabNavigation';
 import ProductDetail from './components/products/ProductDetail';
 import NewProduct from './screens/NewProduct';
 import ProductListSeller from './components/products/ProductListSeller';
@@ -40,7 +40,7 @@ import TopUpScreen from './screens/TopUpScreen';
 import WalletScreen from './screens/WalletScreen';
 import WalletWithdrawScreen from './screens/WalletWithdrawScreen';
 import WithdrawalRequestsScreen from './components/WithdrawalRequests';
-import { navigationRef, navigate } from './navegation/RootNavigation';
+import { navigationRef, navigate } from './navigation/RootNavigation';
 
 const Stack = createNativeStackNavigator();
 
@@ -128,7 +128,7 @@ export default function App() {
               <Stack.Navigator>
                 <Stack.Screen
                   name="BottomNavigation"
-                  component={ButtomTabNavegation}
+                  component={BottomTabNavigation}
                   options={{ headerShown: false }}
                 />
                 <Stack.Screen name="ProductDetail" component={ProductDetail} options={{ headerShown: false }} />

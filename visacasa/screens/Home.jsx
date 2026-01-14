@@ -44,8 +44,8 @@ const ProductItem = React.memo(({ item, onPress }) => (
     style={styles.productCard}
     onPress={() => onPress(item)}
   >
-    <OptimizedImage 
-      source={{ uri: item.image }} 
+    <OptimizedImage
+      source={{ uri: item.image }}
       style={styles.productImage}
     />
     <View style={styles.productDetails}>
@@ -68,8 +68,8 @@ const ProductItem = React.memo(({ item, onPress }) => (
 
 // Componente memoizado para item de categoria
 const CategoryPill = React.memo(({ item, onPress }) => (
-  <TouchableOpacity 
-    style={styles.wrapper} 
+  <TouchableOpacity
+    style={styles.wrapper}
     onPress={() => onPress(item)}
     testID={`category-pill-${item._id}`}
   >
@@ -91,8 +91,8 @@ const ProductRow = React.memo(({ item, onPress }) => (
     onPress={() => onPress(item)}
   >
     <View style={styles.productRow}>
-      <OptimizedImage 
-        source={{ uri: item.image }} 
+      <OptimizedImage
+        source={{ uri: item.image }}
         style={styles.logo}
       />
       <View style={styles.productInfo}>
@@ -155,14 +155,14 @@ const Home = () => {
           // Tentar carregar do cache primeiro
           const cachedCategories = await AsyncStorage.getItem('cachedCategories');
           const cachedTimestamp = await AsyncStorage.getItem('cachedCategoriesTimestamp');
-          
+
           const now = Date.now();
           const isCacheValid = cachedTimestamp && (now - parseInt(cachedTimestamp)) < 5 * 60 * 1000; // 5 minutos
-          
+
           if (cachedCategories && isCacheValid) {
             const parsedCategories = JSON.parse(cachedCategories);
             setCategories(parsedCategories);
-            
+
             // Carregar produtos para categorias que têm produtos
             parsedCategories.forEach(category => {
               if (category.productCount > 0) {
@@ -170,7 +170,7 @@ const Home = () => {
               }
             });
           }
-          
+
           // Sempre atualizar em background
           loadCategories(true);
         } catch (error) {
@@ -178,7 +178,7 @@ const Home = () => {
           loadCategories(true);
         }
       };
-      
+
       loadDataWithCache();
     }, [])
   );
@@ -186,7 +186,7 @@ const Home = () => {
   // Debounce para evitar muitas chamadas ao socket
   const throttledNewProductHandler = useThrottle((newProduct) => {
     if (!newProduct?.category) return;
-    
+
     setCategories(prev =>
       prev.map(c =>
         String(c._id) === String(newProduct.category)
@@ -194,17 +194,17 @@ const Home = () => {
           : c
       )
     );
-    
+
     if (selectedCategory && String(selectedCategory._id) === String(newProduct.category)) {
       loadCategoryProducts(selectedCategory._id, 1, false);
     }
-    
+
     setFeaturedProducts(prev => [newProduct, ...prev.slice(0, 19)]);
   }, 500);
 
   const throttledProductDeletedHandler = useThrottle(({ _id, category }) => {
     if (!category) return;
-    
+
     setCategories(prev =>
       prev.map(c =>
         String(c._id) === String(category)
@@ -212,11 +212,11 @@ const Home = () => {
           : c
       )
     );
-    
+
     if (selectedCategory && String(selectedCategory._id) === String(category)) {
       setCatProducts(prev => prev.filter(p => String(p._id) !== String(_id)));
     }
-    
+
     setFeaturedProducts(prev => prev.filter(p => String(p._id) !== String(_id)));
   }, 500);
 
@@ -305,8 +305,8 @@ const Home = () => {
     });
 
     return () => {
-    notificationListener.remove();
-responseListener.remove();
+      notificationListener.remove();
+      responseListener.remove();
       unsubscribe();
     };
   };
@@ -330,24 +330,24 @@ responseListener.remove();
     try {
       const response = await api.get('/products/categoriesWithCount');
 
-      
+
       const list = response.data?.categories || [];
 
 
 
-      
+
       // Adiciona productCount se não existir (para compatibilidade)
       const categoriesWithCount = list.map(category => ({
         ...category,
         productCount: category.productCount || category.count || 0
       }));
-      
+
       setCategories(replace ? categoriesWithCount : [...categories, ...categoriesWithCount]);
-      
+
       // Salvar no cache
       await AsyncStorage.setItem('cachedCategories', JSON.stringify(categoriesWithCount));
       await AsyncStorage.setItem('cachedCategoriesTimestamp', Date.now().toString());
-      
+
       // Carrega produtos para categorias que têm produtos
       categoriesWithCount.forEach(category => {
         if (category.productCount > 0) {
@@ -385,13 +385,13 @@ responseListener.remove();
   // ------------------- PRODUTOS POR CATEGORIA PARA HOME -------------------
   const loadCategoryProductsForHome = async (categoryId) => {
     if (loadingCategoryProducts[categoryId] || categoryProducts[categoryId]) return;
-    
+
     setLoadingCategoryProducts(prev => ({ ...prev, [categoryId]: true }));
-    
+
     try {
       const response = await api.get(`/products?category=${categoryId}&pageSize=5`);
       const products = response.data?.products || [];
-      
+
       setCategoryProducts(prev => ({
         ...prev,
         [categoryId]: products
@@ -416,7 +416,7 @@ responseListener.remove();
     setCatPage(1);
     setCatTotalPages(1);
     setBottomSheetOpen(true);
-    
+
     // Pequeno delay para garantir que o bottomsheet está aberto antes de carregar
     setTimeout(() => {
       bottomSheetRef.current?.expand?.();
@@ -426,26 +426,26 @@ responseListener.remove();
 
   const loadCategoryProducts = async (categoryId, page = 1, append = false) => {
     if (loadingCatProducts && !append) return;
-        
+
     // Se for carregar mais produtos (scroll), usar loading diferente
     if (append) {
       setLoadingMoreProducts(true);
     } else {
       setLoadingCatProducts(true);
     }
-    
+
     try {
       const response = await api.get(`/products/bycategory/${categoryId}?page=${page}&pageSize=20`);
-      
+
       // Ajuste para a estrutura do seu backend
       const products = response.data?.products || [];
       const totalPages = response.data?.totalPages || response.data?.pages || 1;
       const currentPage = response.data?.currentPage || response.data?.page || page;
-      
+
       setCatProducts(prev => {
         if (append) {
           // Evitar duplicatas ao fazer append
-          const newProducts = products.filter(newProduct => 
+          const newProducts = products.filter(newProduct =>
             !prev.some(existingProduct => existingProduct._id === newProduct._id)
           );
           return [...prev, ...newProducts];
@@ -453,7 +453,7 @@ responseListener.remove();
           return products;
         }
       });
-      
+
       setCatTotalPages(totalPages);
       setCatPage(currentPage);
     } catch (error) {
@@ -482,7 +482,7 @@ responseListener.remove();
   // Função para renderizar o footer da lista com loading
   const renderFooter = () => {
     if (!loadingMoreProducts) return null;
-    
+
     return (
       <View style={styles.footerLoader}>
         <ActivityIndicator size="small" color="#E85A4F" />
@@ -599,7 +599,7 @@ responseListener.remove();
                 maxToRenderPerBatch={5}
                 windowSize={5}
               />
-              
+
               {/* Produtos em Destaque */}
               {renderFeaturedProducts()}
 
@@ -623,66 +623,66 @@ responseListener.remove();
       )}
 
       {/* BottomSheet com produtos paginados da categoria */}
-<BottomSheetComponent
-  isOpen={bottomSheetOpen}
-  toggleSheet={() => {
-    setBottomSheetOpen(false);
-    bottomSheetRef.current?.close?.();
-  }}
-  ref={bottomSheetRef}
-  height={600} // ← aumenta um pouco para melhor experiência
->
-  <View style={styles.bottomSheetContent}>
-    {/* Header do BottomSheet */}
-    <View style={styles.bottomSheetHeader}>
-      <Text style={styles.bottomSheetTitle}>
-        Produtos em {selectedCategory?.name}
-      </Text>
-      <Text style={styles.productCountText}>
-        {catProducts.length} de {selectedCategory?.productCount || selectedCategory?.count || 0} produtos
-      </Text>
-
-      {/* Botão de fechar fixo */}
-      <TouchableOpacity
-        style={styles.closeButton}
-        onPress={() => {
+      <BottomSheetComponent
+        isOpen={bottomSheetOpen}
+        toggleSheet={() => {
           setBottomSheetOpen(false);
           bottomSheetRef.current?.close?.();
         }}
+        ref={bottomSheetRef}
+        height={600} // ← aumenta um pouco para melhor experiência
       >
-        <Ionicons name="close" size={26} color="#fff" />
-      </TouchableOpacity>
-    </View>
+        <View style={styles.bottomSheetContent}>
+          {/* Header do BottomSheet */}
+          <View style={styles.bottomSheetHeader}>
+            <Text style={styles.bottomSheetTitle}>
+              Produtos em {selectedCategory?.name}
+            </Text>
+            <Text style={styles.productCountText}>
+              {catProducts.length} de {selectedCategory?.productCount || selectedCategory?.count || 0} produtos
+            </Text>
 
-    {/* Lista de produtos */}
-    {loadingCatProducts && catProducts.length === 0 ? (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#E85A4F" />
-        <Text style={styles.loadingText}>Carregando produtos...</Text>
-      </View>
-    ) : (
-      <FlatList
-        data={catProducts}
-        keyExtractor={(item) => String(item._id)}
-        renderItem={renderProductRow}
-        onEndReached={debouncedLoadMore}
-        onEndReachedThreshold={0.5}
-        ListFooterComponent={renderFooter}
-        ListEmptyComponent={
-          !loadingCatProducts && (
-            <View style={styles.emptyContainer}>
-              <Text style={styles.empty}>Nenhum produto nesta categoria.</Text>
+            {/* Botão de fechar fixo */}
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => {
+                setBottomSheetOpen(false);
+                bottomSheetRef.current?.close?.();
+              }}
+            >
+              <Ionicons name="close" size={26} color="#fff" />
+            </TouchableOpacity>
+          </View>
+
+          {/* Lista de produtos */}
+          {loadingCatProducts && catProducts.length === 0 ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#E85A4F" />
+              <Text style={styles.loadingText}>Carregando produtos...</Text>
             </View>
-          )
-        }
-        contentContainerStyle={[
-          { paddingBottom: 90 }, // espaço extra para o botão flutuante
-          catProducts.length === 0 ? { flexGrow: 1 } : {}
-        ]}
-      />
-    )}
-  </View>
-</BottomSheetComponent>
+          ) : (
+            <FlatList
+              data={catProducts}
+              keyExtractor={(item) => String(item._id)}
+              renderItem={renderProductRow}
+              onEndReached={debouncedLoadMore}
+              onEndReachedThreshold={0.5}
+              ListFooterComponent={renderFooter}
+              ListEmptyComponent={
+                !loadingCatProducts && (
+                  <View style={styles.emptyContainer}>
+                    <Text style={styles.empty}>Nenhum produto nesta categoria.</Text>
+                  </View>
+                )
+              }
+              contentContainerStyle={[
+                { paddingBottom: 90 }, // espaço extra para o botão flutuante
+                catProducts.length === 0 ? { flexGrow: 1 } : {}
+              ]}
+            />
+          )}
+        </View>
+      </BottomSheetComponent>
 
       <FlashMessage position="top" />
 
@@ -788,27 +788,27 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     flex: 1,
   },
- closeButton: {
-  position: 'absolute',
-  top: 10,
-  right: 10,
-  backgroundColor: '#E85A4F',
-  borderRadius: 20,
-  width: 36,
-  height: 36,
-  justifyContent: 'center',
-  alignItems: 'center',
-  elevation: 3,
-  zIndex: 10,
-},
-bottomSheetHeader: {
-  marginBottom: 16,
-  alignItems: 'center',
-  paddingTop: 15,
-  paddingHorizontal: 10,
-  borderBottomWidth: 1,
-  borderBottomColor: '#eee',
-},
+  closeButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    backgroundColor: '#E85A4F',
+    borderRadius: 20,
+    width: 36,
+    height: 36,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 3,
+    zIndex: 10,
+  },
+  bottomSheetHeader: {
+    marginBottom: 16,
+    alignItems: 'center',
+    paddingTop: 15,
+    paddingHorizontal: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
 
   bottomSheetTitle: {
     fontSize: 20,
@@ -873,34 +873,41 @@ bottomSheetHeader: {
     color: '#E85A4F',
   },
 
-  // Estilos para categorias
+  // Estilos para categorias (Pills Modernizadas)
   wrapper: {
-    marginRight: 8,
-    backgroundColor: '#E85A4F',
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 20,
+    marginRight: 10,
+    backgroundColor: '#F3F4F6', // Cor neutra moderna
+    paddingVertical: 12,
+    paddingHorizontal: 18,
+    borderRadius: 15,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+    elevation: 2,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
   },
   title: {
     fontSize: 14,
-    fontWeight: 'bold',
-    color: 'white',
+    fontWeight: '600',
+    color: '#374151',
   },
   countBadge: {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    minWidth: 24,
-    height: 24,
+    backgroundColor: '#E85A4F',
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 6,
+    paddingHorizontal: 4,
   },
   countText: {
-    color: '#E85A4F',
-    fontSize: 12,
+    color: 'white',
+    fontSize: 10,
     fontWeight: 'bold',
   },
 
