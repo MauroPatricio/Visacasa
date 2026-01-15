@@ -1,46 +1,43 @@
 {
   "expo": {
-    "name": "visacasa",
+    "name": "Visacasa",
     "slug": "visacasa",
     "version": "1.0.0",
     "owner": "mpatricio",
     "orientation": "portrait",
-    "icon": "./assets/visacasa2.png",
     "userInterfaceStyle": "light",
+
+    "icon": "./assets/visacasa2.png",
+
     "splash": {
       "image": "./assets/visacasa2.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+
     "assetBundlePatterns": ["**/*"],
     "platforms": ["ios", "android", "web"],
+
+    "notification": {
+      "icon": "./assets/visacasa2.png",
+      "color": "#E85A4F",
+      "androidMode": "default",
+      "androidCollapsedTitle": "Visacasa"
+    },
 
     "android": {
       "package": "com.mpatricio.visacasa",
       "versionCode": 2,
-      "googleServicesFile": "./google-services.json",
+       "googleServicesFile": "./google-services.json",
       "icon": "./assets/visacasa2.png",
       "adaptiveIcon": {
         "foregroundImage": "./assets/visacasa2.png",
         "backgroundColor": "#ffffff"
       },
-	  
-	     "notification": {
-      "icon": "./assets/visacasa2.png",
-      "color": "#E85A4F",
-      "androidMode": "default",
-      "androidCollapsedTitle": "Visacasa",
-      "androidGoogleServicesFile": "./google-services.json",
-      "androidShowBadge": true
-
-    },
       "permissions": [
         "CAMERA",
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION",
-        "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE",
-        "RECORD_AUDIO",
         "INTERNET",
         "WAKE_LOCK",
         "VIBRATE",
@@ -50,7 +47,7 @@
       ],
       "config": {
         "googleMaps": {
-          "apiKey": "AIzaSyBCd2afNAEQpZLZzRvTKAC7t-aQQEyMxNA"
+          "apiKey": "@EXPO_GOOGLE_MAPS_APIKEY"
         }
       }
     },
@@ -60,10 +57,10 @@
       "bundleIdentifier": "com.mpatricio.visacasa",
       "icon": "./assets/visacasa2.png",
       "infoPlist": {
-        "NSCameraUsageDescription": "Visacasa precisa acessar sua câmera para permitir o envio de imagens.",
-        "NSPhotoLibraryUsageDescription": "Visacasa precisa acessar suas fotos para enviar imagens.",
+        "NSCameraUsageDescription": "O Visacasa precisa acessar a câmera para permitir o envio de imagens.",
+        "NSPhotoLibraryUsageDescription": "O Visacasa precisa acessar suas fotos para envio de imagens.",
         "UIBackgroundModes": ["fetch", "remote-notification"],
-        "NSUserTrackingUsageDescription": "Visacasa usa notificações para mantê-lo atualizado sobre pedidos e entregas."
+        "NSUserTrackingUsageDescription": "O Visacasa usa notificações para mantê-lo atualizado."
       }
     },
 
@@ -75,13 +72,13 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Permita que Visacasa acesse a câmera para tirar fotos."
+          "cameraPermission": "Permita que o Visacasa acesse a câmera."
         }
       ],
       [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "Permita que Visacasa acesse sua localização para encontrar entregadores próximos."
+          "locationAlwaysAndWhenInUsePermission": "Permita que o Visacasa acesse sua localização."
         }
       ],
       "expo-notifications",
@@ -89,10 +86,10 @@
         "expo-build-properties",
         {
           "android": {
-            "softwareKeyboardLayoutMode": "pan",
             "compileSdkVersion": 35,
             "targetSdkVersion": 35,
-            "buildToolsVersion": "35.0.0"
+            "buildToolsVersion": "35.0.0",
+            "softwareKeyboardLayoutMode": "pan"
           },
           "ios": {
             "deploymentTarget": "15.1"

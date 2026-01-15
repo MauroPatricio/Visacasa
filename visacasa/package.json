@@ -17,7 +17,7 @@
     "@react-navigation/native-stack": "6.9.12",
     "@reduxjs/toolkit": "2.9.0",
     "axios": "1.11.0",
-    "expo": "~53.0.23",
+    "expo": "~53.0.25",
     "expo-build-properties": "0.14.8",
     "expo-camera": "16.1.11",
     "expo-dev-client": "~5.2.4",
@@ -62,6 +62,9 @@
     "doctor": {
       "reactNativeDirectoryCheck": {
         "exclude": [
+          "geolib",
+          "react-native-keyboard-aware-scroll-view",
+          "react-native-toast-notifications",
           "react-native-heroicons",
           "haversine",
           "react-native-elements",
