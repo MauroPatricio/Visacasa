@@ -30,30 +30,30 @@ const reducer = (state, action) => {
       return { ...state, loading: true };
 
     case 'FETCH_SUCCESS':
-      return { ...state, loading: false, documentTypes: action.payload.documentTypes,  pages: action.payload.pages};
+      return { ...state, loading: false, documentTypes: action.payload.documentTypes, pages: action.payload.pages };
 
     case 'FETCH_FAIL':
       return { ...state, loading: false, error: action.payload };
 
 
-      case 'FETCH_USER_REQUEST':
-        return { ...state, loadingUser: true };
-  
-      case 'FETCH_USER_SUCCESS':
-        return { ...state, loadingUser: false, user: action.payload};
-  
-      case 'FETCH_USER_FAIL':
-        return { ...state, loadingUser: false, error: action.payload };
+    case 'FETCH_USER_REQUEST':
+      return { ...state, loadingUser: true };
+
+    case 'FETCH_USER_SUCCESS':
+      return { ...state, loadingUser: false, user: action.payload };
+
+    case 'FETCH_USER_FAIL':
+      return { ...state, loadingUser: false, error: action.payload };
 
 
-      case 'FETCH_REQUEST_PROVINCE':
-        return { ...state, loading: true };
-  
-      case 'FETCH_SUCCESS_PROVINCE':
-        return { ...state, loading: false, provinces: action.payload.provinces,  pages: action.payload.pages};
-  
-      case 'FETCH_FAIL_PROVINCE':
-        return { ...state, loading: false, error: action.payload };
+    case 'FETCH_REQUEST_PROVINCE':
+      return { ...state, loading: true };
+
+    case 'FETCH_SUCCESS_PROVINCE':
+      return { ...state, loading: false, provinces: action.payload.provinces, pages: action.payload.pages };
+
+    case 'FETCH_FAIL_PROVINCE':
+      return { ...state, loading: false, error: action.payload };
 
     case 'UPDATE_REQUEST':
       return { ...state, loadingUpdate: true };
@@ -74,14 +74,14 @@ const reducer = (state, action) => {
       return { ...state, errorUpload: action.payload, loadingUpload: false };
 
 
-      case 'COLORS_REQUEST':
-        return { ...state, loadColor: true };
-  
-      case 'COLORS_SUCCESS':
-        return { ...state, loadColor: false, colors: action.payload.colors };
-  
-      case 'COLORS_FAIL':
-        return { ...state, error: action.payload, loadColor: false };
+    case 'COLORS_REQUEST':
+      return { ...state, loadColor: true };
+
+    case 'COLORS_SUCCESS':
+      return { ...state, loadColor: false, colors: action.payload.colors };
+
+    case 'COLORS_FAIL':
+      return { ...state, error: action.payload, loadColor: false };
 
 
     default:
@@ -98,7 +98,7 @@ export default function ProfileScreen() {
   const [name, setName] = useState(userInfo.name);
   const [email, setEmail] = useState(userInfo.email);
   const [phoneNumber, setPhoneNumber] = useState(userInfo.phoneNumber);
-  const [ isApproved,setIsApproved] = useState(userInfo.isApproved);
+  const [isApproved, setIsApproved] = useState(userInfo.isApproved);
 
   const [password, setPassword] = useState('');
   const [confirm, setConfirmPassword] = useState('');
@@ -124,14 +124,14 @@ export default function ProfileScreen() {
 
   // detalhes do entregador
   const [isDeliveryMan, setIsDeliveryMan] = useState(false);
-  const [deliveryManPhoto, setDeliveryManPhoto] = useState('');
+  const [deliveryManPhoto] = useState('');
   const [deliveryManName, setDeliveryManName] = useState('');
   const [deliveryManPhoneNumber, setDeliveryManPhoneNumber] = useState('');
   const [deliveryMantransportType, setDeliveryMantransportType] = useState('');
   const [deliveryMantransportRegistration, setDeliveryMantransportRegistration] = useState('');
   const [deliveryMantransportColor, setDeliveryMantransportColor] = useState('');
 
-  
+
   const daysOfWeek = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
   const [workDaysWithTime, setWorkDaysWithTime] = useState([]);
   const [dayOfWeek, setDayOfWeek] = useState('');
@@ -145,44 +145,44 @@ export default function ProfileScreen() {
   const handleAddItem = () => {
     // Validar entrada do usuário, se necessário
     if (dayOfWeek && opentime && closetime) {
-let dayNumber = 0;
-        if(dayOfWeek){
-          const selectedWorkDay = workDaysWithTime.find((workDay) => workDay.dayOfWeek === dayOfWeek);    
+      let dayNumber = 0;
+      if (dayOfWeek) {
+        const selectedWorkDay = workDaysWithTime.find((workDay) => workDay.dayOfWeek === dayOfWeek);
 
-          if(!selectedWorkDay){
+        if (!selectedWorkDay) {
 
-            if(dayOfWeek.includes("Dom")|| dayOfWeek.includes("Sun"))
-            dayNumber=0;
-         if(dayOfWeek.includes("Seg")|| dayOfWeek.includes("Mon"))
-            dayNumber=1;
-         if(dayOfWeek.includes("Ter")|| dayOfWeek.includes("Tue"))
-            dayNumber=2;
-         if(dayOfWeek.includes("Qua")|| dayOfWeek.includes("Wed"))
-            dayNumber=3;
-         if(dayOfWeek.includes("Qui")|| dayOfWeek.includes("Thu"))
-            dayNumber=4;
-         if(dayOfWeek.includes("Sex")|| dayOfWeek.includes("Fri"))
-            dayNumber=5;
-         if(dayOfWeek.includes("Sab")|| dayOfWeek.includes("Sat")|| dayOfWeek.includes("Sáb"))
-            dayNumber=6;
-         if(dayOfWeek.includes("Fer")|| dayOfWeek.includes("Hol"))
-             dayNumber=7;
+          if (dayOfWeek.includes("Dom") || dayOfWeek.includes("Sun"))
+            dayNumber = 0;
+          if (dayOfWeek.includes("Seg") || dayOfWeek.includes("Mon"))
+            dayNumber = 1;
+          if (dayOfWeek.includes("Ter") || dayOfWeek.includes("Tue"))
+            dayNumber = 2;
+          if (dayOfWeek.includes("Qua") || dayOfWeek.includes("Wed"))
+            dayNumber = 3;
+          if (dayOfWeek.includes("Qui") || dayOfWeek.includes("Thu"))
+            dayNumber = 4;
+          if (dayOfWeek.includes("Sex") || dayOfWeek.includes("Fri"))
+            dayNumber = 5;
+          if (dayOfWeek.includes("Sab") || dayOfWeek.includes("Sat") || dayOfWeek.includes("Sáb"))
+            dayNumber = 6;
+          if (dayOfWeek.includes("Fer") || dayOfWeek.includes("Hol"))
+            dayNumber = 7;
 
-            const newItem = {
-              dayNumber,
-              dayOfWeek,
-              opentime,
-              closetime
-            };
-            setWorkDaysWithTime([...workDaysWithTime, newItem]);
-            setDayOfWeek('');
-            setOpentime('');
-            setClosetime('');
-          
-          }
-        
+          const newItem = {
+            dayNumber,
+            dayOfWeek,
+            opentime,
+            closetime
+          };
+          setWorkDaysWithTime([...workDaysWithTime, newItem]);
+          setDayOfWeek('');
+          setOpentime('');
+          setClosetime('');
+
         }
-      
+
+      }
+
     } else {
       // Lidar com erro de entrada inválida, se necessário
       toast.error('Por favor, preencha todos os campos.');
@@ -207,7 +207,7 @@ let dayNumber = 0;
 
 
   const [{ loadingUpdate, loadingUpload, provinces, loadColor, colors }, dispatch] = useReducer(reducer, {
-    loadingUpdate: false, 
+    loadingUpdate: false,
     loadColor: false,
   });
 
@@ -274,26 +274,26 @@ let dayNumber = 0;
       toast.error(getError(er));
     }
   };
-  useEffect(  () => {
+  useEffect(() => {
 
-    async function fetchData (){
+    async function fetchData() {
 
 
       dispatch({ type: 'FETCH_USER_REQUEST' });
-      try{
+      try {
         const { data } = await axios.get(`api/users/${userInfo._id}`);
-        
-        dispatch({ type: 'FETCH_USER_SUCCESS' , payload: data});
+
+        dispatch({ type: 'FETCH_USER_SUCCESS', payload: data });
 
 
-       setIsDeliveryMan(data.isDeliveryMan);
-    
+        setIsDeliveryMan(data.isDeliveryMan);
+
         if (userInfo.isSeller && data) {
           setIsSeller(true);
           setSellerName(data.seller.name);
           setSellerLogo(data.seller.logo);
           setSellerDescription(data.seller.description);
-          
+
           setPhoneNumberAccount(data.seller.phoneNumberAccount);
           setAlternativePhoneNumberAccount(data.seller.alternativePhoneNumberAccount);
           setAccountType(data.seller.accountType);
@@ -313,12 +313,12 @@ let dayNumber = 0;
         if (data.isDeliveryMan) {
           setDeliveryManPhoneNumber(data.phoneNumber);
           setDeliveryManName(data.name);
-          setDeliveryMantransportType(data.deliveryman!==undefined?data.deliveryman.transport_type:'');
-          setDeliveryMantransportColor(data.deliveryman!==undefined? data.deliveryman.transport_color:'');
-          setDeliveryMantransportRegistration(data.deliveryman!==undefined?data.deliveryman.transport_registration:'');
+          setDeliveryMantransportType(data.deliveryman !== undefined ? data.deliveryman.transport_type : '');
+          setDeliveryMantransportColor(data.deliveryman !== undefined ? data.deliveryman.transport_color : '');
+          setDeliveryMantransportRegistration(data.deliveryman !== undefined ? data.deliveryman.transport_registration : '');
         }
-  
-      }catch(e){
+
+      } catch (e) {
         dispatch({ type: 'FETCH_USER_FAIL', payload: getError(e) });
       }
     }
@@ -327,22 +327,22 @@ let dayNumber = 0;
 
 
 
-  
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         dispatch({ type: 'FETCH_REQUEST' });
 
         const { data } = await axios.get('/api/documents');
-        
+
         dispatch({ type: 'FETCH_SUCCESS', payload: data });
       } catch (err) {
         dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
       }
     };
-   
-      fetchData();
-    
+
+    fetchData();
+
   }, []);
 
   useEffect(() => {
@@ -351,13 +351,13 @@ let dayNumber = 0;
         dispatch({ type: 'FETCH_REQUEST_PROVINCE' });
 
         const { data } = await axios.get('/api/provinces');
-        
+
         dispatch({ type: 'FETCH_SUCCESS_PROVINCE', payload: data });
       } catch (err) {
         dispatch({ type: 'FETCH_FAIL_PROVINCE', payload: getError(err) });
       }
     };
-      fetchData();
+    fetchData();
   }, []);
 
   const uploadFileHandler = async (e) => {
@@ -426,35 +426,35 @@ let dayNumber = 0;
         {isDeliveryMan && (
           <div>
             <h2><b>Detalhes do veículo</b></h2>
-        <Form.Group className="mb-3" controlId="transportType">
-          <FontAwesomeIcon icon={faCar} /> <Form.Label>{t('vehicletype')}</Form.Label>
-            <Form.Select aria-label="Tipo de veículo"
-          value={deliveryMantransportType}
-          onChange={(e)=>setDeliveryMantransportType(e.target.value)} required>
-            <option value="">{t('select')}</option>
-            {transportTypes && transportTypes.map(transport => (
-            <option key={transport._id} value={transport.name}>
-              {transport.name}
-            </option>
-        ))}
-          </Form.Select>
-        </Form.Group>
+            <Form.Group className="mb-3" controlId="transportType">
+              <FontAwesomeIcon icon={faCar} /> <Form.Label>{t('vehicletype')}</Form.Label>
+              <Form.Select aria-label="Tipo de veículo"
+                value={deliveryMantransportType}
+                onChange={(e) => setDeliveryMantransportType(e.target.value)} required>
+                <option value="">{t('select')}</option>
+                {transportTypes && transportTypes.map(transport => (
+                  <option key={transport._id} value={transport.name}>
+                    {transport.name}
+                  </option>
+                ))}
+              </Form.Select>
+            </Form.Group>
 
-        <Form.Group className="mb-3" controlId="colorTransport">
-          <FontAwesomeIcon icon={faTextSlash} /> <Form.Label>{t('color')}</Form.Label>
-            <Form.Select aria-label="Cor do veículo"
-          value={deliveryMantransportColor}
-          onChange={(e)=>setDeliveryMantransportColor(e.target.value)} required>
-            <option value="">{t('select')}</option>
-            {colors && colors.map(color => (
-            <option key={color._id} value={color.name}>
-              {color.name}
-            </option>
-        ))}
-          </Form.Select>
-        </Form.Group>
+            <Form.Group className="mb-3" controlId="colorTransport">
+              <FontAwesomeIcon icon={faTextSlash} /> <Form.Label>{t('color')}</Form.Label>
+              <Form.Select aria-label="Cor do veículo"
+                value={deliveryMantransportColor}
+                onChange={(e) => setDeliveryMantransportColor(e.target.value)} required>
+                <option value="">{t('select')}</option>
+                {colors && colors.map(color => (
+                  <option key={color._id} value={color.name}>
+                    {color.name}
+                  </option>
+                ))}
+              </Form.Select>
+            </Form.Group>
 
-        <Form.Group className="mb-3" controlId="transportPlate">
+            <Form.Group className="mb-3" controlId="transportPlate">
               <FontAwesomeIcon icon={faDriversLicense} /> <Form.Label>{t('registration')}</Form.Label>
               <Form.Control
                 type="text"
@@ -464,12 +464,12 @@ let dayNumber = 0;
                   setDeliveryMantransportRegistration(e.target.value);
                 }}
               />
-        </Form.Group>
+            </Form.Group>
 
- 
+
           </div>
-          
-          )}
+
+        )}
 
 
         <Form.Check
@@ -519,238 +519,238 @@ let dayNumber = 0;
         ></Form.Check>
 
 
-    
 
-{isSeller && (
+
+        {isSeller && (
           <>
-          <br/>
-          <div ><h4>{t('additionaldata')}</h4>
+            <br />
+            <div ><h4>{t('additionaldata')}</h4>
 
-          <Form.Group className="mb-3" controlId="sellerPhoneAccount">
-          <FontAwesomeIcon icon={faListNumeric} /> <Form.Label>{t('phonenumbertransfers')}</Form.Label>
-          <Form.Control
-             type="text"
-             max={9}
-             maxLength={9}
-             pattern="[0-9]*"
-             title="Insira apenas números"
-             placeholder="8********"
-            value={phoneNumberAccount}
-            required
-            onChange={(e) => {
-              setPhoneNumberAccount(e.target.value);
-            }}
-          />
-        </Form.Group>
-
-        <Form.Group className="mb-3" controlId="sellerPhoneAccountAlternativo">
-          <FontAwesomeIcon icon={faListNumeric} /> <Form.Label>{t('phonenumbertransfersoptional')}</Form.Label>
-          <Form.Control
-             type="text"
-             max={9}
-             maxLength={9}
-             pattern="[0-9]*"
-             title="Insira apenas números"
-             placeholder="8********"
-            value={alternativePhoneNumberAccount}
-            onChange={(e) => {
-              setAlternativePhoneNumberAccount(e.target.value);
-            }}
-          />
-        </Form.Group>
-          
-          <Form.Group className="mb-3" controlId="sellerAccountType">
-          <FontAwesomeIcon icon={faTextSlash} /> <Form.Label>{t('accounttype')}</Form.Label>
-            <Form.Select aria-label="Tipo de conta"
-          value={accountType}
-          onChange={(e)=>setAccountType(e.target.value)} required>
-            <option value="">{t('select')}</option>
-            {accountTypes && accountTypes.map(account => (
-            <option key={account._id} value={account.name}>
-              {account.name}
-            </option>
-        ))}
-          </Form.Select>
-        </Form.Group>
-
-        <Form.Group className="mb-3" controlId="sellerAccountNumber">
-          <FontAwesomeIcon icon={faListNumeric} /> <Form.Label>{t('accountnumber')}</Form.Label>
-          <Form.Control
-            type="text"
-            value={accountNumber}
-            required
-            onChange={(e) => {
-              setAccountNumber(e.target.value);
-            }}
-          />
-        </Form.Group>
-
-
-        <Form.Group className="mb-3" controlId="sellerAccountTypeAlternativo">
-          <FontAwesomeIcon icon={faTextSlash} /> <Form.Label>{t('accounttypeoptional')}</Form.Label>
-            <Form.Select aria-label="Tipo de conta alternativo (opcional)"
-          value={alternativeAccountType}
-          onChange={(e)=>setAlternativeAccountType(e.target.value)} required>
-            <option value="">{t('select')}</option>
-            {accountTypes && accountTypes.map(account => (
-            <option key={account._id} value={account.name}>
-              {account.name}
-            </option>
-        ))}
-          </Form.Select>
-        </Form.Group>
-
-        <Form.Group className="mb-3" controlId="sellerAccountNumberAlternativo">
-          <FontAwesomeIcon icon={faListNumeric} /> <Form.Label>{t('accountnumberoptional')}</Form.Label>
-          <Form.Control
-            type="text"
-            value={alternativeAccountNumber}
-            onChange={(e) => {
-              setAlternativeAccountNumber(e.target.value);
-            }}
-          />
-        </Form.Group>
-
-      
-          </div>
-
-         
-          <br/>
-          <div><h4>{t('storedetails')} </h4>
-          <Form.Group className="mb-3" controlId="sellerName">
-          <FontAwesomeIcon icon={faTextSlash} /> <Form.Label>{t('storename')}</Form.Label>
-          <Form.Control
-            type="text"
-            value={sellerName}
-            required
-            onChange={(e) => {
-              setSellerName(e.target.value);
-            }}
-          />
-        </Form.Group>
-
-
-        <Form.Group className="mb-3" controlId="sellerLogo">
-              <Form.Label>{t('storelogo')}</Form.Label>
-              {sellerLogo && (
-                <img
-                  style={{
-                    width: '6rem',
-                    height: '6rem',
-                    alignItems: 'center',
-                    alignContent: 'center',
+              <Form.Group className="mb-3" controlId="sellerPhoneAccount">
+                <FontAwesomeIcon icon={faListNumeric} /> <Form.Label>{t('phonenumbertransfers')}</Form.Label>
+                <Form.Control
+                  type="text"
+                  max={9}
+                  maxLength={9}
+                  pattern="[0-9]*"
+                  title="Insira apenas números"
+                  placeholder="8********"
+                  value={phoneNumberAccount}
+                  required
+                  onChange={(e) => {
+                    setPhoneNumberAccount(e.target.value);
                   }}
-                  src={sellerLogo}
-                  alt={name}
-                  className="card-img-top"
-                ></img>
-              )}
-            </Form.Group>
+                />
+              </Form.Group>
 
-            <Form.Group className="mb-3" controlId="imageFile">
-              <Form.Label>Upload logo</Form.Label>
-              <Form.Control type="file" onChange={uploadFileHandler} />
-              {loadingUpload && <LoadingBox></LoadingBox>}
-            </Form.Group>
+              <Form.Group className="mb-3" controlId="sellerPhoneAccountAlternativo">
+                <FontAwesomeIcon icon={faListNumeric} /> <Form.Label>{t('phonenumbertransfersoptional')}</Form.Label>
+                <Form.Control
+                  type="text"
+                  max={9}
+                  maxLength={9}
+                  pattern="[0-9]*"
+                  title="Insira apenas números"
+                  placeholder="8********"
+                  value={alternativePhoneNumberAccount}
+                  onChange={(e) => {
+                    setAlternativePhoneNumberAccount(e.target.value);
+                  }}
+                />
+              </Form.Group>
 
-          <Form.Group className="mb-3" controlId="sellerDescription">
-          <FontAwesomeIcon icon={faTextSlash} /> <Form.Label>{t('storedescription')}</Form.Label>
-          <Form.Control
-            type="text"
-            value={sellerDescription}
-            as="textarea"
-            required
-            onChange={(e) => {
-              setSellerDescription(e.target.value);
-            }}
-          />
-        </Form.Group>
+              <Form.Group className="mb-3" controlId="sellerAccountType">
+                <FontAwesomeIcon icon={faTextSlash} /> <Form.Label>{t('accounttype')}</Form.Label>
+                <Form.Select aria-label="Tipo de conta"
+                  value={accountType}
+                  onChange={(e) => setAccountType(e.target.value)} required>
+                  <option value="">{t('select')}</option>
+                  {accountTypes && accountTypes.map(account => (
+                    <option key={account._id} value={account.name}>
+                      {account.name}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
 
-        <Form.Group className="mb-3" controlId="sellerLocation">
-          <FontAwesomeIcon icon={faTextSlash} /> <Form.Label>{t('province')}</Form.Label>
-            <Form.Select aria-label="Provincia"
-          value={sellerLocation}
-          onChange={(e)=>setSellerLocation(e.target.value)} required>
-            <option value="">{t('select')}</option>
-            {provinces && provinces.map(province => (
-            <option key={province._id} value={province._id}>
-              {province.name}
-            </option>
-        ))}
-          </Form.Select>
-        </Form.Group>
+              <Form.Group className="mb-3" controlId="sellerAccountNumber">
+                <FontAwesomeIcon icon={faListNumeric} /> <Form.Label>{t('accountnumber')}</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={accountNumber}
+                  required
+                  onChange={(e) => {
+                    setAccountNumber(e.target.value);
+                  }}
+                />
+              </Form.Group>
 
-        <Form.Group className="mb-3" controlId="sellerDescription">
-          <FontAwesomeIcon icon={faTextSlash} /> <Form.Label>{t('storeaddress')}</Form.Label>
-          <Form.Control
-            type="text"
-            value={sellerAddress}
-            as="textarea"
-            required
-            onChange={(e) => {
-              setSellerAddress(e.target.value);
-            }}
-          />
-        </Form.Group>
 
-        <div>
-                  
-        <Form.Group className="mb-3" controlId="dayWeek">
-        <FaCalendarAlt /> <Form.Label>{t('weekday')}</Form.Label>
-            <Form.Select aria-label="Week"
-          value={dayOfWeek}
-          onChange={(e)=>setDayOfWeek(e.target.value)}>
-            <option value="">{t('select')}</option>
-            {daysOfWeek && daysOfWeek.map(day => (
-            <option key={day} value={day}>
-              {day}
-            </option>
-        ))}
-          </Form.Select>
-        </Form.Group>
-        <Form.Group className="mb-3" controlId="sellerOpentime">
-          <FontAwesomeIcon icon={faClock} /> <Form.Label>{t('openingtime')}</Form.Label>
-          <Form.Control
-            type="time"
-            value={opentime}
-            onChange={(e) => {
-              setOpentime(e.target.value);
-            }}
-          />
-        </Form.Group>
+              <Form.Group className="mb-3" controlId="sellerAccountTypeAlternativo">
+                <FontAwesomeIcon icon={faTextSlash} /> <Form.Label>{t('accounttypeoptional')}</Form.Label>
+                <Form.Select aria-label="Tipo de conta alternativo (opcional)"
+                  value={alternativeAccountType}
+                  onChange={(e) => setAlternativeAccountType(e.target.value)} required>
+                  <option value="">{t('select')}</option>
+                  {accountTypes && accountTypes.map(account => (
+                    <option key={account._id} value={account.name}>
+                      {account.name}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
 
-        <Form.Group className="mb-3" controlId="sellerClosetime">
-          <FontAwesomeIcon icon={faClockFour} /> <Form.Label>{t('closingtime')}</Form.Label>
-          <Form.Control
-            type="time"
-            value={closetime}
-            onChange={(e) => {
-              setClosetime(e.target.value);
-            }}
-          />
-        </Form.Group>
-            <Button onClick={handleAddItem}>{t('add')}</Button>
-       </div>
+              <Form.Group className="mb-3" controlId="sellerAccountNumberAlternativo">
+                <FontAwesomeIcon icon={faListNumeric} /> <Form.Label>{t('accountnumberoptional')}</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={alternativeAccountNumber}
+                  onChange={(e) => {
+                    setAlternativeAccountNumber(e.target.value);
+                  }}
+                />
+              </Form.Group>
 
-       {workDaysWithTime && <h6>{t('businessdays')}</h6>}
-      <ul>
-        {workDaysWithTime && workDaysWithTime.map((item, index) => (
-          <li key={index}>
-            {item.dayOfWeek}: {item.opentime} - {item.closetime}
-            <Button
-                        variant="light"
-                        onClick={() => removeDayWeek(index)}
-                      >
-                        {' '}
-                        <FontAwesomeIcon icon={faTimesCircle}></FontAwesomeIcon>
-                      </Button>
-          </li>
-        ))}
-      </ul>
 
-       
+            </div>
 
-        </div>
+
+            <br />
+            <div><h4>{t('storedetails')} </h4>
+              <Form.Group className="mb-3" controlId="sellerName">
+                <FontAwesomeIcon icon={faTextSlash} /> <Form.Label>{t('storename')}</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={sellerName}
+                  required
+                  onChange={(e) => {
+                    setSellerName(e.target.value);
+                  }}
+                />
+              </Form.Group>
+
+
+              <Form.Group className="mb-3" controlId="sellerLogo">
+                <Form.Label>{t('storelogo')}</Form.Label>
+                {sellerLogo && (
+                  <img
+                    style={{
+                      width: '6rem',
+                      height: '6rem',
+                      alignItems: 'center',
+                      alignContent: 'center',
+                    }}
+                    src={sellerLogo}
+                    alt={name}
+                    className="card-img-top"
+                  ></img>
+                )}
+              </Form.Group>
+
+              <Form.Group className="mb-3" controlId="imageFile">
+                <Form.Label>Upload logo</Form.Label>
+                <Form.Control type="file" onChange={uploadFileHandler} />
+                {loadingUpload && <LoadingBox></LoadingBox>}
+              </Form.Group>
+
+              <Form.Group className="mb-3" controlId="sellerDescription">
+                <FontAwesomeIcon icon={faTextSlash} /> <Form.Label>{t('storedescription')}</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={sellerDescription}
+                  as="textarea"
+                  required
+                  onChange={(e) => {
+                    setSellerDescription(e.target.value);
+                  }}
+                />
+              </Form.Group>
+
+              <Form.Group className="mb-3" controlId="sellerLocation">
+                <FontAwesomeIcon icon={faTextSlash} /> <Form.Label>{t('province')}</Form.Label>
+                <Form.Select aria-label="Provincia"
+                  value={sellerLocation}
+                  onChange={(e) => setSellerLocation(e.target.value)} required>
+                  <option value="">{t('select')}</option>
+                  {provinces && provinces.map(province => (
+                    <option key={province._id} value={province._id}>
+                      {province.name}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
+
+              <Form.Group className="mb-3" controlId="sellerDescription">
+                <FontAwesomeIcon icon={faTextSlash} /> <Form.Label>{t('storeaddress')}</Form.Label>
+                <Form.Control
+                  type="text"
+                  value={sellerAddress}
+                  as="textarea"
+                  required
+                  onChange={(e) => {
+                    setSellerAddress(e.target.value);
+                  }}
+                />
+              </Form.Group>
+
+              <div>
+
+                <Form.Group className="mb-3" controlId="dayWeek">
+                  <FaCalendarAlt /> <Form.Label>{t('weekday')}</Form.Label>
+                  <Form.Select aria-label="Week"
+                    value={dayOfWeek}
+                    onChange={(e) => setDayOfWeek(e.target.value)}>
+                    <option value="">{t('select')}</option>
+                    {daysOfWeek && daysOfWeek.map(day => (
+                      <option key={day} value={day}>
+                        {day}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="sellerOpentime">
+                  <FontAwesomeIcon icon={faClock} /> <Form.Label>{t('openingtime')}</Form.Label>
+                  <Form.Control
+                    type="time"
+                    value={opentime}
+                    onChange={(e) => {
+                      setOpentime(e.target.value);
+                    }}
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3" controlId="sellerClosetime">
+                  <FontAwesomeIcon icon={faClockFour} /> <Form.Label>{t('closingtime')}</Form.Label>
+                  <Form.Control
+                    type="time"
+                    value={closetime}
+                    onChange={(e) => {
+                      setClosetime(e.target.value);
+                    }}
+                  />
+                </Form.Group>
+                <Button onClick={handleAddItem}>{t('add')}</Button>
+              </div>
+
+              {workDaysWithTime && <h6>{t('businessdays')}</h6>}
+              <ul>
+                {workDaysWithTime && workDaysWithTime.map((item, index) => (
+                  <li key={index}>
+                    {item.dayOfWeek}: {item.opentime} - {item.closetime}
+                    <Button
+                      variant="light"
+                      onClick={() => removeDayWeek(index)}
+                    >
+                      {' '}
+                      <FontAwesomeIcon icon={faTimesCircle}></FontAwesomeIcon>
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+
+
+
+            </div>
           </>
         )}
 

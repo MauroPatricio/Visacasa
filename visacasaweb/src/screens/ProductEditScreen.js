@@ -755,7 +755,7 @@ export default function ProductEditScreen() {
                 alignContent: 'center',
               }}
               src={image}
-              className="card-img-top"
+              className=""
               alt={name}
             ></img>
 
@@ -784,7 +784,7 @@ export default function ProductEditScreen() {
                             alignContent: 'center',
                           }}
                           src={x}
-                          className="card-img-top"
+                          className=""
                           alt={x}
                         ></img>
                       }

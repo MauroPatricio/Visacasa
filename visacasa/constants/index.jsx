@@ -1,6 +1,6 @@
 
-const COLORS ={
-principal: "#3e2465"
+const COLORS = {
+    principal: "#E85A4F"
 }
 
 

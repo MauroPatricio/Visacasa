@@ -1,13 +1,13 @@
-import React, { useContext, useEffect, useReducer, useState } from 'react';
+import React, { useContext, useEffect, useReducer } from 'react';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 // import Form from 'react-bootstrap/Form';
 import { Helmet } from 'react-helmet-async';
 import Card from 'react-bootstrap/Card';
 import { Store } from '../Store.js';
-import {  useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import {  formatedDate, getError } from '../utils';
+import { formatedDate, getError } from '../utils';
 import MessageBox from '../components/MessageBox';
 
 import axios from 'axios';
@@ -16,7 +16,7 @@ import Badge from 'react-bootstrap/Badge';
 import ListGroup from 'react-bootstrap/ListGroup';
 import { toast } from 'react-toastify';
 import LoadingBox from '../components/LoadingBox.js';
-import  Button  from 'react-bootstrap/Button';
+import Button from 'react-bootstrap/Button';
 
 
 
@@ -30,71 +30,71 @@ const reducer = (state, action) => {
       return { ...state, loading: false, error: action.payload };
 
 
-      case 'PAYMENT_REQUEST':
-        return { ...state, loadingPayment: true };
-      case 'PAYMENT_SUCCESS':
-        return {
-          ...state,
-          loadingPayment: false,
-          successPayment: action.payload,
-        };
-      case 'PAYMENT_FAIL':
-        return {
-          ...state,
-          loadingPayment: false,
-          errorPayment: action.payload,
-        };
+    case 'PAYMENT_REQUEST':
+      return { ...state, loadingPayment: true };
+    case 'PAYMENT_SUCCESS':
+      return {
+        ...state,
+        loadingPayment: false,
+        successPayment: action.payload,
+      };
+    case 'PAYMENT_FAIL':
+      return {
+        ...state,
+        loadingPayment: false,
+        errorPayment: action.payload,
+      };
 
 
-        case 'ACCEPTED_BY_DELIVERMAN_REQUEST':
-          return { ...state, loadingAcceptedByDeliverman: true };
-        case 'ACCEPTED_BY_DELIVERMAN_SUCCESS':
-          return { ...state, loadingAcceptedByDeliverman: false, successAcceptedByDeliverman: true };
-        case 'ACCEPTED_BY_DELIVERMAN_FAIL':
-          return {
-            ...state,
-            loadingAcceptedByDeliverman: false,
-            successAcceptedByDeliverman: false,
-            errorAcceptedByDeliverman: action.payload,
-          };
+    case 'ACCEPTED_BY_DELIVERMAN_REQUEST':
+      return { ...state, loadingAcceptedByDeliverman: true };
+    case 'ACCEPTED_BY_DELIVERMAN_SUCCESS':
+      return { ...state, loadingAcceptedByDeliverman: false, successAcceptedByDeliverman: true };
+    case 'ACCEPTED_BY_DELIVERMAN_FAIL':
+      return {
+        ...state,
+        loadingAcceptedByDeliverman: false,
+        successAcceptedByDeliverman: false,
+        errorAcceptedByDeliverman: action.payload,
+      };
 
 
-          case 'CONFIRM_IN_TRANSIT_REQUEST':
-            return { ...state, loadingInTransit: true };
-            
-            case 'CONFIRM_IN_TRANSIT_SUCCESS':
-            return {
-              ...state,
-              loadingInTransit: false,
-              successInTransit: action.payload,
-            };
-      
-            case 'CONFIRM_IN_TRANSIT_FAIL':
-              return {
-                ...state,
-                loadingInTransit: false,
-                errorInTransit: action.payload,
-              };
+    case 'CONFIRM_IN_TRANSIT_REQUEST':
+      return { ...state, loadingInTransit: true };
+
+    case 'CONFIRM_IN_TRANSIT_SUCCESS':
+      return {
+        ...state,
+        loadingInTransit: false,
+        successInTransit: action.payload,
+      };
+
+    case 'CONFIRM_IN_TRANSIT_FAIL':
+      return {
+        ...state,
+        loadingInTransit: false,
+        errorInTransit: action.payload,
+      };
 
 
 
-              case 'CONFIRM_DESTINATION_REQUEST':
-                return { ...state, loadingDestination: true };
-              case 'CONFIRM_DESTINATION_SUCCESS':
-                return {
-                  ...state,
-                  loadingDestination: false,
-                  successDestination: action.payload,
-                };
-              case 'CONFIRM_DESTINATION_FAIL':
-                return {
-                  ...state,
-                  loadingDestination: false,
-                  errorDestination: action.payload,
-                };
+    case 'CONFIRM_DESTINATION_REQUEST':
+      return { ...state, loadingDestination: true };
+    case 'CONFIRM_DESTINATION_SUCCESS':
+      return {
+        ...state,
+        loadingDestination: false,
+        successDestination: action.payload,
+      };
+    case 'CONFIRM_DESTINATION_FAIL':
+      return {
+        ...state,
+        loadingDestination: false,
+        errorDestination: action.payload,
+      };
 
 
-                case 'DELIVER_REQUEST':
+    case 'DELIVER_REQUEST':
       return { ...state, loadingDeliver: true };
     case 'DELIVER_SUCCESS':
       return { ...state, loadingDeliver: false, successDeliver: true };
@@ -118,10 +118,10 @@ export default function RequestDelivermanProgressScreen() {
 
   const { id: requestDelivId } = params;
 
-  const [{ loading, requestDeliv, loadingPayment, loadingDeliver, loadingInTransit, loadingDestination}, dispatch] = useReducer(reducer, { loading: false, requestDeliv: {}});
-  const { state, dispatch: ctxDispatch } = useContext(Store);
+  const [{ requestDeliv, loadingPayment, loadingDeliver, loadingInTransit, loadingDestination }, dispatch] = useReducer(reducer, { requestDeliv: {} });
+  const { state } = useContext(Store);
   const navigate = useNavigate();
-  const { userInfo} = state;
+  const { userInfo } = state;
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -207,7 +207,7 @@ export default function RequestDelivermanProgressScreen() {
       dispatch({ type: 'CONFIRM_IN_TRANSIT_REQUEST' });
       const { data } = await axios.put(
         `/api/requestdeliver/${requestDelivId}/intransit`,
-        {userInfo},
+        { userInfo },
         { headers: { Authorization: `Bearer ${userInfo.token}` } }
       );
       dispatch({ type: 'CONFIRM_IN_TRANSIT_SUCCESS', payload: data });
@@ -218,7 +218,7 @@ export default function RequestDelivermanProgressScreen() {
     }
   };
 
-  
+
   const confirmArriveDestinationOrderHandler = async (e) => {
     e.preventDefault();
     try {
@@ -254,7 +254,7 @@ export default function RequestDelivermanProgressScreen() {
     }
   };
 
-  
+
   const payOrderHandler = async (e) => {
     e.preventDefault();
     try {
@@ -282,7 +282,7 @@ export default function RequestDelivermanProgressScreen() {
 
       {/* <CheckoutSteps step1 step2 step3 step4 ></CheckoutSteps> */}
       <h1>{t('order')}  № {requestDeliv && requestDeliv.code}</h1>
-      {requestDeliv && requestDeliv.status && <RequestDeliverSteps { ...requestDeliv}></RequestDeliverSteps>}
+      {requestDeliv && requestDeliv.status && <RequestDeliverSteps {...requestDeliv}></RequestDeliverSteps>}
 
       <Row>
         <Col md={8}>
@@ -293,15 +293,15 @@ export default function RequestDelivermanProgressScreen() {
               </Card.Title>
               <Card.Text>
                 <strong>{t('nameoforderreceiver')}:</strong> {requestDeliv && requestDeliv.name}
-                <br/>
+                <br />
                 <strong>{t('numbertocall')}:</strong>  {requestDeliv && requestDeliv.phoneNumber}
-                <br />              
+                <br />
                 <strong>{t('transporttypetoroder')}:</strong> {requestDeliv && requestDeliv.transportType}
-                <br/>
+                <br />
                 <strong>{t('typeofgoodtodeliver')}:</strong> {requestDeliv && requestDeliv.goodType}
-                <br/>
+                <br />
                 <strong>{t('detailsofdeliver')}:</strong> {requestDeliv && requestDeliv.description}
-                <br/>
+                <br />
               </Card.Text>
             </Card.Body>
           </Card>
@@ -315,20 +315,20 @@ export default function RequestDelivermanProgressScreen() {
 
 
               <Card.Text>
-              <strong>{t('deliveryplace')}:</strong> {requestDeliv && requestDeliv.deliverCity}
-                <br/>
-              <strong>{t('origin')}:</strong> {requestDeliv && requestDeliv.origin}
-                <br/>
+                <strong>{t('deliveryplace')}:</strong> {requestDeliv && requestDeliv.deliverCity}
+                <br />
+                <strong>{t('origin')}:</strong> {requestDeliv && requestDeliv.origin}
+                <br />
                 <strong>{t('destination')}:</strong> {requestDeliv && requestDeliv.destination}
-                <br/>
+                <br />
                 {requestDeliv && requestDeliv.isDelivered ? (
-                <MessageBox variant="success">
-                  {t('deliveredon')} {formatedDate(requestDeliv.deliveredAt)}
-                </MessageBox>
-              ) : (
-                <MessageBox variant="danger">{t('notdelivered')}</MessageBox>
-              )}
-                </Card.Text>
+                  <MessageBox variant="success">
+                    {t('deliveredon')} {formatedDate(requestDeliv.deliveredAt)}
+                  </MessageBox>
+                ) : (
+                  <MessageBox variant="danger">{t('notdelivered')}</MessageBox>
+                )}
+              </Card.Text>
             </Card.Body>
           </Card>
 
@@ -353,22 +353,22 @@ export default function RequestDelivermanProgressScreen() {
 
           {requestDeliv.deliveryman && (
             <Card className="mb-3">
-            <Card.Body>
-              <Card.Title>{t('deliverdetails')}</Card.Title>
-              <Card.Text>
-              <strong>{t('name')}:</strong>{' '}{ requestDeliv.deliveryman.name}<br/>
-              <strong>{t('phone')}:</strong> {' '}{ requestDeliv.deliveryman.phoneNumber}<br/>
-              <strong>{t('transport')}:</strong>{' '}{ requestDeliv.deliveryman.transport_type}<br/>
-              <strong>{t('registration')}:</strong>{' '}{ requestDeliv.deliveryman.transport_registration}<br/>
-              <strong>{t('color')}:</strong>{' '}{ requestDeliv.deliveryman.transport_color}<br/>
-              </Card.Text>
-             
-            </Card.Body>
-          </Card>
+              <Card.Body>
+                <Card.Title>{t('deliverdetails')}</Card.Title>
+                <Card.Text>
+                  <strong>{t('name')}:</strong>{' '}{requestDeliv.deliveryman.name}<br />
+                  <strong>{t('phone')}:</strong> {' '}{requestDeliv.deliveryman.phoneNumber}<br />
+                  <strong>{t('transport')}:</strong>{' '}{requestDeliv.deliveryman.transport_type}<br />
+                  <strong>{t('registration')}:</strong>{' '}{requestDeliv.deliveryman.transport_registration}<br />
+                  <strong>{t('color')}:</strong>{' '}{requestDeliv.deliveryman.transport_color}<br />
+                </Card.Text>
+
+              </Card.Body>
+            </Card>
           )}
 
           <Card className="mb-3">
-            {!userInfo.isDeliveryMan || userInfo.isAdmin &&<Card.Body>
+            {(!userInfo.isDeliveryMan || userInfo.isAdmin) && <Card.Body>
               <Card.Title>{t('ordersummary')}</Card.Title>
               <ListGroup variant="flush">
                 <ListGroup.Item>
@@ -385,19 +385,19 @@ export default function RequestDelivermanProgressScreen() {
                   <Row>
                     <Col>{t('price')}</Col>
                     <Col>
-                        {requestDeliv && requestDeliv.deliveryPrice} MT
-                  
+                      {requestDeliv && requestDeliv.deliveryPrice} MT
+
                     </Col>
                   </Row>
                 </ListGroup.Item>
-                
-               
+
+
               </ListGroup>
             </Card.Body>}
           </Card>
 
 
-    
+
           {userInfo.isAdmin && !requestDeliv.isPaid && requestDeliv.status !== 'Cancelado' && (
             <ListGroup.Item>
               {loadingPayment && <LoadingBox></LoadingBox>}
@@ -419,7 +419,7 @@ export default function RequestDelivermanProgressScreen() {
           {(userInfo.isAdmin) &&
             !requestDeliv.isDelivered &&
             requestDeliv.status === 'Pendente' &&
-            requestDeliv.status !=='Em trânsito' &&
+            requestDeliv.status !== 'Em trânsito' &&
             requestDeliv.status !== 'No destino indicado' &&
             requestDeliv.isPaid && (
               <ListGroup.Item>
@@ -431,7 +431,7 @@ export default function RequestDelivermanProgressScreen() {
                     type="button"
                     onClick={acceptedByDelivermanHandler}
                   >
-                   Aceite pelo entregador
+                    Aceite pelo entregador
                   </Button>
                 </div>
               </ListGroup.Item>
@@ -441,7 +441,7 @@ export default function RequestDelivermanProgressScreen() {
           {(userInfo.isAdmin || userInfo.isDeliveryMan) &&
             !requestDeliv.isDelivered &&
             requestDeliv.status === 'Aceite pelo entregador' &&
-            requestDeliv.status !=='Em trânsito' &&
+            requestDeliv.status !== 'Em trânsito' &&
             requestDeliv.status !== 'No destino indicado' &&
             requestDeliv.isPaid && (
               <ListGroup.Item>
@@ -460,33 +460,33 @@ export default function RequestDelivermanProgressScreen() {
             )}
 
           &nbsp;
-        {(userInfo.isAdmin || userInfo.isDeliveryMan) &&
-        
-        requestDeliv.status==='Em trânsito' &&
-        requestDeliv.status !== 'Aceite' &&
-        requestDeliv.status !== 'Pronto' &&
-        requestDeliv.status !== 'No destino indicado' &&   !requestDeliv.isDelivered &&
-        requestDeliv.isPaid && (
-            <ListGroup.Item>
-              {loadingDestination && <LoadingBox></LoadingBox>}
-              <div className="d-grid">
-                <Button
-                  className="customButtom"
-                  variant="light"
-                  type="button"
-                  onClick={confirmArriveDestinationOrderHandler}
-                >
-                  No destino indicado
-                </Button>
-              </div>
-            </ListGroup.Item>
-          )}
+          {(userInfo.isAdmin || userInfo.isDeliveryMan) &&
+
+            requestDeliv.status === 'Em trânsito' &&
+            requestDeliv.status !== 'Aceite' &&
+            requestDeliv.status !== 'Pronto' &&
+            requestDeliv.status !== 'No destino indicado' && !requestDeliv.isDelivered &&
+            requestDeliv.isPaid && (
+              <ListGroup.Item>
+                {loadingDestination && <LoadingBox></LoadingBox>}
+                <div className="d-grid">
+                  <Button
+                    className="customButtom"
+                    variant="light"
+                    type="button"
+                    onClick={confirmArriveDestinationOrderHandler}
+                  >
+                    No destino indicado
+                  </Button>
+                </div>
+              </ListGroup.Item>
+            )}
 
 
-        &nbsp;
+          &nbsp;
           {(userInfo.isAdmin ||
             userInfo.isDeliveryMan
-           ) &&
+          ) &&
             !requestDeliv.isDelivered &&
             requestDeliv.isInTransit &&
             requestDeliv.status === 'No destino indicado' &&

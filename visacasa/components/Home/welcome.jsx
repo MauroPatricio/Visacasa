@@ -11,30 +11,22 @@ const welcome = () => {
   return (
 
     <View>
-        <View style={{paddingBottom:30}}>
-                <Text style={styles.welcomeText('black', 30, 0)}><Text style={{ color: '#E85A4F' }}>Visa</Text>Casa</Text>
-
-              <Text style={styles.welcomeText2('black', 11, 0)}>MATERIAIS DE CONSTRUÇÃO</Text>
-            
-            </View>
-      
+      <View style={styles.container}>
+        <Text style={styles.welcomeText('black', 30, 0)}><Text style={{ color: '#E85A4F' }}>Visa</Text>Casa</Text>
+      </View>
       <View style={styles.searchContainer}>
-        <TouchableOpacity>
-          <Feather name="search" size={24}
-            style={styles.searchIcon} />
-        </TouchableOpacity>
         <View style={styles.searchWrapper}>
           <TextInput
             style={styles.searchInput}
             value=""
-            onPressIn={() => { navigation.navigate("Search") }}
+            onPressIn={() => { navigation.navigate('Pesquisa') }}
             placeholder='O que deseja para hoje?'
+            placeholderTextColor="#9CA3AF"
           />
         </View>
-        <View>
-          <TouchableOpacity style={styles.searchBtn}>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity style={styles.searchBtn} onPress={() => navigation.navigate('Pesquisa')}>
+          <Ionicons name="search-outline" size={24} color="white" />
+        </TouchableOpacity>
       </View>
     </View>
   )

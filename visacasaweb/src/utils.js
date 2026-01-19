@@ -2,11 +2,36 @@
 import { MdWifiOff } from "react-icons/md";
 
 export const getError = (error) => {
-  return error && error.response && error.response.data.message
-    ? error.response.data.message
-    : error && error.response.status===500?<div style={{ textAlign: 'center' }}><MdWifiOff/> Verifique a sua INTERNET</div>:error && error.response.status===503?<div>Formato de Imagem Invalido</div>:error;
-};
+  // Handle cases where error object is not properly structured
+  if (!error || !error.response) {
+    return error?.message || 'Ocorreu um erro desconhecido';
+  }
 
+  // Check for specific error messages
+  if (error?.response?.data?.message) {
+    return error.response.data.message;
+  }
+
+  // Handle specific status codes
+  switch (error?.response?.status) {
+    case 500:
+      return (
+        <div style={{ textAlign: 'center' }}>
+          <MdWifiOff /> Verifique a sua INTERNET
+        </div>
+      );
+    case 503:
+      return 'Formato de Imagem Inválido';
+    case 404:
+      return 'Recurso não encontrado';
+    case 401:
+      return 'Não autorizado - por favor faça login';
+    case 403:
+      return 'Acesso proibido';
+    default:
+      return error.message || 'Ocorreu um erro inesperado';
+  }
+};
 
 export const formatedDate = (dateToFormat) =>{
   const datetimeStr = dateToFormat;

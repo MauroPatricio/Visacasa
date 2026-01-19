@@ -1,46 +1,33 @@
 import axios from 'axios';
-import React, { useContext, useEffect } from 'react';
-
+import React, { useEffect, useReducer } from 'react';
 import { Link } from 'react-router-dom';
+import { Button } from 'react-bootstrap';
 import { getError, truncateString } from '../utils';
-import { useReducer } from 'react';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import { useTranslation } from 'react-i18next';
-import { Store } from '../Store';
+// import { Store } from '../Store';
+import '../styles/CarouselSlide.css'; // Arquivo de estilos separado
 
 const reducer = (state, action) => {
   switch (action.type) {
     case 'ITEMS_REQUEST':
       return { ...state, loadingPopular: true };
-
     case 'ITEMS_SUCCESS':
       return { ...state, loadingPopular: false, popularItems: action.payload.orders };
-
     case 'ITEMS_FAIL':
       return { ...state, loadingPopular: false };
-
     default:
       return state;
   }
 };
 
 export default function CarouselSlide() {
-
   const { t } = useTranslation();
-
-  const [{  popularItems, loadingPopular}, dispatch] = useReducer(reducer, {
+  const [{ popularItems, loadingPopular }, dispatch] = useReducer(reducer, {
     loadingPopular: true,
     error: '',
   });
-
-  const { state } = useContext(Store);
-
-  const {changelng} = state;
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -57,29 +44,39 @@ export default function CarouselSlide() {
     }
   }, [loadingPopular]);
 
-
   return (
-    <>
-<br/>
-     {popularItems && popularItems.length !== 0 && <h3>{t('featuredproducts')}</h3>} 
-    <Carousel showArrows infiniteLoop={true}  autoPlay showThumbs={false}  showIndicators={false} className='carousel-custom'>
-      {popularItems && popularItems.map((p) => (
-       <Link className="link" to={`/products/${p._id}`} key={p._id}>
-        <div key={p._id}>
-          <img className='img-carousel' src={p.image} alt={p.name} />
-                      {p && p.onSale &&  <span className="sale"><b>{t('onsale')}</b></span>}
-                      {p && p.onSale &&  <span className="sale-percentage"><b>{p.onSalePercentage*100}%</b></span>}
-           
-        {/* <br/><b>{changelng=='pt'?truncateString(p.nome,30):truncateString(p.name,30)}</b> */}
+    <div className="carousel-custom-wrapper">
+      <Carousel
+        showArrows={false}
+        infiniteLoop
+        autoPlay
+        interval={5000}
+        showThumbs={false}
+        showIndicators={true}
+        swipeable
+        emulateTouch
+        showStatus={false}
+        className="carousel-custom"
+      >
+        {popularItems &&
+          popularItems.map((p) => (
+            <Link className="carousel-link" to={`/products/${p._id}`} key={p._id}>
+              <div className="carousel-slide">
+                <img className="carousel-image" src={p.image} alt={p.name} />
 
-        <br/><b>{truncateString(p.name,30)}</b>
-
-        </div>
-        </Link>
-      ))}
-    </Carousel>
-    <br/>
-    </>
-
+                <div className="carousel-caption-premium">
+                  {p.onSale && (
+                    <div className="sale-badge-premium">
+                      {t('onsale')} - {p.onSalePercentage * 100}% OFF
+                    </div>
+                  )}
+                  <h2>{truncateString(p.name, 40)}</h2>
+                  <Button className="customButton">{t('shopnow')}</Button>
+                </div>
+              </div>
+            </Link>
+          ))}
+      </Carousel>
+    </div>
   );
 }

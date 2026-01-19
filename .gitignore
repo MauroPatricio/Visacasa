@@ -1,5 +1,6 @@
 node_modules/
 build
+
 # Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
 
 # Expo
@@ -28,7 +29,26 @@ yarn-error.*
 *.pem
 
 # local env files
-.env*.local
+.env
+.env.*
+!.env.example
 
 # typescript
 *.tsbuildinfo
+
+# Firebase & Credentials (SECURITY)
+google-services.json
+firebase-*.json
+credentials.json
+*.der
+
+# Personal Documents (SECURITY)
+*.pdf
+*.docx
+*.doc
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+lerna-debug.log*

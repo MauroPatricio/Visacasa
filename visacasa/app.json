@@ -5,63 +5,116 @@
     "version": "1.0.0",
     "owner": "mpatricio",
     "orientation": "portrait",
-    "icon": "./assets/visacasa2.png",
     "userInterfaceStyle": "light",
+
+    "icon": "./assets/visacasa2.png",
+
     "splash": {
       "image": "./assets/visacasa2.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.mpatricio.visacasa",
-      "infoPlist": {
-        "NSCameraUsageDescription": "Este aplicativo precisa acessar a câmera para permitir o envio de fotos."
-      }
+
+    "assetBundlePatterns": ["**/*"],
+    "platforms": ["ios", "android", "web"],
+
+    "notification": {
+      "icon": "./assets/visacasa2.png",
+      "color": "#E85A4F",
+      "androidMode": "default",
+      "androidCollapsedTitle": "Visacasa"
     },
+
     "android": {
+      "package": "com.mpatricio.visacasa",
+      "versionCode": 2,
+       "googleServicesFile": "./google-services.json",
+       
+      "icon": "./assets/visacasa2.png",
       "adaptiveIcon": {
         "foregroundImage": "./assets/visacasa2.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.mpatricio.visacasa",
       "permissions": [
         "CAMERA",
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION",
-        "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE",
-        "RECORD_AUDIO"
-      ]
+        "INTERNET",
+        "WAKE_LOCK",
+        "VIBRATE",
+        "RECEIVE_BOOT_COMPLETED",
+        "FOREGROUND_SERVICE",
+        "POST_NOTIFICATIONS"
+      ],
+      "config": {
+        "googleMaps": {
+          "apiKey": "@EXPO_GOOGLE_MAPS_APIKEY"
+        }
+      }
     },
+
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.mpatricio.visacasa",
+      "icon": "./assets/visacasa2.png",
+      "infoPlist": {
+        "NSCameraUsageDescription": "O Visacasa precisa acessar a câmera para permitir o envio de imagens.",
+        "NSPhotoLibraryUsageDescription": "O Visacasa precisa acessar suas fotos para envio de imagens.",
+        "UIBackgroundModes": ["fetch", "remote-notification"],
+        "NSUserTrackingUsageDescription": "O Visacasa usa notificações para mantê-lo atualizado."
+      }
+    },
+
     "web": {
       "favicon": "./assets/visacasa2.png"
     },
+
     "plugins": [
       [
         "expo-camera",
         {
-          "cameraPermission": "Permita que visacasa acesse a câmera para tirar fotos."
+          "cameraPermission": "Permita que o Visacasa acesse a câmera."
         }
       ],
       [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "Permita que visacasa acesse sua localização para encontrar entregadores próximos."
+          "locationAlwaysAndWhenInUsePermission": "Permita que o Visacasa acesse sua localização."
         }
       ],
       "expo-notifications",
-      "expo-build-properties",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 35,
+            "targetSdkVersion": 35,
+            "buildToolsVersion": "35.0.0",
+            "softwareKeyboardLayoutMode": "pan"
+          },
+          "ios": {
+            "deploymentTarget": "15.1"
+          }
+        }
+      ],
       "expo-font"
     ],
+
     "extra": {
+      "firebase": {
+        "apiKey": "AIzaSyAssq-4rWO4Ju9xg-PcNH0k3bAAkDerAY4",
+        "authDomain": "nhiquela-4bfb5.firebaseapp.com",
+        "projectId": "nhiquela-4bfb5",
+        "storageBucket": "nhiquela-4bfb5.firebasestorage.app",
+        "messagingSenderId": "127489638441",
+        "appId": "1:127489638441:web:27d4f40299cb1324ca9c38",
+        "measurementId": "G-FN5JGWV1S4"
+      },
       "eas": {
         "projectId": "788966d7-889d-41c2-b35c-85a48359b8d7"
       }
     },
-   "runtimeVersion": "1.0.0"
+
+    "runtimeVersion": "1.0.0"
   }
 }

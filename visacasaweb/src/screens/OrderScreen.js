@@ -17,9 +17,9 @@ import OrderSteps from '../components/OrdersSteps';
 import { FaMoneyBillAlt } from "react-icons/fa";
 
 
-import {Modal, Form} from 'react-bootstrap';
+import { Modal, Form } from 'react-bootstrap';
 import { t } from 'i18next';
-import InvoiceGenerator from '../components/InvoiceGenerator';
+// import InvoiceGenerator from '../components/InvoiceGenerator';
 
 function reducer(state, action) {
   switch (action.type) {
@@ -42,42 +42,42 @@ function reducer(state, action) {
         errorDeliver: action.payload,
       };
 
-      case 'AVAILABLE_TO_DELIVER_REQUEST':
-        return { ...state, loadingAvaliableToDeliver: true };
-      case 'AVAILABLE_TO_DELIVER_SUCCESS':
-        return { ...state, loadingAvaliableToDeliver: false, successAvaliableToDeliver: true };
-      case 'AVAILABLE_TO_DELIVER_FAIL':
-        return {
-          ...state,
-          loadingAvaliableToDeliver: false,
-          successAvaliableToDeliver: false,
-          errorAvaliableToDeliver: action.payload,
-        };
+    case 'AVAILABLE_TO_DELIVER_REQUEST':
+      return { ...state, loadingAvaliableToDeliver: true };
+    case 'AVAILABLE_TO_DELIVER_SUCCESS':
+      return { ...state, loadingAvaliableToDeliver: false, successAvaliableToDeliver: true };
+    case 'AVAILABLE_TO_DELIVER_FAIL':
+      return {
+        ...state,
+        loadingAvaliableToDeliver: false,
+        successAvaliableToDeliver: false,
+        errorAvaliableToDeliver: action.payload,
+      };
 
 
-        case 'ACCEPTED_BY_DELIVERMAN_REQUEST':
-          return { ...state, loadingAcceptedByDeliverman: true };
-        case 'ACCEPTED_BY_DELIVERMAN_SUCCESS':
-          return { ...state, loadingAcceptedByDeliverman: false, successAcceptedByDeliverman: true };
-        case 'ACCEPTED_BY_DELIVERMAN_FAIL':
-          return {
-            ...state,
-            loadingAcceptedByDeliverman: false,
-            successAcceptedByDeliverman: false,
-            errorAcceptedByDeliverman: action.payload,
-          };
+    case 'ACCEPTED_BY_DELIVERMAN_REQUEST':
+      return { ...state, loadingAcceptedByDeliverman: true };
+    case 'ACCEPTED_BY_DELIVERMAN_SUCCESS':
+      return { ...state, loadingAcceptedByDeliverman: false, successAcceptedByDeliverman: true };
+    case 'ACCEPTED_BY_DELIVERMAN_FAIL':
+      return {
+        ...state,
+        loadingAcceptedByDeliverman: false,
+        successAcceptedByDeliverman: false,
+        errorAcceptedByDeliverman: action.payload,
+      };
 
 
-          case 'SELLER_DETAILS_REQUEST':
-            return { ...state, loadingSeller: true };
-      
-          case 'SELLER_DETAILS_SUCCESS':
-            return { ...state, sellerDetails: action.payload, loadingSeller: false };
-      
-          case 'SELLER_DETAILS_FAIL':
-            return { ...state, errorSeller: action.payload, loadingSeller: false };
-      
-      
+    case 'SELLER_DETAILS_REQUEST':
+      return { ...state, loadingSeller: true };
+
+    case 'SELLER_DETAILS_SUCCESS':
+      return { ...state, sellerDetails: action.payload, loadingSeller: false };
+
+    case 'SELLER_DETAILS_FAIL':
+      return { ...state, errorSeller: action.payload, loadingSeller: false };
+
+
 
     case 'PAYMENT_REQUEST':
       return { ...state, loadingPayment: true };
@@ -94,22 +94,22 @@ function reducer(state, action) {
         errorPayment: action.payload,
       };
 
-      case 'CONFIRM_IN_TRANSIT_REQUEST':
+    case 'CONFIRM_IN_TRANSIT_REQUEST':
       return { ...state, loadingInTransit: true };
-      
-      case 'CONFIRM_IN_TRANSIT_SUCCESS':
+
+    case 'CONFIRM_IN_TRANSIT_SUCCESS':
       return {
         ...state,
         loadingInTransit: false,
         successInTransit: action.payload,
       };
 
-      case 'CONFIRM_IN_TRANSIT_FAIL':
-        return {
-          ...state,
-          loadingInTransit: false,
-          errorInTransit: action.payload,
-        };
+    case 'CONFIRM_IN_TRANSIT_FAIL':
+      return {
+        ...state,
+        loadingInTransit: false,
+        errorInTransit: action.payload,
+      };
 
     case 'CONFIRM_DESTINATION_REQUEST':
       return { ...state, loadingDestination: true };
@@ -189,13 +189,15 @@ export default function OrderScreen() {
   };
 
 
-  const calculateReducedPrice =(originalPrice) =>{
-    return originalPrice - (originalPrice * 0.10);
-}
+  /*
+    const calculateReducedPrice =(originalPrice) =>{
+      return originalPrice - (originalPrice * 0.10);
+  }
+  */
 
-// Example usage
+  // Example usage
 
-  
+
 
 
   const [
@@ -221,7 +223,7 @@ export default function OrderScreen() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-  
+
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -260,7 +262,7 @@ export default function OrderScreen() {
       fetchOrder();
     }
 
-    if(loadingAcceptedByDeliverman){
+    if (loadingAcceptedByDeliverman) {
       fetchOrder();
     }
   }, [
@@ -275,25 +277,25 @@ export default function OrderScreen() {
     loadingAvaliableToDeliver,
     loadingAcceptedByDeliverman
   ]);
-  
-useEffect(() => {
-  const fetchSellerDetails = async () => {
-    try {
-      dispatch({ type: 'SELLER_DETAILS_REQUEST' });
-      if(order.orderItems){
-        setSellerId(order.orderItems[0].seller);
-  
-        const { data } = await axios.get(`/api/users/${sellerId}`, {  headers: { authorization: `Bearer ${userInfo.token}` },});
-        setSeller(data)
-        dispatch({ type: 'SELLER_DETAILS_SUCCESS', payload: data });
 
+  useEffect(() => {
+    const fetchSellerDetails = async () => {
+      try {
+        dispatch({ type: 'SELLER_DETAILS_REQUEST' });
+        if (order.orderItems) {
+          setSellerId(order.orderItems[0].seller);
+
+          const { data } = await axios.get(`/api/users/${sellerId}`, { headers: { authorization: `Bearer ${userInfo.token}` }, });
+          setSeller(data)
+          dispatch({ type: 'SELLER_DETAILS_SUCCESS', payload: data });
+
+        }
+      } catch (err) {
+        dispatch({ type: 'SELLER_DETAILS_FAIL', payload: getError(err) });
       }
-    } catch (err) {
-      dispatch({ type: 'SELLER_DETAILS_FAIL', payload: getError(err) });
-    }
-  };
-  fetchSellerDetails();
-}, [dispatch, sellerId,order]);
+    };
+    fetchSellerDetails();
+  }, [dispatch, sellerId, order]);
 
   const cancelOrderHandler = async (e) => {
     e.preventDefault();
@@ -301,7 +303,7 @@ useEffect(() => {
       dispatch({ type: 'CANCEL_REQUEST' });
       const { data } = await axios.put(
         `/api/orders/${order._id}/cancel`,
-        {message},
+        { message },
         { headers: { Authorization: `Bearer ${userInfo.token}` } }
       );
       dispatch({ type: 'CANCEL_SUCCESS', payload: data });
@@ -362,7 +364,7 @@ useEffect(() => {
       dispatch({ type: 'ACCEPTED_BY_DELIVERMAN_FAIL' });
     }
   };
-  
+
   const availableToDeliverHandler = async (e) => {
     e.preventDefault();
     try {
@@ -386,7 +388,7 @@ useEffect(() => {
       dispatch({ type: 'CONFIRM_IN_TRANSIT_REQUEST' });
       const { data } = await axios.put(
         `/api/orders/${order._id}/intransit`,
-        {userInfo},
+        { userInfo },
         { headers: { Authorization: `Bearer ${userInfo.token}` } }
       );
       dispatch({ type: 'CONFIRM_IN_TRANSIT_SUCCESS', payload: data });
@@ -449,78 +451,78 @@ useEffect(() => {
       <h4>{t('order')} №: {order.code}</h4>
       <Row>
         <Col md={8}>
-        {order.deliveryAddress &&
-         ( 
-          <>
-          <Card className="mb-3">
-            <Card.Body>
-              <Card.Title>{t('deliverydetails')}</Card.Title>
-              <Card.Text>
-                <strong>{t('nameoforderreceiver')}:</strong> {order.deliveryAddress.fullName}
-                <br />
-                <strong>{t('numbertocall')}:{' '}</strong>
-                {order.deliveryAddress.phoneNumber}, {order.deliveryAddress.alternativePhoneNumber}
+          {order.deliveryAddress &&
+            (
+              <>
+                <Card className="mb-3">
+                  <Card.Body>
+                    <Card.Title>{t('deliverydetails')}</Card.Title>
+                    <Card.Text>
+                      <strong>{t('nameoforderreceiver')}:</strong> {order.deliveryAddress.fullName}
+                      <br />
+                      <strong>{t('numbertocall')}:{' '}</strong>
+                      {order.deliveryAddress.phoneNumber}, {order.deliveryAddress.alternativePhoneNumber}
 
-                <br />
+                      <br />
 
-                <strong>{t('address')}:</strong>
-                {order.deliveryAddress.city}, {order.deliveryAddress.address},{' '}
-                {order.deliveryAddress.referenceAddress}.
-              </Card.Text>
-              {order.isDelivered ? (
-                <MessageBox variant="success">
-                  {t('deliveredon')} {formatedDate(order.deliveredAt)}
-                </MessageBox>
-              ) : (
-                <MessageBox variant="danger">{t('notdelivered')}</MessageBox>
-              )}
-            </Card.Body>
-          </Card>
-          <Card className="mb-3">
-            <Card.Body>
-              <Card.Title>{t('paymentmethod')}</Card.Title>
-              <Card.Text>
-                <strong>{t('method')}:</strong> {order.paymentMethod}
-              </Card.Text>
-              {order.isPaid ? (
-                <MessageBox variant="success">
-                  {t('paidon')} {formatedDate(order.paidAt)}
-                </MessageBox>
-              ) : (
-                <>
-                  <MessageBox variant="danger">{t('notpaid')}</MessageBox>
-                </>
-              )}
-            </Card.Body>
-          </Card>
-          </>
-          )
+                      <strong>{t('address')}:</strong>
+                      {order.deliveryAddress.city}, {order.deliveryAddress.address},{' '}
+                      {order.deliveryAddress.referenceAddress}.
+                    </Card.Text>
+                    {order.isDelivered ? (
+                      <MessageBox variant="success">
+                        {t('deliveredon')} {formatedDate(order.deliveredAt)}
+                      </MessageBox>
+                    ) : (
+                      <MessageBox variant="danger">{t('notdelivered')}</MessageBox>
+                    )}
+                  </Card.Body>
+                </Card>
+                <Card className="mb-3">
+                  <Card.Body>
+                    <Card.Title>{t('paymentmethod')}</Card.Title>
+                    <Card.Text>
+                      <strong>{t('method')}:</strong> {order.paymentMethod}
+                    </Card.Text>
+                    {order.isPaid ? (
+                      <MessageBox variant="success">
+                        {t('paidon')} {formatedDate(order.paidAt)}
+                      </MessageBox>
+                    ) : (
+                      <>
+                        <MessageBox variant="danger">{t('notpaid')}</MessageBox>
+                      </>
+                    )}
+                  </Card.Body>
+                </Card>
+              </>
+            )
           }
 
-          {order.addressPrice!==0 && order.deliveryman && (
+          {order.addressPrice !== 0 && order.deliveryman && (
             <Card className="mb-3">
-            <Card.Body>
-              <Card.Title>{t('deliverdetails')}</Card.Title>
-              <Card.Text>
-              <strong>{t('name')}:</strong>{' '}{ order.deliveryman.name}<br/>
-              <strong>{t('phone')}:</strong> {' '}{ order.deliveryman.phoneNumber}<br/>
-              <strong>{t('transport')}:</strong>{' '}{ order.deliveryman.transport_type}<br/>
-              <strong>{t('registration')}:</strong>{' '}{ order.deliveryman.transport_registration}<br/>
-              <strong>{t('color')}:</strong>{' '}{ order.deliveryman.transport_color}<br/>
-              </Card.Text>
-             
-            </Card.Body>
-          </Card>
+              <Card.Body>
+                <Card.Title>{t('deliverdetails')}</Card.Title>
+                <Card.Text>
+                  <strong>{t('name')}:</strong>{' '}{order.deliveryman.name}<br />
+                  <strong>{t('phone')}:</strong> {' '}{order.deliveryman.phoneNumber}<br />
+                  <strong>{t('transport')}:</strong>{' '}{order.deliveryman.transport_type}<br />
+                  <strong>{t('registration')}:</strong>{' '}{order.deliveryman.transport_registration}<br />
+                  <strong>{t('color')}:</strong>{' '}{order.deliveryman.transport_color}<br />
+                </Card.Text>
+
+              </Card.Body>
+            </Card>
           )}
 
           <Card className="mb-3">
             <Card.Body>
               <Card.Title>{t('productsinthecart')}:
-              {' '}
-              <Link className="link" to={`/seller/${seller && seller._id}`}>
+                {' '}
+                <Link className="link" to={`/seller/${seller && seller._id}`}>
 
-                <b className='link'>{seller && seller.seller && seller.seller.name}</b>
-              </Link>
+                  <b className='link'>{seller && seller.seller && seller.seller.name}</b>
+                </Link>
               </Card.Title>
               <ListGroup variant="flush">
                 {order.orderItems.map((item) => (
@@ -533,8 +535,8 @@ useEffect(() => {
                           className="img-fluid rounded  img-thumbnail"
                         ></img>{' '}
                         <Link className="link link-none" to={`/product/${item.slug}`}>
-                        <br/>{t('product')}: <b>{item.name}</b><br/>{t('color')}:  <b>{item.color}</b>{' '} {t('size')}:  <b>{item.size}</b><br/>
-                        {' '} {item.onSale && t('deliveryestimate')}{item.onSale && ':'}{item.onSale && item.orderPeriod}
+                          <br />{t('product')}: <b>{item.name}</b><br />{t('color')}:  <b>{item.color}</b>{' '} {t('size')}:  <b>{item.size}</b><br />
+                          {' '} {item.onSale && t('deliveryestimate')}{item.onSale && ':'}{item.onSale && item.orderPeriod}
 
                         </Link>
                       </Col>
@@ -542,10 +544,10 @@ useEffect(() => {
                         <span>{item.quantity}x</span>Qtd
                       </Col>
                       <Col md={3}>
-                        <span>{item.onSale?item.discount:item.price} MT</span>
+                        <span>{item.onSale ? item.discount : item.price} MT</span>
                       </Col>
                       <Col md={3}>
-                        <span>Total {(item.onSale?item.quantity * item.discount:item.quantity * item.price).toFixed(2)} MT</span>
+                        <span>Total {(item.onSale ? item.quantity * item.discount : item.quantity * item.price).toFixed(2)} MT</span>
                       </Col>
                     </Row>
                   </ListGroup.Item>
@@ -556,7 +558,7 @@ useEffect(() => {
         </Col>
         <Col md={4}>
           <Card className="mb-3">
-            {!userInfo.isDeliveryMan || userInfo.isAdmin &&<Card.Body>
+            {(!userInfo.isDeliveryMan || userInfo.isAdmin) && <Card.Body>
               <Card.Title>{t('ordersummary')}</Card.Title>
               <ListGroup variant="flush">
                 <ListGroup.Item>
@@ -575,18 +577,18 @@ useEffect(() => {
                     <Col>{order.itemsPrice} MT</Col>
                   </Row>
                 </ListGroup.Item>
-                { (
+                {(
                   <>
-             {order.addressPrice===0?'':
-                <ListGroup.Item>
-                  <Row>
-                    <Col>{t('deliveryfee')}</Col>
-                    <Col>{order.addressPrice} MT</Col>
-                  </Row>
-                </ListGroup.Item>}
+                    {order.addressPrice === 0 ? '' :
+                      <ListGroup.Item>
+                        <Row>
+                          <Col>{t('deliveryfee')}</Col>
+                          <Col>{order.addressPrice} MT</Col>
+                        </Row>
+                      </ListGroup.Item>}
                     <ListGroup.Item>
                       <Row>
-                      <Col>{t('servicecharge')}</Col>
+                        <Col>{t('servicecharge')}</Col>
                         <Col>{order.siteTax} MT</Col>
                       </Row>
                     </ListGroup.Item>
@@ -611,139 +613,139 @@ useEffect(() => {
               </ListGroup>
             </Card.Body>}
           </Card>
-{userInfo.isAdmin &&
-          <Card className="mb-3">
-            <Card.Body>
-              <Card.Title>Pagamento ao fornecedor</Card.Title>
-              <ListGroup variant="flush">
-              <ListGroup.Item>
-                  <Row>
-                    <Col><b className='link'>{seller && seller.seller && seller.seller.name}</b></Col>
-                  </Row>
-                </ListGroup.Item>
-              <ListGroup.Item>
-                  <Row>
-                    <Col>Número principal</Col>
-                    <Col>{seller && seller.seller && seller.seller.phoneNumberAccount}</Col>
-                  </Row>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <Row>
-                    <Col>Número alternativo</Col>
-                    <Col>{seller && seller.seller && seller.seller.alternativePhoneNumberAccount}</Col>
-                  </Row>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <Row>
-                    <Col>Número de conta</Col>
-                    <Col>{seller && seller.seller && seller.seller.accountType}</Col>
-                    <Col>{seller && seller.seller && seller.seller.accountNumber}</Col>
-                  </Row>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <Row>
-                    <Col>conta alternativa</Col>
-                    <Col>{seller && seller.seller && seller.seller.alternativeAccountType}</Col>
-                    <Col>{seller && seller.seller && seller.seller.alternativeAccountNumber}</Col>
-                  </Row>
-                </ListGroup.Item>
-                
-                <ListGroup.Item>
-                  <Row>
-                    <Col>Valor a enviar</Col>
-                    <Col><b>{order.itemsPriceForSeller} MT</b></Col>
-                  </Row>
-                </ListGroup.Item>
-              
-             
-              </ListGroup>
-            </Card.Body>
-          </Card>
+          {userInfo.isAdmin &&
+            <Card className="mb-3">
+              <Card.Body>
+                <Card.Title>Pagamento ao fornecedor</Card.Title>
+                <ListGroup variant="flush">
+                  <ListGroup.Item>
+                    <Row>
+                      <Col><b className='link'>{seller && seller.seller && seller.seller.name}</b></Col>
+                    </Row>
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                    <Row>
+                      <Col>Número principal</Col>
+                      <Col>{seller && seller.seller && seller.seller.phoneNumberAccount}</Col>
+                    </Row>
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                    <Row>
+                      <Col>Número alternativo</Col>
+                      <Col>{seller && seller.seller && seller.seller.alternativePhoneNumberAccount}</Col>
+                    </Row>
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                    <Row>
+                      <Col>Número de conta</Col>
+                      <Col>{seller && seller.seller && seller.seller.accountType}</Col>
+                      <Col>{seller && seller.seller && seller.seller.accountNumber}</Col>
+                    </Row>
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                    <Row>
+                      <Col>conta alternativa</Col>
+                      <Col>{seller && seller.seller && seller.seller.alternativeAccountType}</Col>
+                      <Col>{seller && seller.seller && seller.seller.alternativeAccountNumber}</Col>
+                    </Row>
+                  </ListGroup.Item>
+
+                  <ListGroup.Item>
+                    <Row>
+                      <Col>Valor a enviar</Col>
+                      <Col><b>{order.itemsPriceForSeller} MT</b></Col>
+                    </Row>
+                  </ListGroup.Item>
+
+
+                </ListGroup>
+              </Card.Body>
+            </Card>
           }
 
           {order.status !== 'Cancelado' && !order.isPaid &&
-          <Card className="mb-3">
-            <Card.Body>
-              <Card.Title>{t('orderpayment')}<FaMoneyBillAlt/></Card.Title>
-              <ListGroup variant="flush">
+            <Card className="mb-3">
+              <Card.Body>
+                <Card.Title>{t('orderpayment')}<FaMoneyBillAlt /></Card.Title>
+                <ListGroup variant="flush">
 
-              {/* <ListGroup.Item>
+                  {/* <ListGroup.Item>
                   <Row>
                     <Col>Tempo de confirmação de pagamento: Max 1 hora</Col>
                   </Row>
                 </ListGroup.Item>
               */}
-                <ListGroup.Item>
-                  <Row>
-                    <Col>
-                    {order.paymentMethod === 'Mpesa' &&
-                     (
-                      <MessageBox variant="">
-                     {t('forconfirmyourorder')} {' '} 
-                                <b>{order.totalPrice} MT</b> {t('onaccountnumber')} <b>853600036</b>
-                      </MessageBox>
-                    )}                
-                       </Col>
-                       </Row>
-                       <Row>
-                       {order.paymentMethod === 'Mpesa' &&
-                     (
-                      <MessageBox variant="">
-                                {t('forconfirmyourorder')} {' '} 
-                                <b>{order.totalPrice} MT</b> {t('onaccountnumber')} <b>853600036</b>
-                      </MessageBox>
-                    )}
-                       {order.paymentMethod === 'Emola' &&
-                     (
-                      <MessageBox variant="">
-                                {t('forconfirmyourorder')} {' '} 
-                                <b>{order.totalPrice} MT</b> {t('onaccountnumber')} <b>879300036</b>
-                      </MessageBox>
-                    )}
-                    
-                       {order.paymentMethod === 'BCI' &&
-                     (
-                      <MessageBox variant="">
-                                {t('forconfirmyourorder')} {' '} 
-                                <b>{order.totalPrice} MT</b> {t('onaccountnumber')} <b>123456789</b>
-                      </MessageBox>
-                    )}
-                     {order.paymentMethod === 'BIM' &&
-                     (
-                      <MessageBox variant="">
-                                {t('forconfirmyourorder')} {' '} 
-                                <b>{order.totalPrice} MT</b> {t('onaccountnumber')} <b>155555555</b>
-                      </MessageBox>
-                    )}
-                  </Row>
-                </ListGroup.Item>
+                  <ListGroup.Item>
+                    <Row>
+                      <Col>
+                        {order.paymentMethod === 'Mpesa' &&
+                          (
+                            <MessageBox variant="">
+                              {t('forconfirmyourorder')} {' '}
+                              <b>{order.totalPrice} MT</b> {t('onaccountnumber')} <b>853600036</b>
+                            </MessageBox>
+                          )}
+                      </Col>
+                    </Row>
+                    <Row>
+                      {order.paymentMethod === 'Mpesa' &&
+                        (
+                          <MessageBox variant="">
+                            {t('forconfirmyourorder')} {' '}
+                            <b>{order.totalPrice} MT</b> {t('onaccountnumber')} <b>853600036</b>
+                          </MessageBox>
+                        )}
+                      {order.paymentMethod === 'Emola' &&
+                        (
+                          <MessageBox variant="">
+                            {t('forconfirmyourorder')} {' '}
+                            <b>{order.totalPrice} MT</b> {t('onaccountnumber')} <b>879300036</b>
+                          </MessageBox>
+                        )}
 
-              
-              
-              </ListGroup>
-            </Card.Body>
-          </Card>
-}
-        {order.status === 'Cancelado' &&
-          <Card className="mb-3">
-            <Card.Body>
-              <Card.Title>{t('reasonforcancel')}</Card.Title>
-              <ListGroup variant="flush">
-                <ListGroup.Item>
-                  <Row>
-                    <Col>
-                    <MessageBox variant="danger">
+                      {order.paymentMethod === 'BCI' &&
+                        (
+                          <MessageBox variant="">
+                            {t('forconfirmyourorder')} {' '}
+                            <b>{order.totalPrice} MT</b> {t('onaccountnumber')} <b>123456789</b>
+                          </MessageBox>
+                        )}
+                      {order.paymentMethod === 'BIM' &&
+                        (
+                          <MessageBox variant="">
+                            {t('forconfirmyourorder')} {' '}
+                            <b>{order.totalPrice} MT</b> {t('onaccountnumber')} <b>155555555</b>
+                          </MessageBox>
+                        )}
+                    </Row>
+                  </ListGroup.Item>
 
-                    {order.canceledReason}    
-                    </MessageBox>
-          
-                       </Col>
-                       </Row>
-                </ListGroup.Item>
-              
-              </ListGroup>
-            </Card.Body>
-          </Card>}
+
+
+                </ListGroup>
+              </Card.Body>
+            </Card>
+          }
+          {order.status === 'Cancelado' &&
+            <Card className="mb-3">
+              <Card.Body>
+                <Card.Title>{t('reasonforcancel')}</Card.Title>
+                <ListGroup variant="flush">
+                  <ListGroup.Item>
+                    <Row>
+                      <Col>
+                        <MessageBox variant="danger">
+
+                          {order.canceledReason}
+                        </MessageBox>
+
+                      </Col>
+                    </Row>
+                  </ListGroup.Item>
+
+                </ListGroup>
+              </Card.Body>
+            </Card>}
           &nbsp;
           {(userInfo.isAdmin ||
             !userInfo.isDeliveryMan ||
@@ -768,35 +770,35 @@ useEffect(() => {
 
 
 
-        <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>{t('reasonforcancel')}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form.Control
-            as="textarea"
-            rows={5}
-            type="text"
-            placeholder="Motivo..."
-            value={message}
-            onChange={handleInputChange}
-            style={{width: '19rem'}}
-          />
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Fechar
-          </Button>
-          <Button variant="primary" onClick={handleSubmit}>
-            Enviar
-          </Button>
-          </Modal.Footer>
+          <Modal show={show} onHide={handleClose}>
+            <Modal.Header closeButton>
+              <Modal.Title>{t('reasonforcancel')}</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Form.Control
+                as="textarea"
+                rows={5}
+                type="text"
+                placeholder="Motivo..."
+                value={message}
+                onChange={handleInputChange}
+                style={{ width: '19rem' }}
+              />
+            </Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={handleClose}>
+                Fechar
+              </Button>
+              <Button variant="primary" onClick={handleSubmit}>
+                Enviar
+              </Button>
+            </Modal.Footer>
           </Modal>
 
           &nbsp;
           {(userInfo.isAdmin ||
             !userInfo.isDeliveryMan
-           ) &&
+          ) &&
             !order.isDelivered &&
             order.isInTransit &&
             order.status === 'No destino indicado' &&
@@ -818,11 +820,11 @@ useEffect(() => {
           &nbsp;
 
           {(userInfo.isAdmin || userInfo.isDeliveryMan) &&
-           
-              order.status==='Em trânsito' &&
-              order.status !== 'Aceite' &&
-              order.status !== 'Pronto' &&
-            order.status !== 'No destino indicado' &&   !order.isDelivered &&
+
+            order.status === 'Em trânsito' &&
+            order.status !== 'Aceite' &&
+            order.status !== 'Pronto' &&
+            order.status !== 'No destino indicado' && !order.isDelivered &&
             order.isPaid && (
               <ListGroup.Item>
                 {loadingDestination && <LoadingBox></LoadingBox>}
@@ -844,7 +846,7 @@ useEffect(() => {
           {(userInfo.isAdmin || userInfo.isDeliveryMan) &&
             !order.isDelivered &&
             order.status === 'Aceite pelo entregador' &&
-            order.status !=='Em trânsito' &&
+            order.status !== 'Em trânsito' &&
             order.status !== 'No destino indicado' &&
             order.isPaid && (
               <ListGroup.Item>
@@ -867,7 +869,7 @@ useEffect(() => {
           {(userInfo.isAdmin || !userInfo.isSeller) &&
             !order.isDelivered &&
             order.status === 'Pronto' &&
-            order.status !=='Em trânsito' &&
+            order.status !== 'Em trânsito' &&
             order.status !== 'No destino indicado' &&
             order.isPaid && (
               <ListGroup.Item>
@@ -879,7 +881,7 @@ useEffect(() => {
                     type="button"
                     onClick={acceptedByDelivermanHandler}
                   >
-                   Aceite pelo entregador
+                    Aceite pelo entregador
                   </Button>
                 </div>
               </ListGroup.Item>
@@ -890,7 +892,7 @@ useEffect(() => {
             !order.isDelivered &&
             order.status === 'Aceite' &&
             order.status !== 'Pronto' &&
-            order.status !=='Em trânsito' &&
+            order.status !== 'Em trânsito' &&
             order.status !== 'No destino indicado' &&
             order.isPaid && (
               <ListGroup.Item>
@@ -902,7 +904,7 @@ useEffect(() => {
                     type="button"
                     onClick={availableToDeliverHandler}
                   >
-                   Pedido disponível para entrega
+                    Pedido disponível para entrega
                   </Button>
                 </div>
               </ListGroup.Item>
@@ -915,9 +917,9 @@ useEffect(() => {
             !order.isDelivered &&
             order.status !== 'Aceite' &&
             order.status !== 'Cancelado' &&
-            order.status !=='Pronto' &&
-            order.status !=='Aceite pelo entregador' &&
-            order.status !=='Em trânsito' &&
+            order.status !== 'Pronto' &&
+            order.status !== 'Aceite pelo entregador' &&
+            order.status !== 'Em trânsito' &&
             order.status !== 'No destino indicado' &&
             order.isPaid && (
               <ListGroup.Item>

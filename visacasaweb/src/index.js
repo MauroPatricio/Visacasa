@@ -11,6 +11,9 @@ import { initReactI18next } from 'react-i18next';
 
 
 
+
+
+
 i18n.use(initReactI18next).init({
   resources: {
     pt: { translation: require('./../src/locales/pt/translation.json') },
