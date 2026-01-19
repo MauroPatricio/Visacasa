@@ -32,3 +32,9 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+
+node_modules
+*.log
+src/
+tests/

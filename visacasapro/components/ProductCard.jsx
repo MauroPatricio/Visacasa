@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 const ProductCard = ({
   id,
+  nome,
   name,
   logo,
   description,
@@ -18,8 +19,12 @@ const ProductCard = ({
   address,
   latitude,
   longitude,
+  priceFromSeller,
+  price,
   countInStock,
   seller,
+  onSale,
+  discount,
   item
 }) => {
   const navigation = useNavigation();
@@ -46,7 +51,8 @@ const ProductCard = ({
     }
 
       if ( countInStock == items.length ) return;
-      dispatch(addToBasket({id,_id,                 
+      dispatch(addToBasket({id,_id, 
+          nome,                
           name,
           image,
           images,
@@ -55,9 +61,11 @@ const ProductCard = ({
           numReviews,
           province,
           address,
+          priceFromSeller,
           price,
           onSale,
           countInStock,
+          discount,
           quantity: currentQuantity + 1 // Increase quantity by 1 when adding
           }));
   }

@@ -23,9 +23,9 @@ const ProductCardView = ({ item }) => {
                         <Text style={styles.title} numberOfLines={1}>{item.item.nome}</Text>
                         <Text style={styles.supplier} numberOfLines={1}>{item.item.seller.seller.name}</Text>
 
-                        <Text style={styles.price} numberOfLines={1}>{item.item.price} MT</Text>
+                        <Text style={styles.price} numberOfLines={1}>{item.item.price} Mt</Text>
                         <Text>
-                            {item.item.isOrdered ? <Badge style={{ color: 'white', backgroundColor: 'green' }}> Por encomenda </Badge> : item.item.countInStock !== 0 ? item.item.countInStock + ` unidade(s)` : <Badge bg='danger'>Sem stock</Badge>}
+                            {item.item.isOrdered ? <Badge style={{ color: 'white', backgroundColor: 'green' }}>  Por encomenda  </Badge> : item.item.countInStock !== 0 ? item.item.countInStock + ` unidade(s)` : <Badge bg='danger'>Sem stock</Badge>}
                         </Text>
 
                     </View>

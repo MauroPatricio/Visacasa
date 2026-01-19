@@ -4,7 +4,6 @@ import mpesa from 'mpesa-node-api';
 
 import Payment from '../models/PaymentModel.js'
 import config from '../config.js';
-import { isAuth } from '../utils.js';
 import PaymentMethod from '../models/PaymentMethod.js';
 
 
@@ -47,99 +46,91 @@ paymentRouter.get(
   );
 
 
-paymentRouter.post('/mpesa',expressAsyncHandler(async (req,response)=>{
+paymentRouter.post('/mpesa/c2b', expressAsyncHandler(async (req, res) => {
+  const { customerNumber, amount } = req.body;
 
+  if (!customerNumber || typeof amount !== 'number' || amount <= 0) {
+    return res.status(400).send({ message: 'Número ou valor inválido.' });
+  }
 
-    const {customerNumber, amount}= req.body;
-    const randomCode = randomString(5);
+  const referenceCode = randomString(5);
 
+  mpesa.initializeApi({
+    baseUrl: config.MPESA_API_HOST,
+    apiKey: config.MPESA_API_KEY,
+    publicKey: config.MPESA_PUBLIC_KEY,
+    origin: config.MPESA_ORIGIN,
+    serviceProviderCode: config.MPESA_SERVICE_PROVIDER_CODE,
+    timeout: 60000 // 60 segundos
+  });
 
-    mpesa.initializeApi({
-        baseUrl: config.MPESA_API_HOST,
-        apiKey: config.MPESA_API_KEY,
-        publicKey: config.MPESA_PUBLIC_KEY,
-        origin: config.MPESA_ORIGIN,
-        serviceProviderCode: config.MPESA_SERVICE_PROVIDER_CODE
+  try {
+    const mpesaRes = await mpesa.initiate_c2b(amount, customerNumber, referenceCode, referenceCode);
+
+    const result = {
+      response_code: mpesaRes.output_ResponseCode,
+      response_description: mpesaRes.output_ResponseDesc+'-'+customerNumber+'-'+amount,
+      transactionId: mpesaRes.output_TransactionID,
+      conversationId: mpesaRes.output_ConversationID,
+      reference: mpesaRes.output_ThirdPartyReference,
+      paid: mpesaRes.output_ResponseCode === 'INS-0',
+    };
+
+    const savedPayment = await salvarPagamento({
+      senderNumber: customerNumber,
+      amount,
+      code: result.response_code,
+      description: result.response_description,
+      transaction: result.transactionId,
+      conversationId: result.conversationId,
+      reference: result.reference,
+      paid: result.paid,
+      receiverNumber: config.MPESA_SERVICE_PROVIDER_CODE,
     });
-    try{
 
-        const mpesa_res = await mpesa.initiate_c2b(amount, /* msisdn */ customerNumber, randomCode, randomCode);
-        if (mpesa_res){
-                  const res = {
-                      "response_code":mpesa_res.output_ResponseCode,
-                      "response_description":mpesa_res.output_ResponseDesc,
-                      "response_transactionId":mpesa_res.output_TransactionID,
-                      "response_conversationId":mpesa_res.output_ConversationID,
-                      "response_reference":mpesa_res.output_ThirdPartyReference,
-                }
-
-                const paymentMpesa = new Payment();
-  
-                paymentMpesa.senderNumber= customerNumber;
-                paymentMpesa.amount = amount;
-                paymentMpesa.code = res.response_code;
-                paymentMpesa.description = res.response_description;
-                paymentMpesa.transation = res.response_transactionId;
-                paymentMpesa.conversationId = res.response_conversationId;
-                paymentMpesa.reference = res.response_reference;
-                paymentMpesa.paid = true;
-                paymentMpesa.receiverNumber = config.MPESA_SERVICE_PROVIDER_CODE;
-  
-                const payment =  await paymentMpesa.save();
-                response.send(payment);
-            
-
-              }else{  
-                const error = {
-                      "response_code":mpesa_res.output_ResponseCode,
-                      "response_description":mpesa_res.output_ResponseDesc,
-                      "response_transactionId":mpesa_res.output_TransactionID,
-                      "response_conversationId":mpesa_res.output_ConversationID,
-                      "response_reference":mpesa_res.output_ThirdPartyReference,
-                      }
-
-              const paymentMpesa = new Payment();
-
-              paymentMpesa.senderNumber = customerNumber;
-              paymentMpesa.amount = amount;
-              paymentMpesa.code = error.response_code;
-              paymentMpesa.description = error.response_description;
-              paymentMpesa.transation = error.response_transactionId;
-              paymentMpesa.conversationId = error.response_conversationId;
-              paymentMpesa.reference = error.response_reference;
-              paymentMpesa.paid = false;
-              paymentMpesa.receiverNumber = config.MPESA_SERVICE_PROVIDER_CODE;
-  
-              const payment =  await paymentMpesa.save();
-              response.send(payment);
-  
-              }
-    }catch(error){
-   const e = {
-    "response_code":error.output_ResponseCode,
-    "response_description":error.output_ResponseDesc,
-    "response_transactionId":error.output_TransactionID,
-    "response_conversationId":error.output_ConversationID,
-    "response_reference":error.output_ThirdPartyReference,
-    }
-
-    const paymentMpesa = new Payment();
     
-    paymentMpesa.senderNumber = customerNumber;
-    paymentMpesa.amount = amount;
-    paymentMpesa.code = e.response_code;
-    paymentMpesa.description = e.response_description;
-    paymentMpesa.transation = e.response_transactionId;
-    paymentMpesa.conversationId = e.response_conversationId;
-    paymentMpesa.reference = e.response_reference;
-    paymentMpesa.paid = false;
-    paymentMpesa.receiverNumber = config.MPESA_SERVICE_PROVIDER_CODE;
 
-    const payment =  await paymentMpesa.save();
-    response.send(payment);
-}
+    return res.status(result.paid ? 200 : 202).send(savedPayment);
 
+  } catch (err) {
+    console.error('Erro no pagamento MPESA:', err?.message || err);
+
+    const output = err?.response?.data?.output || err?.output || {};
+    const fallbackResponse = {
+      response_code: output.ResponseCode || 'ERR-01',
+      response_description: output.ResponseDesc || 'Erro desconhecido'+'-'+customerNumber+'-'+amount,
+      transactionId: output.TransactionID || '',
+      conversationId: output.ConversationID || '',
+      reference: output.ThirdPartyReference || '',
+      paid: false,
+    };
+
+    const failedPayment = await salvarPagamento({
+      senderNumber: customerNumber,
+      amount,
+      code: fallbackResponse.response_code,
+      description: fallbackResponse.response_description,
+      transaction: fallbackResponse.transactionId,
+      conversationId: fallbackResponse.conversationId,
+      reference: fallbackResponse.reference,
+      paid: false,
+      receiverNumber: config.MPESA_SERVICE_PROVIDER_CODE,
+    });
+
+    return res.status(500).send({
+      message: 'Falha no pagamento',
+      error: err?.message || 'Erro desconhecido no servidor.',
+      mpesa: fallbackResponse,
+    });
+  }
 }));
+
+
+
+async function salvarPagamento(data) {
+  const pagamento = new Payment(data);
+  return await pagamento.save();
+}
 
 function randomString(codeLength){
     const chars =
@@ -157,4 +148,3 @@ function randomString(codeLength){
 
 
 export default paymentRouter;
-

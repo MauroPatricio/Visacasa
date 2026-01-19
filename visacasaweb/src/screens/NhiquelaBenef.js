@@ -22,11 +22,11 @@ export default function NhiquelaBenef() {
 
                 <h4 className='howitworks link'><b>Benefícios de comprar na Nhiquela</b></h4>
                 <br/>
-                <p> Comprar pela internet tornou-se um hábito e cada vez mais pessoas tem se adaptado a era digital e com principal enfoque ao comércio eletrônico. De pequenas a grandes marcas do mercado, o comércio eletrônico oferece uma série de produtos e vantagens para o consumidor. <br/>São muitos os motivos para se optar por fazer compras online, abaixo algumas destas vantagens que a Nhiquela Shop possui.
+                <p> Comprar pela internet tornou-se um hábito e cada vez mais pessoas tem se adaptado a era digital e com principal enfoque ao comércio eletrônico. De pequenas a grandes marcas do mercado, o comércio eletrônico oferece uma série de produtos e vantagens para o consumidor. <br/>São muitos os motivos para se optar por fazer compras online, abaixo algumas destas vantagens que a VisaCasa possui.
                 </p>
                 <h5 className='howitworks link'><b >Comodidade</b></h5>
                 <p>
-                Pela Nhiquela shop tens a possibilidade de fazer compras sem sair de onde esta economizando assim o seu tempo e dinheiro.
+                Pela VisaCasa tens a possibilidade de fazer compras sem sair de onde esta economizando assim o seu tempo e dinheiro.
                 </p>
                 <br/>
 
@@ -43,7 +43,7 @@ export default function NhiquelaBenef() {
                 <br/>
                <h5 className='howitworks link'><b >Opinião de outros usuários</b></h5>
                 <p>
-                Na Nhiquela Shop tens a possibilidade de visualizar os comentários e opiniões de outros usuários sobre a venda ou produto, o que possibilita avaliar e comparar se os produtos oferecidos são realmente satisfatórios garantindo assim maior segurança e clareza na sua compra.
+                Na VisaCasa tens a possibilidade de visualizar os comentários e opiniões de outros usuários sobre a venda ou produto, o que possibilita avaliar e comparar se os produtos oferecidos são realmente satisfatórios garantindo assim maior segurança e clareza na sua compra.
                </p>
                <br/>
                <h5 className='howitworks link'><b >Entregas</b></h5>

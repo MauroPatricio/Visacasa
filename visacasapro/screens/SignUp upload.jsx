@@ -115,7 +115,7 @@ const SignUp = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <ScrollView>
         <BackBtn onPress={() => navigation.goBack()} />
-        <Image source={require('../assets/nhiquela.png')} style={styles.cover} />
+        <Image source={require('../assets/visacasa.png')} style={styles.cover} />
         <Text style={styles.title}>NOVO REGISTO</Text>
         <Formik
           initialValues={{

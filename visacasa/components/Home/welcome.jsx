@@ -11,11 +11,13 @@ const welcome = () => {
   return (
 
     <View>
-      <View style={styles.container}>
-        <Text style={styles.welcomeText('black', 30, 0)}><Text style={{ color: '#7F00FF' }}>Visa</Text>Casa</Text>
+        <View style={{paddingBottom:30}}>
+                <Text style={styles.welcomeText('black', 30, 0)}><Text style={{ color: '#E85A4F' }}>Visa</Text>Casa</Text>
 
-        <Text style={styles.welcomeText2('black', 11, 0)}>MATERIAIS DE CONSTRUCAO</Text>
-      </View>
+              <Text style={styles.welcomeText2('black', 11, 0)}>MATERIAIS DE CONSTRUÇÃO</Text>
+            
+            </View>
+      
       <View style={styles.searchContainer}>
         <TouchableOpacity>
           <Feather name="search" size={24}

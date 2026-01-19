@@ -90,7 +90,7 @@ export default function Footer() {
             alt="Nhiquela" ></img>   
         </div>
             <div className="col-md-3 col-lg-4 col-xl-3 mx-auto mb-4">
-          <h6 className="text-uppercase fw-bold">Nhiquela Shop</h6>
+          <h6 className="text-uppercase fw-bold">VisaCasa</h6>
           <hr
               className="mb-4 mt-0 d-inline-block mx-auto"
               style={{backgroundColor: '#7c4dff', width: '60px', height: '2px'}}
