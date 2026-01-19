@@ -36,25 +36,25 @@ const reducer = (state, action) => {
     case 'DELETE_RESET':
       return { ...state, loadingDelete: false, successDelete: false };
 
-      case 'REMOVE_REQUEST':
-        return { ...state, loadingRemove: true, successRemove: false };
-  
-      case 'REMOVE_SUCCESS':
-        return { ...state, loadingRemove: false, successRemove: true };
-  
-      case 'REMOVE_FAIL':
-        return { ...state, loadingRemove: false };
-  
-      case 'REMOVE_RESET':
-        return { ...state, loadingRemove: false, successRemove: false };
-      
+    case 'REMOVE_REQUEST':
+      return { ...state, loadingRemove: true, successRemove: false };
+
+    case 'REMOVE_SUCCESS':
+      return { ...state, loadingRemove: false, successRemove: true };
+
+    case 'REMOVE_FAIL':
+      return { ...state, loadingRemove: false };
+
+    case 'REMOVE_RESET':
+      return { ...state, loadingRemove: false, successRemove: false };
+
     default:
       return state;
   }
 };
 
 export default function OrderListScreen() {
-  const [{ loading, error, orders, loadingDelete, successDelete,loadingRemove, successRemove,pages }, dispatch] =
+  const [{ loading, error, orders, loadingDelete, successDelete, loadingRemove, successRemove, pages }, dispatch] =
     useReducer(reducer, {
       loading: true,
       error: '',
@@ -64,21 +64,21 @@ export default function OrderListScreen() {
   const { userInfo } = state;
   const navigate = useNavigate();
 
-  const {search} =useLocation();
+  const { search } = useLocation();
   const sp = new URLSearchParams(search);
-  const page = sp.get('page') || 1 ;
+  const page = sp.get('page') || 1;
 
 
   const [searchQuery, setSearchQuery] = useState('');
 
 
   const filteredData = orders && orders.filter((row) =>
-  row.code.toLowerCase().includes(searchQuery.toLowerCase())
-);
+    row.code.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-useEffect(() => {
-  window.scrollTo(0, 0);
-}, []);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
 
   useEffect(() => {
@@ -156,12 +156,12 @@ useEffect(() => {
         <MessageBox>{error}</MessageBox>
       ) : (
         <>
-        <div style={{textAlign: "right"}}> Pesquise pelo código de pedido:{' '}
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+          <div style={{ textAlign: "right" }}> Pesquise pelo código de pedido:{' '}
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
           </div>
           <table className="table">
             <thead>
@@ -204,7 +204,7 @@ useEffect(() => {
                     )}
                   </td>
                   <td>
-                  <Badge
+                    <Badge
                       bg={o.status === 'Finalizado' ? 'success' : o.status === 'Cancelado' ? 'danger' : 'primary'}
                       variant={o.status === 'Finalizado' ? 'success' : 'primary'}
                     >
@@ -243,12 +243,12 @@ useEffect(() => {
             </tbody>
           </table>
           <div>
-            {[...Array(pages).keys()].map((x)=>(
-                <Link className={x + 1 === Number(page)? 'btn text-bold': 'btn'} key={x+1} to={`/admin/orderlist?page=${x+1}`}>
-                    {x+1}
-                </Link>
+            {[...Array(pages).keys()].map((x) => (
+              <Link className={x + 1 === Number(page) ? 'btn text-bold' : 'btn'} key={x + 1} to={`/admin/orderlist?page=${x + 1}`}>
+                {x + 1}
+              </Link>
             ))}
-        </div>
+          </div>
         </>
       )}
     </div>

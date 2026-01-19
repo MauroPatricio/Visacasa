@@ -6,6 +6,7 @@ import { BsShieldFillCheck } from "react-icons/bs";
 import {GiBackwardTime} from "react-icons/gi";
 import {FaUserShield} from "react-icons/fa";
 import { useTranslation } from 'react-i18next';
+import '../styles/PaybackInfoAndSecurity.css';
 
 export default function PaybackInfoAndSecurity() {
   const { t } = useTranslation();

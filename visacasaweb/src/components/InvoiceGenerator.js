@@ -1,16 +1,16 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
-import { Row, Col } from 'react-bootstrap';
-import { faClock } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Store } from '../Store';
-import { useTranslation } from 'react-i18next';
+// import { Row, Col } from 'react-bootstrap';
+// import { faClock } from '@fortawesome/free-solid-svg-icons';
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import { Store } from '../Store';
+// import { useTranslation } from 'react-i18next';
 
 
 
 export default function InvoiceGenerator() {
-  const [items, setItems] = useState([
+  const [items] = useState([
     { description: 'Item 1', quantity: 2, price: 10 },
     { description: 'Item 2', quantity: 1, price: 20 },
     // Add more items as needed
@@ -25,7 +25,7 @@ export default function InvoiceGenerator() {
     // You can add additional logic for taxes, discounts, etc., if needed
   };
 
-  
+
   return (
     <div>
       <h1>Invoice</h1>

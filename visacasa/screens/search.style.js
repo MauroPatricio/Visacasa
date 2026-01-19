@@ -1,54 +1,78 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
+const { width, height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
-    searchContainer:{
-        flexDirection: "row",
-        justifyContent: "center",
-        backgroundColor: "white",
-        borderRadius: 10,
-        marginVertical: 9,
-        marginTop: 21,
-        marginHorizontal: 12,
-        height: 50
-        },
-    searchIcon:{
-        marginHorizontal: 10,
-        color: "black",
-        marginTop: 10
+    header: {
+        paddingHorizontal: 20,
+        paddingTop: 10,
+        paddingBottom: 20,
+        backgroundColor: 'white',
     },
-    searchWrapper:{
+    searchContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        backgroundColor: "#F3F4F6",
+        borderRadius: 15,
+        paddingHorizontal: 15,
+        height: 55,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 10,
+        elevation: 2,
+    },
+    searchWrapper: {
         flex: 1,
-        backgroundColor: "#F5F5F5",
-        // marginRight: 5,
-        borderRadius: 2
+        marginLeft: 10,
     },
     searchInput: {
-    width: "100%",
-    paddingHorizontal: 12,
-    marginTop: 9
+        fontSize: 16,
+        color: '#1F2937',
+        height: '100%',
     },
-    searchBtn:{
-        width: 50,
-        height: "100%",
-        borderRadius: 12,
-         alignItems: "center",
-         marginTop: 10 
+    centerContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 40,
+        backgroundColor: 'white',
     },
-    searchImage:{
-        resizeMode:  "contain",
-        width: 100,
-        height: 100,
-        alignContent: "center",
-        alignItems: "center",
-        marginTop: 220,
-        opacity: 1,
-    
+    emptyStateContainer: {
+        alignItems: 'center',
+        marginTop: -50, // Slight offset for better visual balance
     },
-    Text:{
-        marginTop: 300,
-        marginLeft: 130
+    iconCircle: {
+        width: 120,
+        height: 120,
+        borderRadius: 60,
+        backgroundColor: '#FFF1F0',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 20,
+    },
+    emptyTitle: {
+        fontSize: 22,
+        fontWeight: '700',
+        color: '#1F2937',
+        marginBottom: 10,
+    },
+    emptySubtitle: {
+        fontSize: 14,
+        color: '#6B7280',
+        textAlign: 'center',
+        lineHeight: 20,
+    },
+    noDataText: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: '#374151',
+        marginTop: 20,
+        marginBottom: 5,
+    },
+    listStyle: {
+        flex: 1,
+        paddingHorizontal: 15,
     }
-})
+});
 
-
-export default styles
+export default styles;

@@ -1,17 +1,34 @@
-/* Global Styles */ 
+/* Global Styles - Premium */
 body {
-  background-color: #ffffff;
-  font-family: 'Roboto', sans-serif;
-  color: #333;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  font-family: 'Inter', 'Roboto', sans-serif;
+  color: #2d3748;
+  animation: fadeIn 0.8s ease-in-out;
 }
 
-/* Main Color Theme */
+/* Premium Color Theme */
 :root {
   --main-color: #E85A4F;
-  --accent-color: #c84b42;
-  --light-color: #F8E5E3;
-  --text-color: #333;
+  --accent-color: #ff8a75;
+  --light-color: #ffeadb;
+  --text-color: #2d3748;
   --bg-color: #ffffff;
+  --gradient-primary: linear-gradient(135deg, #E85A4F 0%, #ff8a75 100%);
+  --gradient-secondary: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+  --shadow-premium: 0 10px 40px rgba(232, 90, 79, 0.2);
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Container for the form */
@@ -20,6 +37,9 @@ body {
   max-width: 450px;
   margin: 50px auto;
   padding: 30px;
+  border-radius: 10px;
+  background: white;
+  animation: fadeIn 1s ease-in-out;
 }
 
 /* Header styling */
@@ -41,20 +61,6 @@ form label {
   color: var(--text-color);
 }
 
-form .form-control {
-  border-radius: 5px;
-  padding: 12px;
-  font-size: 16px;
-  border: 1px solid var(--light-color);
-  margin-top: 5px;
-  transition: border 0.3s ease;
-}
-
-form .form-control:focus {
-  border-color: var(--main-color);
-  box-shadow: 0px 0px 6px rgba(232, 90, 79, 0.3);
-}
-
 /* Input fields with icons */
 .form-group {
   display: flex;
@@ -67,12 +73,30 @@ form .form-control:focus {
   width: 30px;
 }
 
-.fa-mobile, .fa-lock {
+/* Form control styling */
+form .form-control {
+  border-radius: 5px;
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid var(--light-color);
+  margin-top: 5px;
+  transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Focus effect */
+form .form-control:focus {
+  border-color: var(--main-color);
+  box-shadow: 0px 0px 10px rgba(127, 0, 255, 0.5);
+}
+
+/* Icons */
+.fa-mobile,
+.fa-lock {
   color: var(--main-color);
   font-size: 20px;
 }
 
-/* Button styles */
+/* Animated button */
 .customButtom {
   background-color: var(--main-color);
   color: white;
@@ -81,15 +105,33 @@ form .form-control:focus {
   font-size: 16px;
   border: none;
   transition: background-color 0.3s ease, transform 0.2s ease;
+  cursor: pointer;
+  animation: pulse 2s infinite;
 }
 
+/* Button hover effect */
 .customButtom:hover {
   background-color: var(--accent-color);
-  transform: translateY(-2px);
-  cursor: pointer;
+  transform: translateY(-3px);
+  animation: none;
 }
 
-/* Links styles */
+/* Pulse animation */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.05);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Links */
 .link {
   color: var(--main-color);
   text-decoration: none;
@@ -122,6 +164,7 @@ form .form-control:focus {
   align-items: center;
   justify-content: center;
   color: white;
+  animation: fadeIn 1.2s ease-in-out;
 }
 
 .App-logo {
@@ -130,16 +173,31 @@ form .form-control:focus {
   animation: App-logo-spin infinite 20s linear;
 }
 
-.App-link {
-  color: var(--light-color);
+/* Logo animation */
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-/* Modal Styles */
-.modal {
+/* Modal */
+/* .modal {
   position: fixed;
-}
+  z-index: 1000;
+} */
 
 .modal-content {
+  background-color: white;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  max-width: 90%;
+  width: 400px;
+  animation: fadeIn 0.6s ease-in-out;
 }
 
 .close-btn {
@@ -170,12 +228,18 @@ form .form-control:focus {
 }
 
 @media (max-width: 576px) {
+  .small-conteiner {
+    width: 95%;
+    margin: 20px;
+    padding: 20px;
+  }
+
   form {
     font-size: 14px;
   }
 
   .customButtom {
-    padding: 8px 10px;
+    padding: 10px 14px;
     font-size: 14px;
   }
 }
@@ -187,5 +251,168 @@ form .form-control:focus {
 
   .close-btn {
     font-size: 14px;
+  }
+}
+
+.link-none {
+  text-decoration: none;
+  /* Remove o sublinhado */
+  color: inherit;
+  /* Mantém a cor do texto padrão */
+}
+
+.navbar {
+  background: rgba(255, 255, 255, 0.95) !important;
+  /* Fundo branco com leve transparência */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  /* Sombra sutil para destacar */
+  padding: 12px 20px;
+  /* Espaçamento interno */
+  transition: all 0.3s ease-in-out;
+  /* Transição suave */
+}
+
+.navbar-light .navbar-nav .nav-link {
+  color: #333 !important;
+  /* Cor do texto */
+  font-weight: 600;
+  /* Negrito para maior destaque */
+  padding: 10px 15px;
+  /* Melhor espaçamento entre os itens */
+  transition: color 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.navbar-light .navbar-nav .nav-link:hover {
+  color: #007bff !important;
+  /* Azul moderno no hover */
+  transform: translateY(-2px);
+  /* Efeito de elevação sutil */
+}
+
+.navbar-toggler {
+  border: none;
+  /* Remove bordas do botão do menu */
+  outline: none;
+}
+
+.navbar-toggler:focus {
+  box-shadow: none;
+  /* Remove o efeito de foco padrão */
+}
+
+/* 🔹 Ajuste para evitar sobreposição no conteúdo abaixo do Navbar */
+.main-content {
+  margin-top: 80px;
+  /* Ajuste conforme a altura do Navbar */
+}
+
+@media (max-width: 991px) {
+  .navbar {
+    padding: 10px 15px;
+    /* Ajuste para telas menores */
+  }
+
+  .navbar-nav {
+    text-align: center;
+    /* Centraliza os itens no modo mobile */
+  }
+
+  .main-content {
+    margin-top: 100px;
+    /* Ajuste maior para telas menores se necessário */
+  }
+}
+
+/* Tipos de Estabelecimento */
+
+.admin-container {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  text-align: center;
+}
+
+.form-container {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  /* Permite quebrar para telas menores */
+}
+
+input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+button {
+  padding: 8px 12px;
+  border: none;
+  background: #28a745;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+button:hover {
+  background: #218838;
+}
+
+.tipo-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tipo-table th,
+.tipo-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.tipo-table th {
+  background-color: var(--main-color);
+  color: white;
+  /* Alterado para branco */
+}
+
+.delete-btn {
+  background: #dc3545;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.delete-btn:hover {
+  background: #c82333;
+}
+
+/* Responsividade para telas menores */
+@media (max-width: 600px) {
+  .form-container {
+    flex-direction: column;
+    /* Faz os itens ficarem em coluna */
+    align-items: center;
+  }
+
+  input,
+  button {
+    width: 100%;
+    /* Faz os elementos ocuparem toda a largura */
+  }
+
+  .tipo-table th,
+  .tipo-table td {
+    padding: 6px;
+    /* Reduz espaço interno para melhor adaptação */
   }
 }

@@ -1,8 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, FlatList, StyleSheet, RefreshControl } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  FlatList,
+  StyleSheet,
+  RefreshControl,
+  SafeAreaView,
+  Dimensions,
+  Image,
+  StatusBar as RNStatusBar
+} from 'react-native';
+import { Ionicons, MaterialCommunityIcons, Feather } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import api from '../hooks/createConnectionApi';
+import BackBtn from '../components/BackBtn';
+import { LinearGradient } from 'expo-linear-gradient';
+import { StatusBar } from 'expo-status-bar';
+
+const { width } = Dimensions.get('window');
 
 const WalletScreen = ({ navigation }) => {
   const [userData, setUserData] = useState(null);
@@ -66,26 +82,23 @@ const WalletScreen = ({ navigation }) => {
   };
 
   const renderTransaction = ({ item }) => {
-    // const isCredit = item.amount > 0;
-
     const isCredit = item.type === 'credit';
-
 
     return (
       <View style={styles.transactionCard}>
-        <Ionicons
-          name={isCredit ? 'arrow-up-circle' : 'arrow-down-circle'}
-          size={28}
-          color={isCredit ? '#4CAF50' : '#E53935'}
-          style={{ marginRight: 12 }}
-        />
-        <View style={{ flex: 1 }}>
-          <Text style={styles.transactionType}>{item.type?.toUpperCase()}</Text>
-          <Text style={styles.transactionDesc}>{item.description}</Text>
+        <View style={[styles.iconBox, { backgroundColor: isCredit ? '#ECFDF5' : '#FEF2F2' }]}>
+          <MaterialCommunityIcons
+            name={isCredit ? 'arrow-bottom-left' : 'arrow-top-right'}
+            size={24}
+            color={isCredit ? '#10B981' : '#EF4444'}
+          />
+        </View>
+        <View style={styles.transactionInfo}>
+          <Text style={styles.transactionTitle}>{item.description || (isCredit ? 'Crédito' : 'Débito')}</Text>
           <Text style={styles.transactionDate}>{formatDate(item.date)}</Text>
         </View>
-        <Text style={[styles.transactionAmount, { color: isCredit ? '#4CAF50' : '#E53935' }]}>
-          {isCredit ? '+' : '-'}{item.amount} MT
+        <Text style={[styles.transactionAmount, { color: isCredit ? '#10B981' : '#EF4444' }]}>
+          {isCredit ? '+' : '-'}{Number(item.amount).toLocaleString('pt-MZ', { minimumFractionDigits: 2 })} MT
         </Text>
       </View>
     );
@@ -93,33 +106,70 @@ const WalletScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Minha Carteira</Text>
+      <StatusBar style="dark" />
+      <SafeAreaView style={styles.header}>
+        <View style={styles.headerRow}>
+          <BackBtn onPress={() => navigation.goBack()} />
+          <Text style={styles.headerTitle}>Minha Carteira</Text>
+          <View style={{ width: 40 }} />
+        </View>
+      </SafeAreaView>
 
-      {/* Card de saldo */}
-      <View style={styles.balanceCard}>
-        <Text style={styles.balanceLabel}>Saldo disponível</Text>
-        <Text style={styles.balanceValue}>{balance.toFixed(2)} MT</Text>
-      </View>
-
-      {/* Botão estilizado */}
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate('withdraw')}
-      >
-        <Text style={styles.buttonText}>Solicitar levantamento</Text>
-      </TouchableOpacity>
-
-      {/* Lista de transações */}
-      <Text style={styles.sectionTitle}>Movimentos</Text>
       <FlatList
         data={transactions}
         keyExtractor={(_, i) => i.toString()}
         renderItem={renderTransaction}
-        contentContainerStyle={{ paddingBottom: 20 }}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.listContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#E85A4F" />
         }
-        ListEmptyComponent={<Text style={styles.emptyText}>Nenhuma transação encontrada</Text>}
+        ListHeaderComponent={
+          <>
+            <LinearGradient
+              colors={['#E85A4F', '#D3483E']}
+              style={styles.balanceCard}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+            >
+              <View style={styles.balanceHeader}>
+                <Ionicons name="card-outline" size={24} color="rgba(255,255,255,0.7)" />
+                <Text style={styles.balanceLabel}>Saldo Actual</Text>
+              </View>
+              <Text style={styles.balanceValue}>
+                {Number(balance).toLocaleString('pt-MZ', { minimumFractionDigits: 2 })} MT
+              </Text>
+              <View style={styles.cardFooter}>
+                <Text style={styles.accountHolder}>{(userData?.seller?.name || userData?.name)?.toUpperCase()}</Text>
+                <Image source={require('../assets/visacasa2.png')} style={styles.cardLogo} />
+              </View>
+            </LinearGradient>
+
+            <View style={styles.actionRow}>
+              <TouchableOpacity
+                style={styles.actionButton}
+                activeOpacity={0.8}
+                onPress={() => navigation.navigate('WalletWithdrawScreen')}
+              >
+                <LinearGradient
+                  colors={['#E85A4F', '#D3483E']}
+                  style={styles.actionGradient}
+                >
+                  <MaterialCommunityIcons name="bank-transfer-out" size={24} color="white" />
+                  <Text style={styles.actionText}>Solicitar Levantamento</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.sectionTitle}>Histórico de Movimentos</Text>
+          </>
+        }
+        ListEmptyComponent={
+          <View style={styles.emptyContainer}>
+            <MaterialCommunityIcons name="history" size={60} color="#D1D5DB" />
+            <Text style={styles.emptyText}>Nenhuma transação encontrada</Text>
+          </View>
+        }
       />
     </View>
   );
@@ -128,89 +178,154 @@ const WalletScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F7F8FA',
-    padding: 20,
+    backgroundColor: '#F9FAFB',
   },
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 16,
-    color: '#333',
+  header: {
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 15,
+    paddingBottom: 5,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: '#1F2937',
+  },
+  listContent: {
+    paddingHorizontal: 20,
+    paddingBottom: 40,
   },
   balanceCard: {
-    backgroundColor: '#4CAF50',
-    borderRadius: 12,
-    padding: 20,
-    marginBottom: 20,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
+    borderRadius: 24,
+    padding: 25,
+    marginTop: 10,
+    marginBottom: 25,
+    shadowColor: '#E85A4F',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.3,
+    shadowRadius: 15,
+    elevation: 8,
+  },
+  balanceHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 8,
   },
   balanceLabel: {
-    color: '#E8F5E9',
-    fontSize: 16,
+    color: 'rgba(255,255,255,0.8)',
+    fontSize: 14,
+    fontWeight: '600',
   },
   balanceValue: {
-    color: '#fff',
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginTop: 5,
-  },
-  button: {
-    backgroundColor: '#2196F3',
-    paddingVertical: 14,
-    borderRadius: 10,
-    alignItems: 'center',
+    color: '#FFFFFF',
+    fontSize: 32,
+    fontWeight: '800',
     marginBottom: 25,
   },
-  buttonText: {
-    color: '#fff',
+  cardFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  accountHolder: {
+    color: 'rgba(255,255,255,0.9)',
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 1,
+  },
+  cardLogo: {
+    width: 60,
+    height: 30,
+    resizeMode: 'contain',
+    tintColor: 'white',
+    opacity: 0.8,
+  },
+  actionRow: {
+    marginBottom: 35,
+  },
+  actionButton: {
+    borderRadius: 18,
+    overflow: 'hidden',
+    shadowColor: '#E85A4F',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  actionGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 18,
+    gap: 12,
+  },
+  actionText: {
+    color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '800',
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 10,
-    color: '#333',
+    fontWeight: '800',
+    color: '#1F2937',
+    marginBottom: 20,
   },
   transactionCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 10,
+    backgroundColor: '#FFFFFF',
+    padding: 16,
+    borderRadius: 20,
+    marginBottom: 12,
     shadowColor: '#000',
-    shadowOpacity: 0.05,
-    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 8,
     elevation: 2,
   },
-  transactionType: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#555',
+  iconBox: {
+    width: 48,
+    height: 48,
+    borderRadius: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  transactionAmount: {
-    fontSize: 16,
-    fontWeight: 'bold',
+  transactionInfo: {
+    flex: 1,
+    marginLeft: 15,
   },
-  transactionDesc: {
-    fontSize: 13,
-    color: '#777',
-    marginTop: 2,
+  transactionTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#1F2937',
+    marginBottom: 2,
   },
   transactionDate: {
     fontSize: 12,
-    color: '#999',
-    marginTop: 4,
+    color: '#9CA3AF',
+    fontWeight: '500',
+  },
+  transactionAmount: {
+    fontSize: 16,
+    fontWeight: '800',
+  },
+  emptyContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 50,
+    gap: 15,
   },
   emptyText: {
-    textAlign: 'center',
-    color: '#999',
-    marginTop: 20,
-    fontSize: 14,
+    color: '#9CA3AF',
+    fontSize: 15,
+    fontWeight: '500',
   },
 });
 

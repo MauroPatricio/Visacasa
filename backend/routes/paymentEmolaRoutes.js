@@ -49,8 +49,8 @@ paymentRouterEmola.post('/pay', ensureToken, async (req, res) => {
     return res.status(400).json({ error: 'Campos obrigatórios: phone, amount, orderId' });
   }
 
-  const transId = `NHIQUELA-${Date.now()}`;
-  const refNo = `NHIQUELA+${orderId}`;
+  const transId = `VISACASA-${Date.now()}`;
+  const refNo = `VISACASA+${orderId}`;
 
   try {
     const response = await axios.post(PUSH_USSD_URL, {
@@ -69,7 +69,7 @@ paymentRouterEmola.post('/pay', ensureToken, async (req, res) => {
     // Registra o pagamento no banco
     const paymentData = new Payment({
       senderNumber: phone,
-      receiverNumber: 'NHIQUELA',
+      receiverNumber: 'VISACASA',
       amount: amount.toString(),
       code: response.data.code || transId,
       description: 'Pagamento via Emola',
@@ -114,14 +114,14 @@ paymentRouterEmola.post('/disburse', ensureToken, async (req, res) => {
     return res.status(400).json({ error: 'Campos obrigatórios: phone, amount, orderId' });
   }
 
-  const transaction_id = `NHIQUELA-${orderId}`;
+  const transaction_id = `VISACASA-${orderId}`;
 
   try {
     const response = await axios.post(DISBURSE_URL, {
       phone_number: phone,
       transaction_id,
       amount,
-      message: 'NHIQUELA Payment for services',
+      message: 'VISACASA Payment for services',
     }, {
       headers: {
         Authorization: `Bearer ${bearerToken}`,

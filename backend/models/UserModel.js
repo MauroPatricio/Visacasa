@@ -53,6 +53,26 @@ const modelSchema = new mongoose.Schema({
         transport_type: {type: String},
         transport_color: {type: String},
         transport_registration: {type: String},
+
+        vihicle_picture: {type: String},
+        vihicle_inspection: {type: String},
+        vihicle_Insurance: {type: String},
+
+        license_front: {type: String},// Carta de conducao
+        license_back: {type: String},
+
+        document_type: {type: String}, // BI ou  Passaport ou Cedula Pessoal 
+        document_front: {type: String},
+        document_back: {type: String},
+
+        Proof_of_Address: {type: String}, // Fatura de energia || Fatura de Agua || 
+        Proof_of_Addres_Reason: {type: String},
+        register_conformance: {
+            type: String,
+            enum: ["PENDING_CONFORMANCE", "CONFORMANCE", "INCONFORMANCE"],
+            default: "PENDING_CONFORMANCE"
+          }
+        
     }
 },{
     timestamps: true

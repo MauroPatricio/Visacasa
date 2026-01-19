@@ -5,12 +5,8 @@ import { formatedDate, getError } from '../utils';
 import { Helmet } from 'react-helmet-async';
 import LoadingBox from '../components/LoadingBox';
 import MessageBox from '../components/MessageBox';
-import Button from 'react-bootstrap/Button';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
-import { faList } from '@fortawesome/free-solid-svg-icons';
 import Badge from 'react-bootstrap/Badge';
 
 const reducer = (state, action) => {
@@ -19,7 +15,7 @@ const reducer = (state, action) => {
       return { ...state, loading: true };
 
     case 'FETCH_SUCCESS':
-      return { ...state, loading: false, orders: action.payload.orders, pages:  action.payload.pages};
+      return { ...state, loading: false, orders: action.payload.orders, pages: action.payload.pages };
 
     case 'FETCH_FAIL':
       return { ...state, loading: false, error: action.payload };
@@ -47,13 +43,13 @@ export default function OrderHistoryBySellerScreen() {
       error: '',
     });
 
-  const { state} = useContext(Store);
+  const { state } = useContext(Store);
   const { userInfo } = state;
   const navigate = useNavigate();
 
-  const {search} =useLocation();
+  const { search } = useLocation();
   const sp = new URLSearchParams(search);
-  const page = sp.get('page') || 1 ;
+  const page = sp.get('page') || 1;
 
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -64,9 +60,9 @@ export default function OrderHistoryBySellerScreen() {
       row.code.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    useEffect(() => {
-      window.scrollTo(0, 0);
-    }, []);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -134,7 +130,7 @@ export default function OrderHistoryBySellerScreen() {
                 <th>Data e Hora</th>
                 <th>Código do pedido</th>
                 <th>Valor a receber</th>
-                 <th>Foi pago?</th>
+                <th>Foi pago?</th>
                 {/* <th>Entregue</th>
                 <th>Estado do Pedido</th> */}
                 {/* <th>Acções</th> */}
@@ -146,11 +142,11 @@ export default function OrderHistoryBySellerScreen() {
                   <td>{formatedDate(o.createdAt)}</td>
                   <td>Nº {o.code}</td>
                   <td>{o.itemsPriceForSeller} MT</td>
-                  <td>{o.isSupplierPaid ?  <Badge bg="success" variant="success">
-                        Sim
-                      </Badge> : <Badge bg="danger" variant="danger">
-                      Não
-                      </Badge>}</td>
+                  <td>{o.isSupplierPaid ? <Badge bg="success" variant="success">
+                    Sim
+                  </Badge> : <Badge bg="danger" variant="danger">
+                    Não
+                  </Badge>}</td>
 
                   {/* <td>{o.isDelivered ? <Badge bg="success" variant="success">
                         Sim
@@ -167,7 +163,7 @@ export default function OrderHistoryBySellerScreen() {
                       
                       </td> */}
                   <td>
-                    
+
                     {/* <Button
                       type="Button"
                       variant="light"
@@ -203,12 +199,12 @@ export default function OrderHistoryBySellerScreen() {
 
 
           <div>
- {[...Array(pages).keys()].map((x)=>(
-     <Link className={x + 1 === Number(page)? 'btn text-bold': 'btn'} key={x+1} to={`/orderhistorybycustomer/seller?page=${x+1}`}>
-         {x+1}
-     </Link>
- ))}
-</div>
+            {[...Array(pages).keys()].map((x) => (
+              <Link className={x + 1 === Number(page) ? 'btn text-bold' : 'btn'} key={x + 1} to={`/orderhistorybycustomer/seller?page=${x + 1}`}>
+                {x + 1}
+              </Link>
+            ))}
+          </div>
         </>
       )}
     </div>

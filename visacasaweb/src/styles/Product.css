@@ -1,0 +1,83 @@
+.product-card-premium {
+    border: none;
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    background: white;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+    height: 100%;
+}
+
+.product-card-premium:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-premium);
+}
+
+.product-image-container {
+    height: 200px;
+    overflow: hidden;
+    background: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.product-image-container img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: var(--transition);
+}
+
+.product-card-premium:hover .product-image-container img {
+    transform: scale(1.08);
+}
+
+.btn-action-custom {
+    background: white;
+    border: 1px solid #edf2f7;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    cursor: pointer;
+    color: var(--slate-700);
+    padding: 0;
+    box-shadow: var(--shadow-subtle);
+}
+
+.btn-action-custom:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.badge-onsale {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: var(--primary);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    z-index: 2;
+    box-shadow: 0 4px 6px rgba(232, 90, 79, 0.3);
+}
+
+.unit-tag {
+    font-size: 0.7rem;
+    color: var(--slate-700);
+    background: var(--slate-100);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+}

@@ -1,18 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import Button from 'react-bootstrap/Button';
-import  Form  from 'react-bootstrap/Form';
-import FormControl from 'react-bootstrap/FormControl';
-import InputGroup from 'react-bootstrap/InputGroup';
-
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import { FormControl, Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useTranslation } from 'react-i18next';
+import '../styles/SearchBox.css';
 
 export default function SearchBox() {
   const { t } = useTranslation();
-
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
 
@@ -26,21 +21,30 @@ export default function SearchBox() {
   }, []);
 
   return (
-    <div>
-        <InputGroup>
+    <div className="search-box-container mx-lg-4 flex-grow-1">
+      <form onSubmit={searchHandler}>
+        <div className="position-relative">
+          <span className="search-icon-wrapper">
+            <FontAwesomeIcon icon={faSearch} />
+          </span>
           <FormControl
             type="text"
             name="query"
             id="query"
+            className="search-input-premium"
             onChange={(e) => setQuery(e.target.value)}
             placeholder={t('searchproducts')}
             aria-label="Pesquisar Produtos"
-            aria-describedby="button-search"
-          ></FormControl>
-          <Button className='customButtom' variant="light" type="submit" id="button-search" onClick={searchHandler}>
-            <FontAwesomeIcon icon={faSearch}></FontAwesomeIcon>
+          />
+          <Button
+            className="search-button-premium"
+            type="submit"
+            id="button-search"
+          >
+            {t('search')}
           </Button>
-        </InputGroup>
+        </div>
+      </form>
     </div>
   );
 }

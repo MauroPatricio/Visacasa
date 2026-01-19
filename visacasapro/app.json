@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "VisacasaPRO",
+    "name": "visacasaPRO",
     "slug": "visacasapro",
     "version": "1.0.0",
     "owner": "mpatricio",
@@ -12,16 +12,11 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "platforms": [
-      "ios",
-      "android",
-      "web"
-    ],
+    "assetBundlePatterns": ["**/*"],
+    "platforms": ["ios", "android", "web"],
     "android": {
       "package": "com.mpatricio.visacasapro",
+      "googleServicesFile": "./google-services.json",
       "versionCode": 2,
       "icon": "./assets/visacasa2.png",
       "adaptiveIcon": {
@@ -53,10 +48,8 @@
       "infoPlist": {
         "NSCameraUsageDescription": "This app needs access to your camera to upload images.",
         "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to upload images.",
-        "UIBackgroundModes": [
-          "fetch",
-          "remote-notification"
-        ]
+        "UIBackgroundModes": ["fetch", "remote-notification"],
+        "NSUserTrackingUsageDescription": "VisacasaPRO uses notifications to update you about new orders and deliveries."
       }
     },
     "web": {
@@ -76,11 +69,32 @@
         }
       ],
       "expo-notifications",
-      "expo-font",
-      "expo-build-properties"
-     
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "softwareKeyboardLayoutMode": "pan",
+            "compileSdkVersion": 35,
+            "targetSdkVersion": 35,
+            "buildToolsVersion": "35.0.0"
+          },
+          "ios": {
+      "deploymentTarget": "15.1"
+          }
+        }
+      ],
+      "expo-font"
     ],
     "extra": {
+      "firebase": {
+        "apiKey": "AIzaSyCY-wvry4w6GAsMJQ4zD_e3LiMSVx3qoGU",
+        "authDomain": "nhiquela-pro.firebaseapp.com",
+        "projectId": "nhiquela-pro",
+        "storageBucket": "nhiquela-pro.firebasestorage.app",
+        "messagingSenderId": "321336552110",
+        "appId": "1:321336552110:web:2883153d447c5abe96db3f",
+        "measurementId": "G-2HJXSQN0Z7"
+      },
       "eas": {
         "projectId": "27fcc910-b96c-471c-ac3d-cc803ba450b0"
       }

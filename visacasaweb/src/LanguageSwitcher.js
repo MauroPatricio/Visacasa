@@ -1,43 +1,31 @@
-// LanguageSwitcher.js
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useCallback } from 'react';
 import i18n from 'i18next';
 import { Store } from './Store';
 
-
-export default function LanguageSwitcher () {
-  
-
+export default function LanguageSwitcher() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
+  const { changelng } = state;
 
-  const {changelng} = state;
-
-
-
-
-  useEffect(()=>{
-    handleChangeLanguage()
-  },[changelng])
-
-  let handleChangeLanguage = (event) => {
+  const handleChangeLanguage = useCallback((event) => {
     let selectedLanguage = '';
-    if(event){
-       selectedLanguage = event.target.value;
-       ctxDispatch({ type: 'CHANGE_LNG', payload: selectedLanguage });
+    if (event && event.target) {
+      selectedLanguage = event.target.value;
+      ctxDispatch({ type: 'CHANGE_LNG', payload: selectedLanguage });
+    } else {
+      selectedLanguage = changelng;
     }
 
     i18n.changeLanguage(selectedLanguage);
-  };
+  }, [ctxDispatch, changelng]);
+
+  useEffect(() => {
+    handleChangeLanguage();
+  }, [changelng, handleChangeLanguage]);
 
   return (
-    <select onChange={handleChangeLanguage} style={{textAlign: 'center'}}>
+    <select onChange={handleChangeLanguage} style={{ textAlign: 'center' }}>
       <option value="pt">Português</option>
       <option value="en">English</option>
     </select>
-
-    // <Form.Select aria-label="Linguas"
-    // onChange={handleChangeLanguage} required>
-    //  <option value="pt">PT</option>
-    //  <option value="en">EN</option>
-    // </Form.Select>
   );
 }

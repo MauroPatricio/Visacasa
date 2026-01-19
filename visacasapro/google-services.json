@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "558353111591",
+    "project_id": "visacasapro",
+    "storage_bucket": "visacasapro.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:558353111591:android:e877edfa2f7458b5504c02",
+        "android_client_info": {
+          "package_name": "com.mpatricio.visacasapro"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAGA0zQroB0TvVxstogX9YqTu2OY3NyDS8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

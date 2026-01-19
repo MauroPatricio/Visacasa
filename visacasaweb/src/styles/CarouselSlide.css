@@ -1,0 +1,95 @@
+/* 🔹 Immersive Premium Carousel */
+.carousel-custom {
+  width: 100%;
+  margin: 0 auto;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.carousel-slide {
+  position: relative;
+  height: 480px;
+  background: var(--slate-900);
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+.carousel-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.7;
+  transition: var(--transition);
+}
+
+.carousel-slide:hover .carousel-image {
+  transform: scale(1.05);
+  opacity: 0.8;
+}
+
+.carousel-caption-premium {
+  position: absolute;
+  left: 10%;
+  bottom: 15%;
+  text-align: left;
+  z-index: 10;
+  max-width: 50%;
+  color: white;
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.carousel-caption-premium h2 {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.sale-badge-premium {
+  background: var(--primary-gradient);
+  padding: 8px 24px;
+  border-radius: 50px;
+  font-weight: 800;
+  display: inline-block;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 15px rgba(232, 90, 79, 0.4);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 991px) {
+  .carousel-slide {
+    height: 350px;
+  }
+
+  .carousel-caption-premium h2 {
+    font-size: 2rem;
+  }
+
+  .carousel-caption-premium {
+    max-width: 80%;
+    left: 5%;
+  }
+}
+
+@media (max-width: 576px) {
+  .carousel-slide {
+    height: 250px;
+  }
+
+  .carousel-caption-premium h2 {
+    font-size: 1.5rem;
+  }
+}

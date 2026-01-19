@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import Button from 'react-bootstrap/Button';
-import {FaAngleUp } from "react-icons/fa";
+// import Button from 'react-bootstrap/Button';
+// import {FaAngleUp } from "react-icons/fa";
 
 
 
 export default function ScrollTopButton(props) {
-  const [showButton, setShowButton] = useState(false);
+  // const [showButton, setShowButton] = useState(false);
 
   const handleScroll = () => {
-    if (window.scrollY > 200) {
-      setShowButton(true);
-    } else {
-      setShowButton(false);
-    }
+    /*
+        if (window.scrollY > 200) {
+          setShowButton(true);
+        } else {
+          setShowButton(false);
+        }
+    */
   };
 
   useEffect(() => {
@@ -23,24 +25,26 @@ export default function ScrollTopButton(props) {
   }, []);
 
 
+  /*
   const handleScrollToTop = () => {
     window.scrollTo(0, 0); 
   };
- 
+  */
+
 
   return (
     <div >
-  
-        <>
-          {/* <Button
+
+      <>
+        {/* <Button
             className={`scroll-to-top-button ${showButton ? 'show' : 'hide'}`}
             type="button"
             onClick={handleScrollToTop}
           >
             <FaAngleUp />
           </Button> */}
-        </>
-      
+      </>
+
     </div>
   );
 }
