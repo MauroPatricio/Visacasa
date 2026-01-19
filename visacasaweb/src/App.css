@@ -1,18 +1,21 @@
-/* Global Styles */
+/* Global Styles - Premium */
 body {
-  background-color: #ffffff;
-  font-family: 'Roboto', sans-serif;
-  color: #333;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  font-family: 'Inter', 'Roboto', sans-serif;
+  color: #2d3748;
   animation: fadeIn 0.8s ease-in-out;
 }
 
-/* Main Color Theme */
+/* Premium Color Theme */
 :root {
   --main-color: #E85A4F;
-  --accent-color: #D3483E;
-  --light-color: #E8E1FF;
-  --text-color: #333;
+  --accent-color: #ff8a75;
+  --light-color: #ffeadb;
+  --text-color: #2d3748;
   --bg-color: #ffffff;
+  --gradient-primary: linear-gradient(135deg, #E85A4F 0%, #ff8a75 100%);
+  --gradient-secondary: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+  --shadow-premium: 0 10px 40px rgba(232, 90, 79, 0.2);
 }
 
 /* Fade-in animation */
@@ -376,7 +379,7 @@ button:hover {
 }
 
 .tipo-table th {
-  background-color: #E85A4F;
+  background-color: var(--main-color);
   color: white;
   /* Alterado para branco */
 }

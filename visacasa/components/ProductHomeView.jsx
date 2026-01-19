@@ -1,87 +1,138 @@
 // components/ProductHomeView.js (atualizado)
 import React from 'react';
-import { 
-  View, 
-  Text, 
-  TouchableOpacity, 
-  Image, 
-  FlatList, 
-  StyleSheet, 
-  ActivityIndicator 
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  FlatList,
+  StyleSheet,
+  ActivityIndicator
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { useDispatch, useSelector } from 'react-redux';
+import { useToast } from 'react-native-toast-notifications';
+import {
+  toggleFavoriteOptimistic,
+  selectIsFavorited,
+} from '../features/favoriteSlice';
+import {
+  toggleProductSelection,
+  selectIsProductSelected,
+} from '../features/comparisonSlice';
+import { selectUser } from '../features/userSlice';
+import api from '../hooks/createConnectionApi';
 
-const ProductHomeView = ({ 
-  title, 
-  description, 
-  categoryid, 
-  products, 
-  loading = false 
+const ProductHomeView = ({
+  title,
+  description,
+  categoryid,
+  products,
+  loading = false
 }) => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const toast = useToast();
+  const user = useSelector(selectUser);
 
-const renderProductItem = ({ item }) => (
-  <TouchableOpacity
-    style={styles.productItem}
-    onPress={() => navigation.navigate('ProductDetail', { item })}
-  >
-    <View style={styles.imageContainer}>
-      <Image 
-        source={{ uri: item.image }} 
-        style={styles.productImage}
-        resizeMode="cover"
-      />
+  const ProductItem = ({ item, navigation, dispatch, toast, user }) => {
+    const isFavorited = useSelector(selectIsFavorited(item?._id));
+    const isSelected = useSelector(selectIsProductSelected(item?._id));
 
-      {/* Badge de promoção */}
-      {item.discount > 0 && (
-        <View style={styles.promoBadge}>
-          <Text style={styles.promoText}>PROMO</Text>
+    const handleToggleFavorite = async (e) => {
+      e.stopPropagation();
+      if (!user?._id) {
+        toast.show('Faça login para adicionar favoritos', { type: 'warning' });
+        navigation.navigate('Login');
+        return;
+      }
+      try {
+        dispatch(toggleFavoriteOptimistic(item._id));
+        const { data } = await api.post('/favorites/toggle', {
+          userId: user._id,
+          productId: item._id,
+        });
+        toast.show(data.message, { type: 'success' });
+      } catch (error) {
+        dispatch(toggleFavoriteOptimistic(item._id));
+        console.error('Erro ao toggle favorito:', error);
+        toast.show('Erro ao atualizar favoritos', { type: 'danger' });
+      }
+    };
+
+    const handleToggleComparison = (e) => {
+      e.stopPropagation();
+      dispatch(toggleProductSelection(item));
+    };
+
+    return (
+      <TouchableOpacity
+        style={styles.productItem}
+        onPress={() => navigation.navigate('ProductDetail', { item })}
+      >
+        <View style={styles.imageContainer}>
+          <Image
+            source={{ uri: item.image }}
+            style={styles.productImage}
+            resizeMode="cover"
+          />
+
+          {/* Action Buttons (Top Corners) */}
+          <TouchableOpacity onPress={handleToggleFavorite} style={styles.favoriteBtn}>
+            <Ionicons
+              name={isFavorited ? 'heart' : 'heart-outline'}
+              size={18}
+              color={isFavorited ? '#FF3B30' : '#000'}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={handleToggleComparison} style={styles.comparisonBtn}>
+            <Ionicons
+              name={isSelected ? 'repeat' : 'repeat-outline'}
+              size={18}
+              color={isSelected ? '#3B82F6' : '#000'}
+            />
+          </TouchableOpacity>
+
+          {item.discount > 0 && (
+            <View style={styles.promoBadge}>
+              <Text style={styles.promoText}>PROMO</Text>
+            </View>
+          )}
         </View>
-      )}
 
-      {/* Badge de estoque/encomenda */}
-      {item.isOrdered ? (
-        <View style={styles.badgeOrdered}>
-          <Text style={styles.badgeText}>Por encomenda</Text>
-                    <Text style={styles.badgePeriodOrder}>{item.orderPeriod}</Text>
+        <View style={styles.productInfo}>
+          <Text style={styles.productName} numberOfLines={1}>
+            {item.nome || item.name}
+          </Text>
 
-          
+          <Text style={styles.stockText}>
+            {item.countInStock > 0 ? `${item.countInStock} unidade(s)` : 'Sem stock'}
+          </Text>
+
+          <Text style={styles.sellerName} numberOfLines={1}>
+            {item.sellerName || item.seller?.seller?.name || 'N/A'}
+          </Text>
+
+          <View style={styles.bottomRow}>
+            {item.discount > 0 ? (
+              <View style={styles.priceContainer}>
+                <Text style={styles.discountPrice}>{item.discount} MT</Text>
+                <Text style={styles.originalPrice}>{item.price} MT</Text>
+              </View>
+            ) : (
+              <Text style={styles.productPrice}>{item.price} MT</Text>
+            )}
+
+            <TouchableOpacity style={styles.cartIconBtn}>
+              <Ionicons name="cart-outline" size={20} color="white" />
+            </TouchableOpacity>
+          </View>
         </View>
-      ) : item.countInStock > 0 ? (
-        <View style={styles.badgeInStock}>
-          <Text style={styles.badgeTextQ}>{item.countInStock} unidade(s)</Text>
-        </View>
-      ) : (
-        <View style={styles.badgeOutOfStock}>
-          <Text style={styles.badgeText}>Sem estoque</Text>
-        </View>
-      )}
-    </View>
-
-    <View style={styles.productInfo}>
-      <Text style={styles.productName} numberOfLines={1}>
-        {item.nome || item.name}
-      </Text>
-
-      {item.discount > 0 ? (
-        <View style={styles.priceContainer}>
-          <Text style={styles.originalPrice}>{item.price} MT</Text>
-          <Text style={styles.discountPrice}>{item.discount} MT</Text>
-        </View>
-      ) : (
-        <Text style={styles.productPrice}>{item.price} MT</Text>
-      )}
-
-      <View style={styles.extraInfo}>
-        <Text style={styles.infoTextB}>Fornecedor: {item.sellerName || item.seller?.seller?.name || 'N/A'}</Text>
-        <Text style={styles.infoText}>{item.province?.name || 'N/A'}</Text>
-      </View>
-    </View>
-  </TouchableOpacity>
-);
-
-
-
+      </TouchableOpacity>
+    );
+  };
 
   if (loading) {
     return (
@@ -104,7 +155,7 @@ const renderProductItem = ({ item }) => (
           <Text style={styles.title}>{title}</Text>
           {description ? <Text style={styles.description}>{description}</Text> : null}
         </View>
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={() => navigation.navigate('ProductListByCategory', { title, categoryid })}
         >
           <Text style={styles.seeAll}>Ver tudo</Text>
@@ -116,7 +167,15 @@ const renderProductItem = ({ item }) => (
           horizontal
           data={products}
           keyExtractor={(item) => item._id.toString()}
-          renderItem={renderProductItem}
+          renderItem={({ item }) => (
+            <ProductItem
+              item={item}
+              navigation={navigation}
+              dispatch={dispatch}
+              toast={toast}
+              user={user}
+            />
+          )}
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.productsList}
         />
@@ -132,7 +191,7 @@ const renderProductItem = ({ item }) => (
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 15,
-    // backgroundColor: '#F8F8F8',
+    marginVertical: 10,
   },
   header: {
     flexDirection: 'row',
@@ -141,162 +200,142 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   title: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: '800',
-    color: '#1A1A1A',
+    color: '#272343',
   },
   description: {
-    fontSize: 12,
-    color: '#666',
-    marginTop: 4,
-    lineHeight: 18,
+    fontSize: 11,
+    color: '#9A9CAA',
+    marginTop: 2,
   },
   seeAll: {
     color: '#E85A4F',
     fontWeight: '700',
-    fontSize: 14,
+    fontSize: 13,
   },
   productsList: {
     paddingBottom: 15,
-    paddingLeft: 5,
   },
   productItem: {
     backgroundColor: '#ffffff',
-    borderRadius: 10,
-    shadowColor: 'grey',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.6,
-    shadowRadius: 6,
-    elevation: 6,
-    marginRight: 12,
-    width: 150,
+    borderRadius: 12,
+    marginRight: 15,
+    width: 165,
+    height: 300, // Altura fixa para todos os cards
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 2,
     overflow: 'hidden',
   },
   imageContainer: {
-    position: 'relative',
+    width: '100%',
+    height: 160,
+    backgroundColor: '#F5F5F5',
   },
   productImage: {
     width: '100%',
-    height: 130,
-    resizeMode: 'cover',
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
+    height: '100%',
   },
-  promoBadge: {
+  favoriteBtn: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    backgroundColor: 'white',
+    padding: 6,
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  comparisonBtn: {
     position: 'absolute',
     top: 8,
     left: 8,
-    backgroundColor: '#FF3B30',
+    backgroundColor: 'white',
+    padding: 6,
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  promoBadge: {
+    position: 'absolute',
+    bottom: 8,
+    left: 8,
+    backgroundColor: '#E85A4F',
     paddingVertical: 2,
-    paddingHorizontal: 6,
-    borderRadius: 6,
+    paddingHorizontal: 8,
+    borderRadius: 4,
   },
   promoText: {
     color: '#fff',
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: 'bold',
   },
   productInfo: {
-    padding: 6,
+    padding: 12,
+    flex: 1,
+    justifyContent: 'space-between',
   },
   productName: {
     fontSize: 14,
-    fontWeight: 'bold',
-    marginBottom: 3,
-    color: '#333',
+    fontWeight: '600',
+    color: '#272343',
+    marginBottom: 2,
   },
-  productPrice: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#E85A4F',
-    marginBottom: 5,
+  stockText: {
+    fontSize: 11,
+    color: '#9A9CAA',
+    marginBottom: 2,
+  },
+  sellerName: {
+    fontSize: 11,
+    color: '#9A9CAA',
+    fontStyle: 'italic',
+    marginBottom: 4,
+  },
+  bottomRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 'auto',
   },
   priceContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    marginBottom: 5,
+    gap: 2,
   },
-  originalPrice: {
-    fontSize: 12,
-    color: '#AAA',
-    textDecorationLine: 'line-through',
+  productPrice: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#272343',
   },
   discountPrice: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#FF3B30',
-  },
-  extraInfo: {
-  },
-  infoText: {
-    fontSize: 12,
-    color: '#555',
-    lineHeight: 16,
-        fontWeight: '900',
-
-  },
-   infoTextB: {
-    fontSize: 12,
+    fontSize: 16,
+    fontWeight: '700',
     color: '#E85A4F',
-    lineHeight: 16,
-    fontWeight: '900',
-
+  },
+  originalPrice: {
+    fontSize: 11,
+    color: '#9A9CAA',
+    textDecorationLine: 'line-through',
+  },
+  cartIconBtn: {
+    backgroundColor: '#F0F2F3',
+    padding: 8,
+    borderRadius: 8,
   },
   emptyState: {
     padding: 30,
     alignItems: 'center',
-    justifyContent: 'center',
   },
   emptyText: {
-    color: '#AAA',
-    fontSize: 14,
-    fontStyle: 'italic',
-  },
-  badgeOrdered: {
-  position: 'absolute',
-  top: 8,
-  right: 8,
-  backgroundColor: '#4CAF50',
-  paddingVertical: 2,
-  paddingHorizontal: 6,
-  borderRadius: 6,
-},
-badgeInStock: {
-  position: 'absolute',
-  top: 8,
-  right: 8,
-  backgroundColor: '#E0F7FA',
-  paddingVertical: 2,
-  paddingHorizontal: 6,
-  borderRadius: 6,
-},
-badgeOutOfStock: {
-  position: 'absolute',
-  top: 8,
-  right: 8,
-  backgroundColor: 'red',
-  paddingVertical: 2,
-  paddingHorizontal: 6,
-  borderRadius: 6,
-},
-badgeText: {
-  fontSize: 10,
-  fontWeight: 'bold',
-  color: 'white',
-},
-badgePeriodOrder: {
-  fontSize: 10,
-  fontWeight: 'bold',
-  color: 'white',
-  textAlign: 'right'
-},
-badgeTextQ: {
-  fontSize: 10,
-  fontWeight: 'bold',
-  color: 'black',
-},
-
+    color: '#9A9CAA',
+    fontSize: 13,
+  }
 });
 
 

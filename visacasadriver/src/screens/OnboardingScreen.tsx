@@ -1,10 +1,10 @@
 // screens/OnboardingScreen.tsx
 import React, { useState, useEffect, useRef } from "react";
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TouchableOpacity, 
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
   Dimensions,
   StatusBar,
   Animated,
@@ -25,7 +25,7 @@ interface OnboardingScreenProps {
 export default function OnboardingScreen({ onOnboardingComplete }: OnboardingScreenProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [fadeAnim] = useState(new Animated.Value(1));
-  
+
   // Animações
   const slideAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
@@ -36,7 +36,7 @@ export default function OnboardingScreen({ onOnboardingComplete }: OnboardingScr
     {
       id: 1,
       icon: "🚗",
-      title: "Bem-vindo ao\nNhiquela Driver",
+      title: "Bem-vindo ao\nVisacasa Driver",
       subtitle: "Excelência em cada jornada",
       description: "Tecnologia avançada, suporte 24/7 e as melhores oportunidades para motoristas profissionais.",
       gradient: ['#667eea', '#764ba2'],
@@ -158,10 +158,10 @@ export default function OnboardingScreen({ onOnboardingComplete }: OnboardingScr
       console.log("✅ Finalizando onboarding...");
       await AsyncStorage.setItem("hasAcceptedPolicies", "true");
       console.log("✅ Políticas salvas, chamando callback...");
-      
+
       // ✅ CORREÇÃO: Chame o callback em vez de navegar manualmente
       onOnboardingComplete();
-      
+
     } catch (error) {
       console.error("❌ Erro ao finalizar onboarding:", error);
     }
@@ -182,7 +182,7 @@ export default function OnboardingScreen({ onOnboardingComplete }: OnboardingScr
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
-      
+
       <LinearGradient
         colors={currentStepData.gradient as [string, string]}
         style={styles.background}
@@ -235,7 +235,7 @@ export default function OnboardingScreen({ onOnboardingComplete }: OnboardingScr
               />
             ))}
           </View>
-          
+
           {currentStep > 0 && (
             <TouchableOpacity style={styles.backButton} onPress={handleBack}>
               <Text style={styles.backButtonText}>‹</Text>
@@ -243,10 +243,10 @@ export default function OnboardingScreen({ onOnboardingComplete }: OnboardingScr
           )}
         </View>
 
-        <Animated.View 
+        <Animated.View
           style={[
-            styles.content, 
-            { 
+            styles.content,
+            {
               opacity: fadeAnim,
               transform: [
                 { translateY: slideAnim },
@@ -256,13 +256,13 @@ export default function OnboardingScreen({ onOnboardingComplete }: OnboardingScr
           ]}
         >
           {/* Ícone com animação */}
-          <Animated.View 
+          <Animated.View
             style={[
               styles.iconContainer,
               {
                 transform: [
-                  { 
-                    rotate: rotateInterpolate 
+                  {
+                    rotate: rotateInterpolate
                   }
                 ]
               }
@@ -283,7 +283,7 @@ export default function OnboardingScreen({ onOnboardingComplete }: OnboardingScr
           <Text style={styles.subtitle}>{currentStepData.subtitle}</Text>
 
           {/* Descrição */}
-          <ScrollView 
+          <ScrollView
             style={styles.descriptionContainer}
             showsVerticalScrollIndicator={false}
           >
@@ -293,7 +293,7 @@ export default function OnboardingScreen({ onOnboardingComplete }: OnboardingScr
           </ScrollView>
 
           {/* Botão Principal */}
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.primaryButton}
             onPress={handleNext}
             activeOpacity={0.8}
@@ -312,7 +312,7 @@ export default function OnboardingScreen({ onOnboardingComplete }: OnboardingScr
 
           {/* Pular (apenas nos primeiros steps) */}
           {currentStep < steps.length - 1 && (
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.skipButton}
               onPress={handleFinish}
             >
@@ -323,7 +323,7 @@ export default function OnboardingScreen({ onOnboardingComplete }: OnboardingScr
 
         {/* Footer com marca */}
         <View style={styles.footer}>
-          <Text style={styles.footerText}>Nhiquela Driver ® 2025</Text>
+          <Text style={styles.footerText}>Visacasa Driver ® 2026</Text>
         </View>
       </LinearGradient>
     </View>

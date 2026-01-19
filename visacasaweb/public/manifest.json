@@ -1,6 +1,6 @@
 {
-  "short_name": "Nhiquela",
-  "name": "Tudo em suas Mãos",
+  "short_name": "Visacasa",
+  "name": "Visacasa - Tudo em suas Mãos",
   "icons": [
     {
       "src": "favicon2.ico",
@@ -8,12 +8,12 @@
       "type": "image/x-icon"
     },
     {
-      "src": "nhiquelalogo.png",
+      "src": "visacasalogo.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "nhiquelalogo.png",
+      "src": "visacasalogo.png",
       "type": "image/png",
       "sizes": "512x512"
     }

@@ -25,35 +25,37 @@ const FavoriteButton = memo(({ isFavorited, onPress }) => (
     >
         <Ionicons
             name={isFavorited ? 'heart' : 'heart-outline'}
-            size={22}
-            color={isFavorited ? '#E85A4F' : '#666'}
+            size={18}
+            color={isFavorited ? '#FF3B30' : '#000'}
         />
     </TouchableOpacity>
 ));
 
 FavoriteButton.displayName = 'FavoriteButton';
 
-// Memoized comparison checkbox
-const ComparisonCheckbox = memo(({ isSelected, onPress }) => (
+// Memoized comparison button
+const ComparisonButton = memo(({ isSelected, onPress }) => (
     <TouchableOpacity
-        style={styles.checkboxBtn}
+        style={styles.comparisonBtn}
         onPress={onPress}
         activeOpacity={0.7}
     >
-        <View style={[styles.checkbox, isSelected && styles.checkboxSelected]}>
-            {isSelected && <Ionicons name="checkmark" size={16} color="#fff" />}
-        </View>
+        <Ionicons
+            name={isSelected ? 'repeat' : 'repeat-outline'}
+            size={18}
+            color={isSelected ? '#3B82F6' : '#000'}
+        />
     </TouchableOpacity>
 ));
 
-ComparisonCheckbox.displayName = 'ComparisonCheckbox';
+ComparisonButton.displayName = 'ComparisonButton';
 
 const ProductCardView = memo(({ item, showComparison = false }) => {
     const navigation = useNavigation();
     const dispatch = useDispatch();
     const toast = useToast();
 
-    const productDetail = item.item;
+    const productDetail = item.item || item;
     const user = useSelector(selectUser);
     const isFavorited = useSelector(selectIsFavorited(productDetail?._id));
     const isSelected = useSelector(selectIsProductSelected(productDetail?._id));
@@ -101,56 +103,62 @@ const ProductCardView = memo(({ item, showComparison = false }) => {
     }, [navigation, item]);
 
     return (
-        <TouchableOpacity onPress={handleProductPress}>
-            <View style={styles.container}>
+        <TouchableOpacity onPress={handleProductPress} activeOpacity={0.9}>
+            <View style={styles.productItem}>
                 <View style={styles.imageContainer}>
                     <Image
                         source={{ uri: productDetail.image }}
-                        style={styles.image}
+                        style={styles.productImage}
+                        resizeMode="cover"
                     />
 
-                    {/* Comparison Checkbox (top-left) */}
+                    {/* Action Buttons (Top Corners) */}
                     {showComparison && (
-                        <ComparisonCheckbox
+                        <ComparisonButton
                             isSelected={isSelected}
                             onPress={handleToggleComparison}
                         />
                     )}
 
-                    {/* Favorite Button (top-right) */}
                     <FavoriteButton
                         isFavorited={localFavorited}
                         onPress={handleToggleFavorite}
                     />
 
-                    <View style={styles.details}>
-                        <Text style={styles.title} numberOfLines={1}>
-                            {productDetail.nome}
-                        </Text>
-                        <Text style={styles.supplier} numberOfLines={1}>
-                            {productDetail.seller.seller.name}
-                        </Text>
+                    {productDetail.discount > 0 && (
+                        <View style={styles.promoBadge}>
+                            <Text style={styles.promoText}>PROMO</Text>
+                        </View>
+                    )}
+                </View>
 
-                        <Text style={styles.price} numberOfLines={1}>
-                            {productDetail.price} Mt
-                        </Text>
-                        <Text>
-                            {productDetail.isOrdered ? (
-                                <Badge style={{ color: 'white', backgroundColor: 'green' }}>
-                                    {' '}
-                                    Por encomenda{' '}
-                                </Badge>
-                            ) : productDetail.countInStock !== 0 ? (
-                                productDetail.countInStock + ` unidade(s)`
-                            ) : (
-                                <Badge bg="danger">Sem stock</Badge>
-                            )}
-                        </Text>
+                <View style={styles.productInfo}>
+                    <Text style={styles.productName} numberOfLines={1}>
+                        {productDetail.nome || productDetail.name}
+                    </Text>
+
+                    <Text style={styles.stockText}>
+                        {productDetail.countInStock > 0 ? `${productDetail.countInStock} unidade(s)` : 'Sem stock'}
+                    </Text>
+
+                    <Text style={styles.sellerName} numberOfLines={1}>
+                        {productDetail.sellerName || productDetail.seller?.seller?.name || 'N/A'}
+                    </Text>
+
+                    <View style={styles.bottomRow}>
+                        {productDetail.discount > 0 ? (
+                            <View style={styles.priceContainer}>
+                                <Text style={styles.discountPrice}>{productDetail.discount} MT</Text>
+                                <Text style={styles.originalPrice}>{productDetail.price} MT</Text>
+                            </View>
+                        ) : (
+                            <Text style={styles.productPrice}>{productDetail.price} MT</Text>
+                        )}
+
+                        <TouchableOpacity style={styles.cartIconBtn}>
+                            <Ionicons name="cart-outline" size={20} color="white" />
+                        </TouchableOpacity>
                     </View>
-
-                    <TouchableOpacity style={styles.addBtn}>
-                        <Ionicons name="cart" size={25} color={'#E85A4F'} />
-                    </TouchableOpacity>
                 </View>
             </View>
         </TouchableOpacity>
@@ -162,82 +170,116 @@ ProductCardView.displayName = 'ProductCardView';
 export default ProductCardView;
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#f5f5f5',
+    productItem: {
+        backgroundColor: '#ffffff',
+        borderRadius: 12,
+        marginBottom: 15,
+        marginHorizontal: 8,
+        width: 165,
+        height: 300,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 10,
+        elevation: 2,
+        overflow: 'hidden',
     },
     imageContainer: {
-        flex: 1,
-        width: 170,
-        marginLeft: 12 / 2,
-        marginTop: 5,
-        borderRadius: 12,
-        overflow: "hidden",
-        backgroundColor: "white",
+        width: '100%',
+        height: 160,
+        backgroundColor: '#F5F5F5',
     },
-    image: {
-        aspectRatio: 1,
-        resizeMode: 'cover',
-    },
-    details: {
-        padding: 12,
-    },
-    title: {
-        fontSize: 12,
-        fontWeight: '800',
-    },
-    supplier: {
-        fontSize: 12,
-        fontWeight: '600',
-    },
-    price: {
-        fontSize: 12,
-        fontWeight: '400',
-    },
-    addBtn: {
-        position: "absolute",
-        bottom: 10,
-        right: 12,
+    productImage: {
+        width: '100%',
+        height: '100%',
     },
     favoriteBtn: {
-        position: "absolute",
+        position: 'absolute',
         top: 8,
         right: 8,
-        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-        borderRadius: 20,
+        backgroundColor: 'white',
         padding: 6,
-        elevation: 3,
+        borderRadius: 8,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 3,
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 2,
     },
-    checkboxBtn: {
-        position: "absolute",
+    comparisonBtn: {
+        position: 'absolute',
         top: 8,
         left: 8,
-        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-        borderRadius: 6,
-        padding: 4,
-        elevation: 3,
+        backgroundColor: 'white',
+        padding: 6,
+        borderRadius: 8,
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 3,
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 2,
     },
-    checkbox: {
-        width: 24,
-        height: 24,
-        borderRadius: 4,
-        borderWidth: 2,
-        borderColor: '#666',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    checkboxSelected: {
+    promoBadge: {
+        position: 'absolute',
+        bottom: 8,
+        left: 8,
         backgroundColor: '#E85A4F',
-        borderColor: '#E85A4F',
+        paddingVertical: 2,
+        paddingHorizontal: 8,
+        borderRadius: 4,
+    },
+    promoText: {
+        color: '#fff',
+        fontSize: 9,
+        fontWeight: 'bold',
+    },
+    productInfo: {
+        padding: 12,
+        flex: 1,
+        justifyContent: 'space-between',
+    },
+    productName: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#272343',
+        marginBottom: 2,
+    },
+    stockText: {
+        fontSize: 11,
+        color: '#9A9CAA',
+        marginBottom: 2,
+    },
+    sellerName: {
+        fontSize: 11,
+        color: '#9A9CAA',
+        fontStyle: 'italic',
+        marginBottom: 4,
+    },
+    bottomRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginTop: 'auto',
+    },
+    priceContainer: {
+        gap: 2,
+    },
+    productPrice: {
+        fontSize: 16,
+        fontWeight: '700',
+        color: '#272343',
+    },
+    discountPrice: {
+        fontSize: 16,
+        fontWeight: '700',
+        color: '#E85A4F',
+    },
+    originalPrice: {
+        fontSize: 11,
+        color: '#9A9CAA',
+        textDecorationLine: 'line-through',
+    },
+    cartIconBtn: {
+        backgroundColor: '#E85A4F', // Mantendo o salmon para o botão de ação principal
+        padding: 8,
+        borderRadius: 8,
     },
 });

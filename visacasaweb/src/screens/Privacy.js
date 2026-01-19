@@ -20,7 +20,7 @@ export default function Privacy() {
 
           <h5 className='howitworks'><b>Objeto</b></h5>
           <p>
-            A Nhiquela Serviços & Consultoria, SU, LDA compromete-se a proteger a privacidade dos seus usuários.
+            A Visacasa Serviços & Consultoria, SU, LDA compromete-se a proteger a privacidade dos seus usuários.
             Esta Política de Privacidade descreve como coletamos, usamos, armazenamos e protegemos as informações pessoais dos usuários do nosso aplicativo.
           </p>
 
@@ -76,7 +76,7 @@ export default function Privacy() {
           <p>Se você tiver dúvidas ou preocupações sobre esta Política de Privacidade, entre em contato conosco:</p>
           <ul>
             <li><b>Endereço:</b> Rua de Malhangalene, Bairro de Malhangalene n° 11, 3° andar, Kampfumu, Maputo Cidade</li>
-            <li><b>E-mail:</b> nhiquelaservicosconsultoria@gmail.com</li>
+            <li><b>E-mail:</b> geral@visacasa.co.mz</li>
             <li><b>Telefone:</b> 853600036</li>
           </ul>
         </Card.Body>

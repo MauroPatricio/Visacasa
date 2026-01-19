@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useContext, useEffect, useState, useReducer } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { getError } from '../utils';
+// import { getError } from '../utils';
 import Rating from './Rating';
 import Card from 'react-bootstrap/Card';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

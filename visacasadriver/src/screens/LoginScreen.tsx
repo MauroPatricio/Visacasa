@@ -67,7 +67,7 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
   const [loader, setLoader] = useState(false);
   const [hideText, setHideText] = useState(true);
   const { showLoading, hideLoading, showUpload, showProcessing, isLoading } = useLoadingContext();
-  
+
   // ✅ CORREÇÃO: USAR useAuth CORRETAMENTE E VERIFICAR
   const authContext = useAuth();
 
@@ -82,7 +82,7 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
 
       // ✅ AGORA RECEBE TODOS OS DADOS DO USUÁRIO
       const userData = await loginUser(values.phoneNumber, values.password);
-            
+
       // ✅ VERIFICAÇÃO DE SEGURANÇA DOS DADOS
       if (!userData || !userData._id) {
         throw new Error("Dados do utilizador inválidos da API");
@@ -132,9 +132,9 @@ const Login: React.FC<LoginProps> = ({ navigation }) => {
     <ScrollView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.header}>
-        <BackBtn onPress={() => {}} />
+          <BackBtn onPress={() => { }} />
           <Image
-            source={require("../../assets/nhiquela2.png")}
+            source={require("../../assets/visacasa2.png")}
             style={styles.headerLogo}
           />
           <Text style={styles.headerTitle}>App do Condutor</Text>

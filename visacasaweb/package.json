@@ -53,7 +53,8 @@
     "node": "18.16.0"
   },
   "scripts": {
-    "start": "react-scripts start index.js",
+    "start": "react-scripts start",
+    "dev": "nodemon --watch src --exec \"react-scripts start\"",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

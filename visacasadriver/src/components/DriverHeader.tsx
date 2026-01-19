@@ -75,7 +75,7 @@ export default function DriverHeader({
     const deliverymanPhoto = user?.deliveryman?.photo;
     // Depois verificar se há foto direta do user
     const userPhoto = user?.photo;
-    
+
     // Prioridade: deliveryman photo -> user photo -> profileImage -> placeholder
     let imageUri = deliverymanPhoto || userPhoto || profileImage;
 
@@ -123,7 +123,7 @@ export default function DriverHeader({
 
   // ✅ FUNÇÃO PARA OBTER STATUS DO REGISTO
   const getRegistrationStatus = () => {
-    const status = user?.deliveryman?.register_conformance;    
+    const status = user?.deliveryman?.register_conformance;
     switch (status) {
       case "CONFORMANCE":
         return { text: "Registo Aprovado", color: COLORS.success };
@@ -157,8 +157,8 @@ export default function DriverHeader({
       {/* Top Row */}
       <View style={styles.topRow}>
         <View style={styles.logoContainer}>
-          <Text style={styles.logoText}>Nhiquela+</Text>
-          
+          <Text style={styles.logoText}>Visacasa</Text>
+
           {/* ✅ BADGE DINÂMICO - PREMIUM OU MOTORISTA */}
           {isDeliveryMan ? (
             <View style={styles.deliveryBadge}>
@@ -198,18 +198,18 @@ export default function DriverHeader({
           </TouchableOpacity>
 
           {/* ✅ BOTÃO DE LOGOUT ADICIONADO */}
-          <TouchableOpacity 
-            style={styles.logoutButton} 
+          <TouchableOpacity
+            style={styles.logoutButton}
             onPress={handleLogout}
           >
-            <Ionicons 
-              name="log-out-outline" 
-              size={24} 
-              color={COLORS.white} 
+            <Ionicons
+              name="log-out-outline"
+              size={24}
+              color={COLORS.white}
             />
           </TouchableOpacity>
 
-         
+
         </View>
       </View>
 
@@ -228,17 +228,17 @@ export default function DriverHeader({
           <Text style={styles.greeting}>
             {getGreeting()}, {getFirstName()}! 👋
           </Text>
-          
+
           <Text style={styles.userStatus}>
             {isConnected ? 'Pronto para novas viagens' : 'Offline'}
           </Text>
-          
+
           {/* ✅ INFO DO VEÍCULO (APENAS PARA MOTORISTAS) - AGORA DO CONTEXTO */}
           {isDeliveryMan && (
             <View style={styles.vehicleInfoContainer}>
               {transportType ? (
                 <Text style={styles.vehicleInfo}>
-                  {transportType} 
+                  {transportType}
                   {vehicleColor && ` • ${vehicleColor}`}
                   {vehiclePlate && ` • ${vehiclePlate}`}
                 </Text>
@@ -247,17 +247,17 @@ export default function DriverHeader({
                   Veículo não registado
                 </Text>
               )}
-              
+
               {/* ✅ STATUS DO REGISTO */}
               <View style={[styles.registrationStatus, { backgroundColor: registrationStatus.color + '20' }]}>
-                <Ionicons 
+                <Ionicons
                   name={
                     registrationStatus.text === "Registo Aprovado" ? "checkmark-circle" :
-                    registrationStatus.text === "Registo Recusado" ? "close-circle" :
-                    "time"
-                  } 
-                  size={10} 
-                  color={registrationStatus.color} 
+                      registrationStatus.text === "Registo Recusado" ? "close-circle" :
+                        "time"
+                  }
+                  size={10}
+                  color={registrationStatus.color}
                 />
                 <Text style={[styles.registrationStatusText, { color: registrationStatus.color }]}>
                   {registrationStatus.text}

@@ -25,6 +25,10 @@ import EstablishmentsView from '../components/EstablishmentsView1';
 import OptimizedImage from '../components/OptimizedImage';
 import useDebounce from '../hooks/useDebounce';
 import useThrottle from '../hooks/useThrottle';
+import { MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
+import { selectFavoritesCount } from '../features/favoriteSlice';
+import { selectSelectedProductsCount } from '../features/comparisonSlice';
+import PremiumCarousel from '../components/Home/PremiumCarousel';
 
 const { width } = Dimensions.get('window');
 const SOCKET_URL = typeof api === 'string' ? api : (api.defaults?.baseURL || 'http://localhost:3000');
@@ -43,25 +47,39 @@ const ProductItem = React.memo(({ item, onPress }) => (
   <TouchableOpacity
     style={styles.productCard}
     onPress={() => onPress(item)}
+    activeOpacity={0.9}
   >
-    <OptimizedImage
-      source={{ uri: item.image }}
-      style={styles.productImage}
-    />
+    <View style={styles.imageBox}>
+      <OptimizedImage
+        source={{ uri: item.image }}
+        style={styles.productImage}
+      />
+      {item.discount > 0 && (
+        <View style={styles.promoBadgeSmall}>
+          <Text style={styles.promoTextSmall}>PROMO</Text>
+        </View>
+      )}
+    </View>
     <View style={styles.productDetails}>
       <Text style={styles.productName} numberOfLines={1}>
         {item.nome || item.name}
       </Text>
-      <Text style={styles.productPrice}>
+      <Text style={styles.productStock}>
+        {item.countInStock > 0 ? `${item.countInStock} un.` : 'Pre-order'}
+      </Text>
+      <View style={styles.priceRowSmall}>
         {item.discount > 0 ? (
-          <View style={styles.discountContainer}>
-            <Text style={styles.originalPrice}>{item.price} MT</Text>
-            <Text style={styles.discountPrice}>{item.discount} MT</Text>
+          <View style={styles.discountRow}>
+            <Text style={styles.discountPriceSmall}>{item.discount} MT</Text>
+            <Text style={styles.originalPriceSmall}>{item.price} MT</Text>
           </View>
         ) : (
-          `${item.price} MT`
+          <Text style={styles.productPriceSmall}>{item.price} MT</Text>
         )}
-      </Text>
+        <View style={styles.cartIconSmall}>
+          <Ionicons name="cart-outline" size={14} color="white" />
+        </View>
+      </View>
     </View>
   </TouchableOpacity>
 ));
@@ -133,6 +151,8 @@ const Home = () => {
 
   const bottomSheetRef = useRef(null);
   const items = useSelector(selectBasketItems);
+  const favoritesCount = useSelector(selectFavoritesCount);
+  const comparisonCount = useSelector(selectSelectedProductsCount);
   const navigation = useNavigation();
 
   // Memoizar dados para evitar recálculos desnecessários
@@ -531,25 +551,11 @@ const Home = () => {
   // Renderizar seção de produtos em destaque
   const renderFeaturedProducts = () => (
     <View style={styles.featuredSection}>
-      <Text style={styles.sectionTitle}>Produtos em Destaque</Text>
-      {loadingFeaturedProducts ? (
-        <ActivityIndicator size="small" color="#E85A4F" style={{ marginVertical: 20 }} />
-      ) : (
-        <FlatList
-          horizontal
-          data={memoizedFeaturedProducts}
-          keyExtractor={(item) => String(item._id)}
-          renderItem={renderProductItem}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.featuredList}
-          ListEmptyComponent={
-            <Text style={styles.emptyText}>Nenhum produto em destaque</Text>
-          }
-          initialNumToRender={5}
-          maxToRenderPerBatch={5}
-          windowSize={5}
-        />
-      )}
+      <Text style={styles.sectionTitle}>Novidades em Destaque</Text>
+      <PremiumCarousel
+        data={memoizedFeaturedProducts}
+        loading={loadingFeaturedProducts}
+      />
     </View>
   );
 
@@ -558,15 +564,40 @@ const Home = () => {
       {/* AppBar */}
       <View style={style.appBarWrapper}>
         <View style={style.appBar}>
-          <OptimizedImage source={require('../assets/default1.jpg')} style={style.cover} />
-          <Text style={style.location}>{userData ? `Olá, ${userData.name}` : 'Faça login'}</Text>
-          <View style={{ alignItems: "flex-end" }}>
-            <View style={style.cartCount}>
-              <Text style={style.cartNumber}>{items.length}</Text>
-            </View>
-            <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
-              <Ionicons name="cart-outline" size={35} />
+          <OptimizedImage source={require('../assets/visacasa2.png')} style={style.cover} />
+          <Text style={style.location}>{userData ? `Olá, ${userData.name}` : 'Bem-vindo à Visacasa'}</Text>
+          <View style={style.headerIcons}>
+
+            {/* Comparison */}
+            <TouchableOpacity onPress={() => navigation.navigate('PriceComparison')} style={style.iconContainer}>
+              {comparisonCount > 0 && (
+                <View style={[style.cartCount, style.badgePrimary]}>
+                  <Text style={style.cartNumber}>{comparisonCount}</Text>
+                </View>
+              )}
+              <MaterialCommunityIcons name="compare-horizontal" size={28} color="#4B5563" />
             </TouchableOpacity>
+
+            {/* Favorites */}
+            <TouchableOpacity onPress={() => navigation.navigate('Favorites')} style={style.iconContainer}>
+              {favoritesCount > 0 && (
+                <View style={[style.cartCount, style.badgeRed]}>
+                  <Text style={style.cartNumber}>{favoritesCount}</Text>
+                </View>
+              )}
+              <Ionicons name="heart-outline" size={28} color="#4B5563" />
+            </TouchableOpacity>
+
+            {/* Cart */}
+            <TouchableOpacity onPress={() => navigation.navigate('Cart')} style={style.iconContainer}>
+              {items.length > 0 && (
+                <View style={style.cartCount}>
+                  <Text style={style.cartNumber}>{items.length}</Text>
+                </View>
+              )}
+              <Ionicons name="cart-outline" size={28} color="#4B5563" />
+            </TouchableOpacity>
+
           </View>
         </View>
       </View>
@@ -714,54 +745,83 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
   },
   productCard: {
-    width: 160,
+    width: 150,
     backgroundColor: 'white',
     borderRadius: 12,
     marginRight: 15,
-    padding: 12,
+    marginBottom: 5,
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 2,
+    overflow: 'hidden',
+  },
+  imageBox: {
+    width: '100%',
+    height: 110,
+    backgroundColor: '#F5F5F5',
   },
   productImage: {
     width: '100%',
-    height: 120,
-    borderRadius: 8,
-    marginBottom: 10,
+    height: '100%',
+  },
+  promoBadgeSmall: {
+    position: 'absolute',
+    bottom: 5,
+    left: 5,
+    backgroundColor: '#E85A4F',
+    paddingVertical: 1,
+    paddingHorizontal: 5,
+    borderRadius: 3,
+  },
+  promoTextSmall: {
+    color: '#fff',
+    fontSize: 8,
+    fontWeight: 'bold',
   },
   productDetails: {
-    flex: 1,
+    padding: 10,
   },
   productName: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '600',
-    marginBottom: 4,
-    color: '#333',
+    color: '#272343',
+    marginBottom: 2,
   },
-  productPrice: {
-    fontSize: 16,
+  productStock: {
+    fontSize: 10,
+    color: '#9A9CAA',
+    marginBottom: 4,
+  },
+  priceRowSmall: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 2,
+  },
+  productPriceSmall: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#272343',
+  },
+  discountRow: {
+    gap: 2,
+  },
+  discountPriceSmall: {
+    fontSize: 14,
     fontWeight: 'bold',
     color: '#E85A4F',
   },
-  discountContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  originalPrice: {
-    fontSize: 12,
-    color: '#999',
+  originalPriceSmall: {
+    fontSize: 10,
+    color: '#9A9CAA',
     textDecorationLine: 'line-through',
   },
-  discountPrice: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#E85A4F',
+  cartIconSmall: {
+    backgroundColor: '#F0F2F3',
+    padding: 4,
+    borderRadius: 6,
   },
   addButton: {
     position: 'absolute',

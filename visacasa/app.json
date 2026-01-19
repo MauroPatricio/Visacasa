@@ -29,6 +29,7 @@
       "package": "com.mpatricio.visacasa",
       "versionCode": 2,
        "googleServicesFile": "./google-services.json",
+       
       "icon": "./assets/visacasa2.png",
       "adaptiveIcon": {
         "foregroundImage": "./assets/visacasa2.png",

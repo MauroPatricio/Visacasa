@@ -1,7 +1,7 @@
 
 import admin from 'firebase-admin';
 
-import serviceAccount from './firebase-nhiquela-plus.js';
+import serviceAccount from './firebase-visacasa.js';
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),

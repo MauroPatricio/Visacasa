@@ -14,7 +14,7 @@ const ProductDetail = () => {
   const item = route.params?.item || {};
   const navigation = useNavigation();
   const itemData = item?.item !== undefined ? item?.item : item;
-    const toast = useToast(); // ← inicializa o toast
+  const toast = useToast(); // ← inicializa o toast
 
 
   const {
@@ -85,7 +85,7 @@ const ProductDetail = () => {
         dispatch(removeSeller({ sellerId: seller._id }));
       }
     }
-     toast.show(`${nome} removido do carrinho!`, {
+    toast.show(`${nome} removido do carrinho!`, {
       type: 'warning',
       placement: 'top',
       duration: 3000,
@@ -126,7 +126,7 @@ const ProductDetail = () => {
               )}
             </View>
 
-               {/* NOVO CAMPO ENDEREÇO */}
+            {/* NOVO CAMPO ENDEREÇO */}
             {itemData.province?.name && (
               <Text style={styles.address}>
                 Endereço do produto: <Text style={{ fontWeight: '600' }}>{itemData.province.name}</Text>
@@ -137,7 +137,7 @@ const ProductDetail = () => {
               {itemData.isOrdered ? (
                 <>
                   <Badge style={styles.badgeOrdered}>Por encomenda: <Text style={{ fontSize: 13, marginTop: 2 }}>{itemData.orderPeriod} para entrega</Text></Badge>
-                  <Text style={{paddingTop:10}}>{countInStock} unidade(s) disponíveis</Text>
+                  <Text style={{ paddingTop: 10 }}>{countInStock} unidade(s) disponíveis</Text>
 
                 </>
               ) : countInStock > 0 ? (
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     elevation: 5,
   },
-  seller: { fontSize: 15, color: '#7F00FF', marginBottom: 4 },
+  seller: { fontSize: 15, color: '#E85A4F', marginBottom: 4 },
   title: { fontSize: 26, fontWeight: 'bold', color: '#222', marginBottom: 10 },
 
   priceRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
@@ -238,8 +238,9 @@ const styles = StyleSheet.create({
   originalPrice: { fontSize: 14, color: 'grey', textDecorationLine: 'line-through' },
   normalPrice: { fontSize: 20, fontWeight: 'bold', color: '#333' },
 
-  badgeOrdered: { backgroundColor: '#4CAF50', color: '#fff', fontWeight: '600', paddingHorizontal: 10, borderRadius: 12, fontSize: 13,      alignSelf: 'flex-start', // move para a esquerda
- },
+  badgeOrdered: {
+    backgroundColor: '#4CAF50', color: '#fff', fontWeight: '600', paddingHorizontal: 10, borderRadius: 12, fontSize: 13, alignSelf: 'flex-start', // move para a esquerda
+  },
   badgeInStock: { backgroundColor: '#E0F7FA', color: '#00796B', fontWeight: '600', paddingHorizontal: 10, borderRadius: 12, fontSize: 13 },
   badgeOutOfStock: { backgroundColor: '#FFCDD2', color: '#C62828', fontWeight: '700', paddingHorizontal: 12, borderRadius: 12, fontSize: 13 },
 
@@ -259,7 +260,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   counterButton: {
-    backgroundColor: '#7F00FF',
+    backgroundColor: '#E85A4F',
     borderRadius: 10,
     padding: 10,
     marginHorizontal: 20,
@@ -271,9 +272,9 @@ const styles = StyleSheet.create({
   descriptionTitle: { fontSize: 20, fontWeight: 'bold', color: '#333', marginBottom: 8 },
   descriptionText: { fontSize: 16, color: '#555', lineHeight: 22 },
   address: {
-  fontSize: 15,
-  color: '#444',
-  marginTop: 4,
-  marginBottom: 8,
-},
+    fontSize: 15,
+    color: '#444',
+    marginTop: 4,
+    marginBottom: 8,
+  },
 });

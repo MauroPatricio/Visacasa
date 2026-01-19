@@ -29,8 +29,8 @@ const styles = StyleSheet.create({
     },
     cartCount: {
         position: "absolute",
-        top: -5,
-        right: -5,
+        top: -8,
+        right: -8,
         width: 18,
         height: 18,
         borderRadius: 9,
@@ -40,6 +40,12 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: 'white',
         zIndex: 999,
+    },
+    badgeRed: {
+        backgroundColor: '#E85A4F',
+    },
+    badgePrimary: {
+        backgroundColor: '#3B82F6',
     },
     cartNumber: {
         fontWeight: '700',
@@ -51,6 +57,16 @@ const styles = StyleSheet.create({
         height: 45,
         borderRadius: 22.5,
         backgroundColor: '#F3F4F6',
+    },
+    headerIcons: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+    },
+    iconContainer: {
+        position: 'relative',
+        alignItems: 'center',
+        justifyContent: 'center',
     }
 })
 

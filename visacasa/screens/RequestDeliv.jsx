@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-// Define aqui a cor principal da Nhiquela
+// Define aqui a cor principal da Visacasa
 const PRIMARY_COLOR = '#E85A4F'; // amarelo vibrante
 const TEXT_COLOR = '#1A1A1A'; // preto suave
 
@@ -10,7 +10,7 @@ export default function UnderDevelopmentScreen() {
   return (
     <View style={styles.container}>
       <Image
-        source={require('../assets/visacasa2.png')} 
+        source={require('../assets/visacasa2.png')}
         style={styles.logo}
         resizeMode="contain"
       />

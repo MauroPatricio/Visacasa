@@ -5,7 +5,7 @@ let baseURL = '';
 if (process.env.NODE_ENV === 'development') {
   baseURL = 'http://192.168.0.6:5000/api'; // ou localhost se estiver no navegador
 } else {
-  baseURL = 'https.visacasaapi.gestaomodernaonline.com/api';
+  baseURL = 'https://visacasaapi.gestaomodernaonline.com/api';
 }
 
 const api = axios.create({ baseURL });

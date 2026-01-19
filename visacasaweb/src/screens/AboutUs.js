@@ -15,27 +15,27 @@ export default function Alvara() {
       <Card>
         <Card.Body style={{ paddingLeft: '50px', paddingRight: '50px' }}>
           <h4 className='howitworks link'><b>Sobre nós</b></h4>
-          <br/>
+          <br />
           <p><b>ALVARÁ N°:</b> 55440/11/01/PS/2023</p>
           <p><b>DECRETO N°:</b> 34/2013, de 2 de Agosto</p>
-          <br/>
-          <p><b>Titular:</b> NHIQUELA SERVIÇOS & CONSULTORIA, SU, LDA</p>
+          <br />
+          <p><b>Titular:</b> VISACASA SERVIÇOS & CONSULTORIA, SU, LDA</p>
           <p><b>NUIT:</b> 401581928</p>
           <p><b>Atividade Principal:</b> 62010 - ATIVIDADES DE PROGRAMAÇÃO INFORMÁTICA</p>
-          <br/>
+          <br />
           <p><b>Endereço do Estabelecimento:</b></p>
           <p>AV./RUA DA MALHANGALENE, BAIRRO MALHANGALENE, N° 11,</p>
           <p>ANDAR 3°, KAMPFUMU, MAPUTO CIDADE</p>
-          <br/>
+          <br />
           <p><b>Validade:</b> POR TEMPO INDETERMINADO</p>
-          <br/>
+          <br />
           <p><b>Atividade(s) Secundária(s):</b></p>
           <p>62021 - ATIVIDADES DE CONSULTORIA E PROGRAMAÇÃO INFORMÁTICA</p>
           <p>62022 - GESTÃO E EXPLORAÇÃO DE EQUIPAMENTO INFORMÁTICO</p>
-          <br/>
+          <br />
           <p><b>Estabelecimento:</b></p>
           <p>1 AV./RUA DA MALHANGALENE, BAIRRO MALHANGALENE, Nº 11, ANDAR 3º, KAMPFUMU, MAPUTO CIDADE</p>
-          <br/>
+          <br />
           <p><b>O titular da licença deve:</b></p>
           <ul>
             <li>Cumprir com as condições e requisitos legais da laboração, higiene, segurança, saúde e segurança pública e meio ambiente e de ordenamento território;</li>
@@ -49,10 +49,10 @@ export default function Alvara() {
               <li>A alteração do horário de funcionamento dos estabelecimentos.</li>
             </ul>
           </ul>
-          <br/>
+          <br />
           <p><b>Código de verificação:</b> 004772023013670041492255</p>
           <p>Conferir o código em <a href="http://www.dasp.mic.gov.mz/contra-prova" target="_blank" rel="noopener noreferrer">http://www.dasp.mic.gov.mz/contra-prova</a></p>
-          <br/>
+          <br />
           <p><b>Maputo Cidade, 10 de Julho de 2023</b></p>
         </Card.Body>
       </Card>

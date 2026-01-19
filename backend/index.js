@@ -116,6 +116,244 @@ const __dirname = path.resolve();
 // const rootDir = path.join(__dirname, '..');
 app.use(express.static(path.join(__dirname, '/frontend/build')));
 
+// **Rota de Status da API - Premium**
+app.get('/', (req, res) => {
+  const uptime = process.uptime();
+  const uptimeFormatted = new Date(uptime * 1000).toISOString().substr(11, 8);
+  const dbStatus = mongoose.connection.readyState === 1 ? 'Conectado' : 'Desconectado';
+
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="pt">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Visacasa API - Status</title>
+      <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+        
+        body {
+          font-family: 'Inter', sans-serif;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          min-height: 100vh;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          padding: 20px;
+        }
+        
+        .container {
+          background: rgba(255, 255, 255, 0.95);
+          backdrop-filter: blur(20px);
+          border-radius: 24px;
+          padding: 48px;
+          max-width: 600px;
+          width: 100%;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+          animation: fadeIn 0.6s ease-out;
+        }
+        
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        .header {
+          text-align: center;
+          margin-bottom: 40px;
+        }
+        
+        .logo {
+          font-size: 42px;
+          font-weight: 700;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          margin-bottom: 8px;
+        }
+        
+        .subtitle {
+          color: #718096;
+          font-size: 16px;
+          font-weight: 400;
+        }
+        
+        .status-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+          color: white;
+          padding: 12px 24px;
+          border-radius: 50px;
+          font-weight: 600;
+          font-size: 14px;
+          margin: 24px 0;
+          box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+        }
+        
+        .pulse {
+          width: 8px;
+          height: 8px;
+          background: white;
+          border-radius: 50%;
+          animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+          0%, 100% {
+            opacity: 1;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 0.5;
+            transform: scale(1.2);
+          }
+        }
+        
+        .info-grid {
+          display: grid;
+          gap: 16px;
+          margin-top: 32px;
+        }
+        
+        .info-card {
+          background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+          padding: 20px;
+          border-radius: 16px;
+          border: 1px solid rgba(102, 126, 234, 0.1);
+          transition: all 0.3s ease;
+        }
+        
+        .info-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
+        }
+        
+        .info-label {
+          color: #718096;
+          font-size: 13px;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          margin-bottom: 8px;
+        }
+        
+        .info-value {
+          color: #2d3748;
+          font-size: 24px;
+          font-weight: 700;
+        }
+        
+        .db-status {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+        }
+        
+        .db-indicator {
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          background: ${dbStatus === 'Conectado' ? '#10b981' : '#ef4444'};
+          box-shadow: 0 0 12px ${dbStatus === 'Conectado' ? 'rgba(16, 185, 129, 0.6)' : 'rgba(239, 68, 68, 0.6)'};
+        }
+        
+        .footer {
+          text-align: center;
+          margin-top: 32px;
+          padding-top: 24px;
+          border-top: 1px solid rgba(102, 126, 234, 0.1);
+          color: #718096;
+          font-size: 14px;
+        }
+        
+        .footer a {
+          color: #667eea;
+          text-decoration: none;
+          font-weight: 600;
+          transition: color 0.3s ease;
+        }
+        
+        .footer a:hover {
+          color: #764ba2;
+        }
+        
+        @media (max-width: 640px) {
+          .container {
+            padding: 32px 24px;
+          }
+          
+          .logo {
+            font-size: 32px;
+          }
+          
+          .info-value {
+            font-size: 20px;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <div class="logo">Visacasa API</div>
+          <div class="subtitle">Sistema de Gestão e Comparação de Preços</div>
+          <div class="status-badge">
+            <span class="pulse"></span>
+            API Online
+          </div>
+        </div>
+        
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="info-label">Tempo Ativo</div>
+            <div class="info-value">${uptimeFormatted}</div>
+          </div>
+          
+          <div class="info-card">
+            <div class="info-label">Base de Dados</div>
+            <div class="info-value">
+              <div class="db-status">
+                <span class="db-indicator"></span>
+                ${dbStatus}
+              </div>
+            </div>
+          </div>
+          
+          <div class="info-card">
+            <div class="info-label">Versão</div>
+            <div class="info-value">v2.0.0</div>
+          </div>
+          
+          <div class="info-card">
+            <div class="info-label">Ambiente</div>
+            <div class="info-value">${process.env.NODE_ENV || 'Desenvolvimento'}</div>
+          </div>
+        </div>
+        
+        <div class="footer">
+          <p>Desenvolvido por <a href="#">Nhiquela Serviços e Consultoria, LDA</a></p>
+          <p style="margin-top: 8px; font-size: 12px;">© ${new Date().getFullYear()} Visacasa. Todos os direitos reservados.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `);
+});
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname + '/frontend/build/index.html'));

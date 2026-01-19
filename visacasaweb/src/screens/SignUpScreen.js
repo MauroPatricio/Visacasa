@@ -4,9 +4,9 @@ import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMobile, faTextSlash, faEnvelopeOpenText, faLock, faLockOpen, faClock, faClockFour, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
-import { CiCreditCard1 } from "react-icons/ci";
-import { FaCalendarAlt } from "react-icons/fa";
-import { GoNumber } from "react-icons/go";
+// import { CiCreditCard1 } from "react-icons/ci";
+// import { FaCalendarAlt } from "react-icons/fa";
+// import { GoNumber } from "react-icons/go";
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { useContext, useEffect, useReducer, useState } from 'react';
@@ -100,10 +100,13 @@ export default function SignupScreen() {
   const [alternativeAccountType, setAlternativeAccountType] = useState('');
   const [alternativeAccountNumber, setAlternativeAccountNumber] = useState('');
 
+  /*
   const daysOfWeek = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira','Sexta-feira','Sábado'];
+  */
   const [workDaysWithTime, setWorkDaysWithTime] = useState([]);
   const [dayOfWeek, setDayOfWeek] = useState('');
 
+  /*
   const accountTypes = [
     { _id: 1, name: 'BCI' },
     { _id: 2, name: 'BIM' },
@@ -111,9 +114,10 @@ export default function SignupScreen() {
     { _id: 4, name: 'ABSA' },
     { _id: 5, name: 'FNB' },
   ];
+  */
 
   const { dispatch: ctxDispatch } = useContext(Store);
-  const [{ loadingUser, loadingUpload, provinces }, dispatch] = useReducer(reducer, {
+  const [{ loadingUser }, dispatch] = useReducer(reducer, {
     loadingUser: false,
     registerUserFail: [],
     registerUser: {},

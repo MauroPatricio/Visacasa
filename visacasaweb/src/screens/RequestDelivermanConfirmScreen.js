@@ -3,7 +3,7 @@ import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 // import Form from 'react-bootstrap/Form';
 import { Helmet } from 'react-helmet-async';
-import CheckoutSteps from '../components/CheckoutSteps.js';
+// import CheckoutSteps from '../components/CheckoutSteps.js';
 import Card from 'react-bootstrap/Card';
 import { Store } from '../Store.js';
 import { Link, useNavigate } from 'react-router-dom';
@@ -14,7 +14,7 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import LoadingBox from '../components/LoadingBox.js';
 import { FaPencilAlt } from "react-icons/fa";
-import { Modal} from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
 import Form from 'react-bootstrap/Form'
 import { useTranslation } from 'react-i18next';
 import MessageBox from '../components/MessageBox.js';
@@ -33,24 +33,24 @@ const reducer = (state, action) => {
       return { ...state, loading: false };
 
 
-      case 'CREATE_MPESA_REQUEST':
-        return { ...state, loading: true };
-  
-      case 'CREATE_MPESA_SUCCESS':
-        return { ...state, paymentMpesa: action.payload, loading: false };
-  
-      case 'CREATE_MPESA_FAIL':
-        return { ...state, loading: false };
+    case 'CREATE_MPESA_REQUEST':
+      return { ...state, loading: true };
 
-   case 'SELLER_DETAILS_REQUEST':
-        return { ...state, loadingSeller: true };
-  
-      case 'SELLER_DETAILS_SUCCESS':
-        return { ...state, sellerDetails: action.payload, loadingSeller: false };
-  
-      case 'SELLER_DETAILS_FAIL':
-        return { ...state, errorSeller: action.payload, loadingSeller: false };
-  
+    case 'CREATE_MPESA_SUCCESS':
+      return { ...state, paymentMpesa: action.payload, loading: false };
+
+    case 'CREATE_MPESA_FAIL':
+      return { ...state, loading: false };
+
+    case 'SELLER_DETAILS_REQUEST':
+      return { ...state, loadingSeller: true };
+
+    case 'SELLER_DETAILS_SUCCESS':
+      return { ...state, sellerDetails: action.payload, loadingSeller: false };
+
+    case 'SELLER_DETAILS_FAIL':
+      return { ...state, errorSeller: action.payload, loadingSeller: false };
+
 
 
     default:
@@ -62,14 +62,14 @@ export default function RequestDelivermanConfirmScreen() {
   const { t } = useTranslation();
 
   const [{ loading }, dispatch] = useReducer(reducer, { loading: false });
-  const { state, dispatch: ctxDispatch } = useContext(Store);
+  const { state } = useContext(Store);
   const navigate = useNavigate();
-  const { cart, userInfo  } = state;
+  const { cart, userInfo } = state;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalMpesa, setIsModalMpesa] = useState(false);
   const [isModalStock, setIsModalStock] = useState(false);
   const [isModalDelayOrder, setIsModalDelayOrder] = useState(false);
-  const [itemOutOfStock, setItemOutOfStock] = useState([]);
+  const [itemOutOfStock] = useState([]);
 
 
   let [customerNumber, setCustomerNumber] = useState(null);
@@ -87,8 +87,8 @@ export default function RequestDelivermanConfirmScreen() {
     setIsModalOpen(false);
   };
 
-  const redirectDelivermanScreen = () =>{
-        navigate('/requestdelivermanscreen');
+  const redirectDelivermanScreen = () => {
+    navigate('/requestdelivermanscreen');
   }
 
   const closeModalMpesa = () => {
@@ -97,7 +97,7 @@ export default function RequestDelivermanConfirmScreen() {
 
   };
 
-  const closeModalStock = () =>{
+  const closeModalStock = () => {
     setIsModalStock(false)
     setIsModalMpesa(false);
     setIsModalOpen(false);
@@ -105,19 +105,19 @@ export default function RequestDelivermanConfirmScreen() {
     return
   }
 
-  const closeModalDelay = () =>{
+  const closeModalDelay = () => {
 
     setIsModalDelayOrder(false)
     return
   }
 
 
-  
+
   const loginRedirect = () => {
     navigate('/signin?redirect=/requestdelivermanconfirm');
   };
-  
-  const {requestDeliverman} = state;
+
+  const { requestDeliverman } = state;
 
 
   // Estado para rastrear a escolha do usuário
@@ -128,11 +128,11 @@ export default function RequestDelivermanConfirmScreen() {
 
   // Função para atualizar o estado de escolha
   const handleEscolhaChange = (event) => {
-    if(userInfo){
+    if (userInfo) {
       const novaEscolha = event.target.value;
       setEscolha(novaEscolha);
       setCustomerNumber(userInfo && userInfo.phoneNumber)
-  
+
       // Limpar o valor do input quando a escolha mudar
       setValorInput('');
     }
@@ -143,14 +143,14 @@ export default function RequestDelivermanConfirmScreen() {
     const novoValor = event.target.value;
     setValorInput(novoValor);
   };
-  
-  const paymentMpesa = async () => {
-   
 
-    if(valorInput){
-        customerNumber = valorInput
+  const paymentMpesa = async () => {
+
+
+    if (valorInput) {
+      customerNumber = valorInput
     }
-    customerNumber = '258'+customerNumber;
+    customerNumber = '258' + customerNumber;
 
     const amount = priceToPay;
 
@@ -159,89 +159,89 @@ export default function RequestDelivermanConfirmScreen() {
     // Caso nao deve emitir uma mensagem informando que a quantidade disponivel em stock e tanto e pede que se reduza
     // A quantidade para o disponivel em stock
 
-    try{
-    dispatch({ type: 'CREATE_MPESA_REQUEST' });
+    try {
+      dispatch({ type: 'CREATE_MPESA_REQUEST' });
 
-    const { data } = await axios.post(`/api/payments/mpesa`, {customerNumber, amount},  {
-      headers: {
-        authorization: `Bearer ${userInfo.token}`,
-      },
-    });
-    if(data.paid){
+      const { data } = await axios.post(`/api/payments/mpesa`, { customerNumber, amount }, {
+        headers: {
+          authorization: `Bearer ${userInfo.token}`,
+        },
+      });
+      if (data.paid) {
 
-      try{
-        dispatch({ type: 'CREATE_REQUEST' });
-        const order = await axios.post(
-          '/api/requestdeliver',
-          {
-            name: requestDeliverman.name,
-            phoneNumber: requestDeliverman.phoneNumber,
-            goodType: requestDeliverman.goodType,
-            transportType:  requestDeliverman.transportType,
-            deliverCity:  requestDeliverman.deliverCity,
-            origin:  requestDeliverman.origin,
-            destination:  requestDeliverman.destination,
-            paymentOption:  requestDeliverman.paymentOption,
-            description:  requestDeliverman.description,
-            paymentMethod:  requestDeliverman.paymentMethod,
-            deliveryPrice:  priceToPay,
-            user: userInfo._id,
-            isPaid: data.paid,
-            paidAt: Date.now(),
-            stepStatus: 1
-          },
-          {
-            headers: {
-              authorization: `Bearer ${userInfo.token}`,
+        try {
+          dispatch({ type: 'CREATE_REQUEST' });
+          const order = await axios.post(
+            '/api/requestdeliver',
+            {
+              name: requestDeliverman.name,
+              phoneNumber: requestDeliverman.phoneNumber,
+              goodType: requestDeliverman.goodType,
+              transportType: requestDeliverman.transportType,
+              deliverCity: requestDeliverman.deliverCity,
+              origin: requestDeliverman.origin,
+              destination: requestDeliverman.destination,
+              paymentOption: requestDeliverman.paymentOption,
+              description: requestDeliverman.description,
+              paymentMethod: requestDeliverman.paymentMethod,
+              deliveryPrice: priceToPay,
+              user: userInfo._id,
+              isPaid: data.paid,
+              paidAt: Date.now(),
+              stepStatus: 1
             },
-          }
-        );
-        // ctxDispatch({ type: 'CART_CLEAR' });
-        dispatch({ type: 'CREATE_SUCCESS' });
-        navigate(`/requestdelivermanprogress/${order.data.requestDeliv._id}`);
-        toast.success('Pedido efectuado com sucesso');
-    
-        dispatch({ type: 'CREATE_MPESA_SUCCESS', payload: data });
-      } catch (err) {
-        dispatch({ type: 'CREATE_FAIL', payload: getError(err) });
+            {
+              headers: {
+                authorization: `Bearer ${userInfo.token}`,
+              },
+            }
+          );
+          // ctxDispatch({ type: 'CART_CLEAR' });
+          dispatch({ type: 'CREATE_SUCCESS' });
+          navigate(`/requestdelivermanprogress/${order.data.requestDeliv._id}`);
+          toast.success('Pedido efectuado com sucesso');
+
+          dispatch({ type: 'CREATE_MPESA_SUCCESS', payload: data });
+        } catch (err) {
+          dispatch({ type: 'CREATE_FAIL', payload: getError(err) });
+        }
+      } else {
+        if (data.code === 'INS-1') {
+          toast.error('Erro Interno');
+        }
+        if (data.code === 'INS-4') {
+          toast.error('Conta inactiva');
+        }
+        if (data.code === 'INS-5') {
+          toast.error('Transação cancelada pelo utilizador');
+        }
+        if (data.code === 'INS-6') {
+          toast.error('Transação falhada');
+        }
+        if (data.code === 'INS-9') {
+          toast.error('Tempo de espera excedido');
+        }
+        if (data.code === 'INS-2006') {
+          toast.error('Saldo insuficiente');
+        }
+        if (data.code === 'INS-2051') {
+          toast.error('Número de telefone inválido');
+        }
+
+        toast.error('Pagamento sem sucesso');
+        setIsModalMpesa(false);
       }
-    }else{
-      if(data.code==='INS-1'){
-        toast.error('Erro Interno');
-      }
-      if(data.code==='INS-4'){
-        toast.error('Conta inactiva');
-      }
-      if(data.code==='INS-5'){
-        toast.error('Transação cancelada pelo utilizador');
-      }
-      if(data.code==='INS-6'){
-        toast.error('Transação falhada');
-      }
-      if(data.code==='INS-9'){
-        toast.error('Tempo de espera excedido');
-      }
-      if(data.code==='INS-2006'){
-        toast.error('Saldo insuficiente');
-      }
-      if(data.code==='INS-2051'){
-        toast.error('Número de telefone inválido');
-      }
-      
-      toast.error('Pagamento sem sucesso');
-      setIsModalMpesa(false);
-    }
     } catch (err) {
       toast.error(getError(err));
     }
   };
 
 
-  const priceToPay= requestDeliverman.deliverCity === 'Maputo Cidade' ? 150 : 300;
+  const priceToPay = requestDeliverman.deliverCity === 'Maputo Cidade' ? 150 : 300;
 
 
   const placeOrderHandler = async () => {
-    
+
 
     // Compare the current time with the threshold
     // const isPastThreshold =
@@ -252,21 +252,21 @@ export default function RequestDelivermanConfirmScreen() {
       setIsModalOpen(true)
       return
     }
-    
+
     // if (userInfo) {
     //   setCustomerNumber(userInfo.phoneNumber)
     //   return
     // }
 
 
-    if(requestDeliverman.paymentOption ==='Mpesa'){
+    if (requestDeliverman.paymentOption === 'Mpesa') {
       setIsModalMpesa(true)
       return
     }
 
 
-    if(requestDeliverman.paymentOption !=='Mpesa'){
-      try{
+    if (requestDeliverman.paymentOption !== 'Mpesa') {
+      try {
         dispatch({ type: 'CREATE_REQUEST' });
         const order = await axios.post(
           '/api/requestdeliver',
@@ -274,14 +274,14 @@ export default function RequestDelivermanConfirmScreen() {
             name: requestDeliverman.name,
             phoneNumber: requestDeliverman.phoneNumber,
             goodType: requestDeliverman.goodType,
-            transportType:  requestDeliverman.transportType,
-            deliverCity:  requestDeliverman.deliverCity,
-            origin:  requestDeliverman.origin,
-            destination:  requestDeliverman.destination,
-            paymentOption:  requestDeliverman.paymentOption,
-            description:  requestDeliverman.description,
-            paymentMethod:  requestDeliverman.paymentMethod,
-            deliveryPrice:  priceToPay,
+            transportType: requestDeliverman.transportType,
+            deliverCity: requestDeliverman.deliverCity,
+            origin: requestDeliverman.origin,
+            destination: requestDeliverman.destination,
+            paymentOption: requestDeliverman.paymentOption,
+            description: requestDeliverman.description,
+            paymentMethod: requestDeliverman.paymentMethod,
+            deliveryPrice: priceToPay,
             user: userInfo._id,
             stepStatus: 1
           },
@@ -295,13 +295,13 @@ export default function RequestDelivermanConfirmScreen() {
         // dispatch({ type: 'CREATE_SUCCESS' });
         navigate(`/requestdelivermanprogress/${order.data.requestDeliv._id}`);
         toast.success('Pedido efectuado com sucesso');
-    
+
       } catch (err) {
         dispatch({ type: 'CREATE_MPESA_FAIL', payload: getError(err) });
       }
     }
-   
-   
+
+
   };
 
   return (
@@ -322,18 +322,18 @@ export default function RequestDelivermanConfirmScreen() {
               </Card.Title>
               <Card.Text>
                 <strong>{t('nameoforderreceiver')}:</strong> {requestDeliverman.name}
-                <br/>
+                <br />
                 <strong>{t('numbertocall')}:</strong>  {requestDeliverman.phoneNumber}
-                <br />              
+                <br />
                 <strong>{t('transporttypetoroder')}:</strong> {requestDeliverman.transportType}
-                <br/>
+                <br />
                 <strong>{t('typeofgoodtodeliver')}:</strong> {requestDeliverman.goodType}
-                <br/>
+                <br />
                 <strong>{t('detailsofdeliver')}:</strong> {requestDeliverman.description}
-                <br/>
+                <br />
               </Card.Text>
               <Link className="link" to="/requestdeliverman">
-                {t('changedelivdetails')} <FaPencilAlt/>
+                {t('changedelivdetails')} <FaPencilAlt />
               </Link>
             </Card.Body>
           </Card>
@@ -345,13 +345,13 @@ export default function RequestDelivermanConfirmScreen() {
                 <strong>{t('deliveryaddressdetails')}</strong>
               </Card.Title>
               <Card.Text>
-              <strong>{t('deliveryplace')}:</strong> {requestDeliverman.deliverCity}
-                <br/>
-              <strong>{t('origin')}:</strong> {requestDeliverman.origin}
-                <br/>
+                <strong>{t('deliveryplace')}:</strong> {requestDeliverman.deliverCity}
+                <br />
+                <strong>{t('origin')}:</strong> {requestDeliverman.origin}
+                <br />
                 <strong>{t('destination')}:</strong> {requestDeliverman.destination}
-                <br/>
-                </Card.Text>
+                <br />
+              </Card.Text>
             </Card.Body>
           </Card>
 
@@ -364,7 +364,7 @@ export default function RequestDelivermanConfirmScreen() {
               </Card.Title>
               <Card.Text>{requestDeliverman.paymentOption}</Card.Text>
               <Link className="link" to="/requestdeliverman">
-                {t('changepayment')} <FaPencilAlt/>
+                {t('changepayment')} <FaPencilAlt />
               </Link>
             </Card.Body>
           </Card>
@@ -372,38 +372,38 @@ export default function RequestDelivermanConfirmScreen() {
         <Col md={4}>
           <Card>
             <Card.Body>
-              <Card.Title>{t('ordersummary')}</Card.Title> 
+              <Card.Title>{t('ordersummary')}</Card.Title>
               <ListGroup variant="flush">
 
-              <ListGroup.Item>
-                  
-                       <Row>
-                    
-                       {requestDeliverman.paymentOption === 'Emola' &&
-                     (
-                      <MessageBox variant="">
-                                {t('forconfirmyourorder')} {' '} 
-                                <b>{priceToPay} MT</b> {t('onaccountnumber')} <b>879300036</b>
-                      </MessageBox>
-                    )}
-                    
-                       {requestDeliverman.paymentOption === 'BCI' &&
-                     (
-                      <MessageBox variant="">
-                                {t('forconfirmyourorder')} {' '} 
-                                <b>{priceToPay} MT</b> {t('onaccountnumber')} <b>123456789</b>
-                      </MessageBox>
-                    )}
-                     {requestDeliverman.paymentOption === 'BIM' &&
-                     (
-                      <MessageBox variant="">
-                                {t('forconfirmyourorder')} {' '} 
-                                <b>{priceToPay} MT</b> {t('onaccountnumber')} <b>155555555</b>
-                      </MessageBox>
-                    )}
+                <ListGroup.Item>
+
+                  <Row>
+
+                    {requestDeliverman.paymentOption === 'Emola' &&
+                      (
+                        <MessageBox variant="">
+                          {t('forconfirmyourorder')} {' '}
+                          <b>{priceToPay} MT</b> {t('onaccountnumber')} <b>879300036</b>
+                        </MessageBox>
+                      )}
+
+                    {requestDeliverman.paymentOption === 'BCI' &&
+                      (
+                        <MessageBox variant="">
+                          {t('forconfirmyourorder')} {' '}
+                          <b>{priceToPay} MT</b> {t('onaccountnumber')} <b>123456789</b>
+                        </MessageBox>
+                      )}
+                    {requestDeliverman.paymentOption === 'BIM' &&
+                      (
+                        <MessageBox variant="">
+                          {t('forconfirmyourorder')} {' '}
+                          <b>{priceToPay} MT</b> {t('onaccountnumber')} <b>155555555</b>
+                        </MessageBox>
+                      )}
                   </Row>
                 </ListGroup.Item>
-              <ListGroup.Item>
+                <ListGroup.Item>
                   <Row>
                     <Col>
                       <b>Total</b>
@@ -413,14 +413,14 @@ export default function RequestDelivermanConfirmScreen() {
                     </Col>
                   </Row>
                 </ListGroup.Item>
-           
-           
-              
+
+
+
 
                 <ListGroup.Item>
                   <div className="d-grid">
                     <Button
-                    className='customButtom' variant='light'
+                      className='customButtom' variant='light'
                       type="button"
                       onClick={placeOrderHandler}
                     >
@@ -436,12 +436,12 @@ export default function RequestDelivermanConfirmScreen() {
         </Col>
       </Row>
 
-      <Modal show={isModalOpen}  onClick={closeModal}  className='modal'>
+      <Modal show={isModalOpen} onClick={closeModal} className='modal'>
         <Modal.Header closeButton onClick={closeModal}>
           <Modal.Title>Login</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-         {message}
+          {message}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="dark" onClick={loginRedirect}>
@@ -453,50 +453,50 @@ export default function RequestDelivermanConfirmScreen() {
         </Modal.Footer>
       </Modal>
 
-      <Modal show={isModalMpesa}  className='modal' >
+      <Modal show={isModalMpesa} className='modal' >
         <Modal.Header closeButton onClick={closeModalMpesa}>
           <Modal.Title>{t('mpesapayment')}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-        {t('whichnumbertopay')}<br/>
-       
-       
-      {/* RadioButtons */}
-      <label>
-        <input
-          type="radio"
-          value="opcao1"
-          checked={escolha === "opcao1"}
-          onChange={handleEscolhaChange}
-        />
-        {userInfo && userInfo.phoneNumber}
-      </label>
-<br/>
-      <label>
-        <input
-          type="radio"
-          value="opcao2"
-          checked={escolha === "opcao2"}
-          onChange={handleEscolhaChange}
-        />
-          {t('anothernumber')}
-      </label>
+          {t('whichnumbertopay')}<br />
 
-      {/* Campo de input condicional */}
-      {escolha === 'opcao2' && (
-        <div>
-          <Form.Control
-            type="text"
-            max={9}
-            maxLength={9}
-            pattern="[0-9]*"
-            title="Insira apenas números"
-            placeholder="8********"
-            value={valorInput}
-            onChange={handleInputChange}
-          />
-        </div>
-      )}
+
+          {/* RadioButtons */}
+          <label>
+            <input
+              type="radio"
+              value="opcao1"
+              checked={escolha === "opcao1"}
+              onChange={handleEscolhaChange}
+            />
+            {userInfo && userInfo.phoneNumber}
+          </label>
+          <br />
+          <label>
+            <input
+              type="radio"
+              value="opcao2"
+              checked={escolha === "opcao2"}
+              onChange={handleEscolhaChange}
+            />
+            {t('anothernumber')}
+          </label>
+
+          {/* Campo de input condicional */}
+          {escolha === 'opcao2' && (
+            <div>
+              <Form.Control
+                type="text"
+                max={9}
+                maxLength={9}
+                pattern="[0-9]*"
+                title="Insira apenas números"
+                placeholder="8********"
+                value={valorInput}
+                onChange={handleInputChange}
+              />
+            </div>
+          )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="dark" onClick={paymentMpesa}>

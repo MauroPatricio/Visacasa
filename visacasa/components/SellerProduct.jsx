@@ -50,7 +50,7 @@ const SellerProduct = ({
   );
   const items = useSelector((state) => selectItems(state));
   const dispatch = useDispatch();
-    const toast = useToast(); // ← inicializa o toast
+  const toast = useToast(); // ← inicializa o toast
 
   const toggleExpand = () => {
     Animated.timing(animation, {
@@ -81,7 +81,7 @@ const SellerProduct = ({
     }));
     dispatch(addSellers({ seller }));
 
-      toast.show(`${nome} adicionado ao carrinho!`, {
+    toast.show(`${nome} adicionado ao carrinho!`, {
       type: 'success',
       placement: 'top',
       duration: 3000,
@@ -92,7 +92,7 @@ const SellerProduct = ({
   const removeItem = () => {
     if (items.length === 0) return;
     dispatch(removeFromBasket({ _id: id }));
-      toast.show(`${nome} removido do carrinho!`, {
+    toast.show(`${nome} removido do carrinho!`, {
       type: 'warning',
       placement: 'top',
       duration: 3000,
@@ -175,11 +175,11 @@ const SellerProduct = ({
         {isExpanded && (
           <View style={styles.actions}>
             <TouchableOpacity onPress={removeItem} disabled={items.length === 0}>
-              <MinusCircleIcon size={40} color={items.length > 0 ? '#7F00FF' : 'gray'} />
+              <MinusCircleIcon size={40} color={items.length > 0 ? '#E85A4F' : 'gray'} />
             </TouchableOpacity>
             <Text style={styles.quantity}>{items.length}</Text>
             <TouchableOpacity onPress={addItemToBasket} disabled={items.length >= countInStock}>
-              <PlusCircleIcon size={40} color={items.length < countInStock ? '#7F00FF' : 'gray'} />
+              <PlusCircleIcon size={40} color={items.length < countInStock ? '#E85A4F' : 'gray'} />
             </TouchableOpacity>
           </View>
         )}
@@ -298,7 +298,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     marginTop: 6,
-    color: '#7F00FF',
+    color: '#E85A4F',
   },
   actions: {
     marginTop: 14,

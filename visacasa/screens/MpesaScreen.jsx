@@ -110,7 +110,7 @@ const MpesaScreen = () => {
 
   const showAlert = (title, message, onConfirm) => {
     Alert.alert(title, message, [
-      { text: 'OK', onPress: onConfirm ? onConfirm : () => {}, style: 'default' }
+      { text: 'OK', onPress: onConfirm ? onConfirm : () => { }, style: 'default' }
     ], { cancelable: false });
   };
 
@@ -203,7 +203,7 @@ const MpesaScreen = () => {
             <Modal visible={loader} animationType="fade" transparent>
               <View style={styles.modalOverlay}>
                 <View style={styles.modalContent}>
-                  <ActivityIndicator size="large" color="#7F00FF" />
+                  <ActivityIndicator size="large" color="#E85A4F" />
                   <Text style={styles.loadingText}>Processando pagamento...</Text>
                 </View>
               </View>
@@ -245,7 +245,7 @@ const MpesaScreen = () => {
                       {isUserWantDelivery ? totalToPay.toFixed(2) : (totalToPay - deliveryPrice).toFixed(2)} MT
                     </Text>
 
-                    <Button loader={loader} title="Pagar" onPress={handleSubmit} isValid={isValid ? '#7F00FF' : 'red'} />
+                    <Button loader={loader} title="Pagar" onPress={handleSubmit} isValid={isValid ? '#E85A4F' : 'red'} />
                   </View>
                 )}
               </Formik>
@@ -262,7 +262,7 @@ export default MpesaScreen;
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: 'white' },
   icons: { position: 'absolute', top: 15, left: 25, zIndex: 10 },
-  back: { color: '#7F00FF' },
+  back: { color: '#E85A4F' },
   cover: { width: 300, height: 200, marginBottom: 20, alignSelf: 'center', borderRadius: 20 },
   container: {
     paddingHorizontal: 20,
@@ -282,5 +282,5 @@ const styles = StyleSheet.create({
   amount: { fontSize: 18, fontWeight: 'bold', color: '#4CAF50', marginTop: 5, marginBottom: 20 },
   modalOverlay: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.4)' },
   modalContent: { width: Dimensions.get('window').width * 0.8, backgroundColor: 'white', padding: 30, borderRadius: 20, alignItems: 'center', elevation: 10 },
-  loadingText: { marginTop: 20, fontSize: 16, fontWeight: '600', color: '#7F00FF' },
+  loadingText: { marginTop: 20, fontSize: 16, fontWeight: '600', color: '#E85A4F' },
 });

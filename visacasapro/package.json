@@ -20,7 +20,7 @@
     "@react-navigation/stack": "^7.4.8",
     "@reduxjs/toolkit": "^2.9.0",
     "axios": "^1.11.0",
-    "expo": "~53.0.23",
+    "expo": "~53.0.25",
     "expo-build-properties": "0.14.8",
     "expo-camera": "~16.1.11",
     "expo-constants": "~17.1.7",
@@ -75,7 +75,9 @@
           "react-native-heroicons",
           "haversine",
           "react-native-elements",
-          "react-native-maps-directions"
+          "react-native-maps-directions",
+          "react-native-keyboard-aware-scroll-view",
+          "react-native-toast-notifications"
         ],
         "listUnknownPackages": false
       }

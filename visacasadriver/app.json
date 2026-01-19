@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "Nhiquela Driver",
-    "slug": "nhiqueladriver",
+    "name": "Visacasa Driver",
+    "slug": "visacasa-driver",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/nhiquela2-square.png",
+    "icon": "./assets/visacasa2.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/nhiquela2-square.png",
+      "image": "./assets/visacasa2.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -18,7 +18,7 @@
       "package": "com.nhiquela.driver",
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/nhiquela2-square.png",
+        "foregroundImage": "./assets/visacasa2.png",
         "backgroundColor": "#ffffff"
       },
       "permissions": [
@@ -35,8 +35,10 @@
       "supportsTablet": true,
       "usesAppleSignIn": false,
       "infoPlist": {
-        "UIBackgroundModes": ["remote-notification"],
-        "NSUserTrackingUsageDescription": "O Nhiquela Driver usa notificações para atualizações de pedidos e entregas."
+        "UIBackgroundModes": [
+          "remote-notification"
+        ],
+        "NSUserTrackingUsageDescription": "O Visacasa Driver usa notificações para atualizações de pedidos e entregas."
       }
     },
     "plugins": [
@@ -54,7 +56,7 @@
     ],
     "extra": {
       "firebase": {
-       "apiKey": "AIzaSyDlHUEIp6YENtHnKoizx9s1pH-FX08O5Gw",
+        "apiKey": "AIzaSyDlHUEIp6YENtHnKoizx9s1pH-FX08O5Gw",
         "authDomain": "nhiqueladriver.firebaseapp.com",
         "projectId": "nhiqueladriver",
         "storageBucket": "nhiqueladriver.firebasestorage.app",

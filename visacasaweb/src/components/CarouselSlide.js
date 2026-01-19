@@ -1,11 +1,12 @@
 import axios from 'axios';
-import React, { useContext, useEffect, useReducer } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import { Link } from 'react-router-dom';
+import { Button } from 'react-bootstrap';
 import { getError, truncateString } from '../utils';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import { useTranslation } from 'react-i18next';
-import { Store } from '../Store';
+// import { Store } from '../Store';
 import '../styles/CarouselSlide.css'; // Arquivo de estilos separado
 
 const reducer = (state, action) => {
@@ -44,18 +45,17 @@ export default function CarouselSlide() {
   }, [loadingPopular]);
 
   return (
-    <>
-      {popularItems && popularItems.length > 0 && <h3 className="carousel-title">{t('featuredproducts')}</h3>}
-      
+    <div className="carousel-custom-wrapper">
       <Carousel
-        showArrows
+        showArrows={false}
         infiniteLoop
         autoPlay
-        interval={3000}
+        interval={5000}
         showThumbs={false}
-        showIndicators={false}
+        showIndicators={true}
         swipeable
         emulateTouch
+        showStatus={false}
         className="carousel-custom"
       >
         {popularItems &&
@@ -63,20 +63,20 @@ export default function CarouselSlide() {
             <Link className="carousel-link" to={`/products/${p._id}`} key={p._id}>
               <div className="carousel-slide">
                 <img className="carousel-image" src={p.image} alt={p.name} />
-                
-                {p.onSale && (
-                  <div className="sale-tag">
-                    <b>{t('onsale')} - {p.onSalePercentage * 100}% OFF</b>
-                  </div>
-                )}
 
-                <div className="carousel-caption">
-                  <b>{truncateString(p.name, 30)}</b>
+                <div className="carousel-caption-premium">
+                  {p.onSale && (
+                    <div className="sale-badge-premium">
+                      {t('onsale')} - {p.onSalePercentage * 100}% OFF
+                    </div>
+                  )}
+                  <h2>{truncateString(p.name, 40)}</h2>
+                  <Button className="customButton">{t('shopnow')}</Button>
                 </div>
               </div>
             </Link>
           ))}
       </Carousel>
-    </>
+    </div>
   );
 }

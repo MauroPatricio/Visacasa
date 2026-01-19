@@ -90,7 +90,7 @@ const DeliveryDetailsScreen = () => {
   const HeaderWithBack = ({ title }) => (
     <View style={styles.header}>
       <TouchableOpacity onPress={() => navigation.goBack()}>
-        <Ionicons name="chevron-back-circle" size={35} color="#7F00FF" />
+        <Ionicons name="chevron-back-circle" size={35} color="#E85A4F" />
       </TouchableOpacity>
       <Text style={styles.headerTitle}>{title}</Text>
     </View>
@@ -326,16 +326,16 @@ const styles = StyleSheet.create({
   locationText: { textAlign: 'center', marginBottom: 10, fontSize: 16, color: '#666' },
   distanceText: { textAlign: 'center', fontWeight: '600', marginBottom: 20, fontSize: 16, color: '#000' },
   toggleContainerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginVertical: 12 },
-  switchText: { fontWeight: '600', fontSize: 18, color: '#7F00FF' },
+  switchText: { fontWeight: '600', fontSize: 18, color: '#E85A4F' },
   toggleButtons: { flexDirection: 'row', gap: 8 },
   toggleButtonSmall: { paddingVertical: 6, paddingHorizontal: 12, borderRadius: 8 },
   toggleButtonTextSmall: { color: '#FFF', fontWeight: 'bold', fontSize: 14 },
   statusText: { fontSize: 16, textAlign: 'center', marginVertical: 12 },
   summary: { marginVertical: 20, padding: 16, backgroundColor: '#F5F5F5', borderRadius: 15 },
   summaryText: { fontSize: 16, fontWeight: '600' },
-  priceText: { fontSize: 16, fontWeight: '900', color: '#7F00FF' },
+  priceText: { fontSize: 16, fontWeight: '900', color: '#E85A4F' },
   summaryRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },
-  button: { backgroundColor: '#7F00FF', paddingVertical: 16, borderRadius: 30, alignItems: 'center', marginVertical: 20 },
+  button: { backgroundColor: '#E85A4F', paddingVertical: 16, borderRadius: 30, alignItems: 'center', marginVertical: 20 },
   buttonText: { color: '#fff', fontWeight: '700', fontSize: 18 },
   loadingOverlay: { position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.3)' },
   loadingText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
