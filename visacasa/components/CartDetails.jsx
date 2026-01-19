@@ -201,6 +201,7 @@ const styles = StyleSheet.create({
     },
     locationText: {
         fontSize: 16,
+<<<<<<< HEAD
         color: '#666',
         marginBottom: 10,
         textAlign: 'center',
@@ -211,6 +212,18 @@ const styles = StyleSheet.create({
     distanceText: {
         fontSize: 16,
         color: 'black',
+=======
+        color: '#666', // Soft grey for secondary info
+        marginBottom: 10,
+        textAlign: 'center',
+        backgroundColor: '#F8F8F8', // Slight background contrast
+        padding: 10,
+        borderRadius: 10, // Rounded corners for a modern look
+    },
+    distanceText: {
+        fontSize: 16,
+        color: '#7F00FF', // Highlight distance with a noticeable color
+>>>>>>> main
         marginBottom: 10,
         textAlign: 'center',
         fontWeight: '600',
@@ -223,6 +236,7 @@ const styles = StyleSheet.create({
         marginBottom: 15,
     },
     barPayment: {
+<<<<<<< HEAD
         backgroundColor: '#E85A4F',
         paddingVertical: 14,
         paddingHorizontal: 22,
@@ -230,6 +244,15 @@ const styles = StyleSheet.create({
         marginTop: 40,
         shadowColor: '#E85A4F',
         shadowOffset: { width: 0, height: 4 },
+=======
+        backgroundColor: '#7F00FF', // Vibrant purple for the payment button
+        paddingVertical: 15,
+        paddingHorizontal: 20,
+        borderRadius: 30, // Rounded for a button-like appearance
+        marginTop: 20,
+        shadowColor: '#7F00FF', // Subtle shadow matching the button color
+        shadowOffset: { width: 0, height: 3 },
+>>>>>>> main
         shadowOpacity: 0.5,
         shadowRadius: 6,
         elevation: 6,
@@ -267,6 +290,7 @@ const styles = StyleSheet.create({
         color: 'grey',
     },
     totalDescript: {
+<<<<<<< HEAD
         color: '#E85A4F',
         fontWeight: '700',
     },
@@ -283,6 +307,13 @@ const styles = StyleSheet.create({
     switchText: {
         fontSize: 16,
         color: '#E85A4F',
+=======
+        color: '#7F00FF',
+        fontWeight: '600',
+    },
+    totalPrice: {
+        color: '#7F00FF',
+>>>>>>> main
         fontWeight: '600',
     },
     statusText: {

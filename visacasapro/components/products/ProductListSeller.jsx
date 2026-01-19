@@ -120,6 +120,7 @@ const ProductListSeller = () => {
     }
   };
 
+<<<<<<< HEAD
   const renderProduct = ({ item: product }) => (
     <TouchableOpacity 
       style={styles.card}
@@ -133,6 +134,20 @@ const ProductListSeller = () => {
         ) : (
           <Ionicons name="cube-outline" style={styles.productIcon} />
         )}
+=======
+  const removeItem = async (productId) => {
+    const id = productId;
+    console.log(id)
+    const response = await api.delete(`${id}`, {
+      headers: { authorization: `Bearer ${userData.token}` },
+    });
+  }
+
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#7F00FF" />
+>>>>>>> main
       </View>
 
       <View style={styles.content}>
@@ -173,6 +188,7 @@ const ProductListSeller = () => {
   );
 
   return (
+<<<<<<< HEAD
     <SafeAreaView style={styles.safe}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -181,6 +197,12 @@ const ProductListSeller = () => {
         <Text style={styles.headerTitle}>Meus produtos</Text>
         <View style={{ width: 28 }} />
       </View>
+=======
+    <SafeAreaView style={{ backgroundColor: "white",  flex:1 }}>
+      <Text style={{ fontSize: 25, fontWeight: '700', marginLeft: 14, marginBottom: 40, marginTop: 30,color: '#7F00FF' }}>
+        Lista de produtos
+      </Text>
+>>>>>>> main
 
       {isLoading ? (
         <ActivityIndicator size="large" color="#1E90FF" style={{ marginTop: 20 }}/>
@@ -210,6 +232,66 @@ const ProductListSeller = () => {
 };
 
 export default ProductListSeller;
+<<<<<<< HEAD
+=======
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  image: {
+    width: 60,
+    height: 60,
+    borderRadius: 8,
+    marginRight: 15,
+    resizeMode: 'cover',
+  },
+  wrapper: {
+    backgroundColor: '#7F00FF',
+    padding: 15,
+    borderRadius: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 7,
+    shadowColor: '#7F00FF',
+    // shadowOffset: { width: 0, height: 2 },
+    // shadowOpacity: 0.1,
+    // shadowRadius: 6,
+    elevation: 5,
+  },
+  container: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: '#7F00FF',
+    borderRadius: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 3, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 5,
+    marginBottom: 10,
+    padding: 7,
+  },
+  title: {
+    flex: 1,
+    fontSize: 18,
+    fontWeight: '600',
+    color: 'white',
+  },
+  price: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: 'white',
+  },
+  noProductsText: {
+    textAlign: 'center',
+    marginTop: 50,
+    fontSize: 18,
+    fontWeight: '500',
+    color: '#888',
+  },
+>>>>>>> main
 
 
 const styles = StyleSheet.create({  
@@ -233,6 +315,7 @@ const styles = StyleSheet.create({
     fontWeight:'bold',
     color: '#333',
   },
+<<<<<<< HEAD
   scroll: {
     padding: 16,
   },
@@ -257,6 +340,15 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 12,
     marginRight: 16,
     backgroundColor: '#E85A4F',
+=======
+  modalButton: {
+    width: '100%',
+    padding: 10,
+    backgroundColor: '#7F00FF',
+    borderRadius: 8,
+    marginBottom: 10,
+    alignItems: 'center',
+>>>>>>> main
   },
   iconWrapper: {
     backgroundColor: '#edf2ff',

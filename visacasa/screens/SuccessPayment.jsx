@@ -120,6 +120,7 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   title: {
+<<<<<<< HEAD
     fontSize: 24,
     fontWeight: '700',
     color: '#2e2e2e',
@@ -136,6 +137,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginTop: 15,
     color: '#333',
+=======
+    fontSize: 26,
+    fontWeight: 'bold',
+    color: '#2e2e2e', // Darker color for text
+>>>>>>> main
     textAlign: 'center',
   },
   button: {

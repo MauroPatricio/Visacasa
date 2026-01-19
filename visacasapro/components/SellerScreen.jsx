@@ -106,7 +106,7 @@ useLayoutEffect(()=>{
               <Text style={{fontWeight: '500', marginLeft: 10}}>Endereço:</Text>
               <View style={styles.details}>
                 <View style={styles.address}>
-                  <Ionicons name='location-outline' color="#E85A4F" opacity={12} size={22}/>
+                  <Ionicons name='location-outline' color="#7F00FF" opacity={12} size={22}/>
                   <Text>< Text style={{fontWeight: '500'}}>{province.name}</Text> - {address}</Text>
                 </View>
           </View>

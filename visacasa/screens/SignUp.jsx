@@ -92,8 +92,13 @@ const SignUp = ({ navigation }) => {
               <View>
                 <View style={styles.wrapper}>
                   <Text style={styles.label}>Nome e apelido</Text>
+<<<<<<< HEAD
                   <View style={styles.inputWrapper(touched.name ? '#E85A4F' : '#ccc')}>
                     <MaterialCommunityIcons name="face-man" size={20} color="black" style={styles.iconStyle} />
+=======
+                  <View style={styles.inputWrapper(touched.name ? '#7F00FF' : '#ccc')}>
+                    <MaterialCommunityIcons name="face-man" size={20} color="grey" style={styles.iconStyle} />
+>>>>>>> main
                     <TextInput
                       placeholder="Nome e apelido"
                       onFocus={() => setFieldTouched('name')}
@@ -107,8 +112,13 @@ const SignUp = ({ navigation }) => {
 
                 <View style={styles.wrapper}>
                   <Text style={styles.label}>Número de telefone</Text>
+<<<<<<< HEAD
                   <View style={styles.inputWrapper(touched.phoneNumber ? '#E85A4F' : '#ccc')}>
                     <MaterialCommunityIcons name="phone" size={20} color="black" style={styles.iconStyle} />
+=======
+                  <View style={styles.inputWrapper(touched.phoneNumber ? '#7F00FF' : '#ccc')}>
+                    <MaterialCommunityIcons name="phone" size={20} color="grey" style={styles.iconStyle} />
+>>>>>>> main
                     <TextInput
                       placeholder="Insira o número de telefone"
                       onFocus={() => setFieldTouched('phoneNumber')}
@@ -123,8 +133,13 @@ const SignUp = ({ navigation }) => {
 
                 <View style={styles.wrapper}>
                   <Text style={styles.label}>Email</Text>
+<<<<<<< HEAD
                   <View style={styles.inputWrapper(touched.email ? '#E85A4F' : '#ccc')}>
                     <MaterialCommunityIcons name="email" size={20} color="black" style={styles.iconStyle} />
+=======
+                  <View style={styles.inputWrapper(touched.email ? '#7F00FF' : '#ccc')}>
+                    <MaterialCommunityIcons name="email" size={20} color="grey" style={styles.iconStyle} />
+>>>>>>> main
                     <TextInput
                       placeholder="Seu email"
                       onFocus={() => setFieldTouched('email')}
@@ -138,8 +153,13 @@ const SignUp = ({ navigation }) => {
 
                 <View style={styles.wrapper}>
                   <Text style={styles.label}>Senha</Text>
+<<<<<<< HEAD
                   <View style={styles.inputWrapper(touched.password ? '#E85A4F' : '#ccc')}>
                     <MaterialCommunityIcons name="lock" size={20} color="black" style={styles.iconStyle} />
+=======
+                  <View style={styles.inputWrapper(touched.password ? '#7F00FF' : '#ccc')}>
+                    <MaterialCommunityIcons name="lock" size={20} color="grey" style={styles.iconStyle} />
+>>>>>>> main
                     <TextInput
                       placeholder="Sua senha"
                       secureTextEntry={hideText}
@@ -155,6 +175,7 @@ const SignUp = ({ navigation }) => {
                   {touched.password && errors.password && <Text style={styles.errorMessage}>{errors.password}</Text>}
                 </View>
 
+<<<<<<< HEAD
                 <Button
                   title="Registar"
                   onPress={handleSubmit}
@@ -162,6 +183,9 @@ const SignUp = ({ navigation }) => {
                   loader={state.loading}
                   disabled={state.loading || !isValid}
                 />
+=======
+                <Button title="Registar" onPress={handleSubmit} isValid={isValid ? '#7F00FF' : 'red'} loader={loader} />
+>>>>>>> main
               </View>
             )}
           </Formik>
@@ -194,7 +218,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     marginBottom: 5,
-    color: '#E85A4F',
+    color: '#7F00FF',
   },
   inputWrapper: (borderColor) => ({
     borderColor: borderColor,

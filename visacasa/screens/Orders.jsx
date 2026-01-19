@@ -137,6 +137,7 @@ const formatDate = (dateString) => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
       <Text style={styles.title}>Meus Pedidos</Text>
+<<<<<<< HEAD
 
       {isLoading ? (
         <ActivityIndicator size="large" color="#E85A4F" style={styles.loader} />
@@ -154,6 +155,41 @@ const formatDate = (dateString) => {
       )}
       
       <View style={{ paddingBottom: 65 }} />
+=======
+      <ScrollView
+        style={{ backgroundColor: "white" }}
+        contentContainerStyle={{
+          paddingHorizontal: 10,
+        }}
+      >
+        {isLoading ? (
+          <ActivityIndicator size="large" color="#7F00FF" />
+        ) : orders.length > 0 ? (
+          orders.map((item) => (
+            <TouchableOpacity
+              key={item._id}
+              style={styles.container}
+              onPress={() => {
+              navigation.navigate('OrderDetailsScreen', { item });
+              }}
+            >
+              <Ionicons name="cart-outline" size={25} style={styles.cartIcon} />
+              <View>
+                <Text style={styles.code}>{item.code}</Text>
+              </View>
+              <View>
+                <Text style={styles.createAt}>{formatDate(item.createdAt)}</Text>
+                <Text style={styles.price}>{item.totalPrice} MT</Text>
+                <Text style={styles.status}>{item.status}</Text>
+              </View>
+            </TouchableOpacity>
+          ))
+        ) : (
+          <Text style={{ textAlign: 'center', marginTop: 20 }}>Sem pedidos disponíveis.</Text>
+        )}
+        <View style={{ marginBottom: 210 }} />
+      </ScrollView>
+>>>>>>> main
     </SafeAreaView>
   );
 };
@@ -162,11 +198,17 @@ export default Orders;
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
+<<<<<<< HEAD
     borderRadius: 12,
     padding: 12,
     marginBottom: 16,
     backgroundColor: '#FFF',
     alignItems: 'center',
+=======
+    justifyContent: 'space-between',
+    backgroundColor: '#FFF',
+    borderRadius: 5,
+>>>>>>> main
     shadowColor: '#000',
     shadowOffset: { width: 2, height: 3 },
     shadowOpacity: 0.1,
@@ -182,6 +224,7 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   title: {
+<<<<<<< HEAD
     fontSize: 28,
     fontWeight: 'bold',
     paddingVertical: 15,
@@ -231,5 +274,43 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'center',
     paddingHorizontal: 20,
+=======
+    marginTop: 20,
+    fontSize: 30,
+    fontWeight: '700',
+    padding: 15,
+    color: '#7F00FF',
+    marginBottom: 20
+  },
+  cartIcon: {
+    color: '#7F00FF',
+    padding: 20,
+    borderRadius: 22,
+    backgroundColor: 'white',
+  },
+  code: {
+    fontWeight: '500',
+    fontSize: 17,
+    color: '#333',
+    marginLeft: 10,
+    textAlign: 'center',
+    top: 20,
+  },
+  status: {
+    fontWeight: '700',
+    fontSize: 15,
+    color: '#555',
+    marginLeft: 10,
+  },
+  price: {
+    color: '#666',
+    fontSize: 15,
+    marginLeft: 10,
+  },
+  createAt: {
+    color: '#888',
+    fontSize: 15,
+    marginLeft: 10,
+>>>>>>> main
   },
 });

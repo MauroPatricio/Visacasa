@@ -48,6 +48,7 @@ export default SearchTile;
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
+<<<<<<< HEAD
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
     borderRadius: 12,
@@ -96,3 +97,55 @@ const styles = StyleSheet.create({
     color: '#E85A4F', // Roxo para destacar o preço
   },
 });
+=======
+    justifyContent:'space-between',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 3, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 5,
+    marginBottom: 10,
+    // width:100
+},
+image: {
+    width: 70,
+    backgroundColor:"#F5F5F5",
+    borderRadius: 12,
+    justifyContent: "center",
+    alignContent: "center",
+    marginLeft: 5
+},
+productImg:{
+    width: "100%",
+    height: 60
+},
+textContainer: {
+    justifyContent:'space-between',
+    padding: 10,
+    backgroundColor: '#fff',
+    borderRadius: 5,
+    marginBottom: 10,
+
+},
+productTitle:{
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#333333",
+    width:240,
+
+},
+seller:{
+    fontSize: 12,
+    color: "#666666",
+    marginTop: 3,
+    width:80,
+
+},
+price: {
+    fontWeight: "600"
+}
+
+})
+>>>>>>> main

@@ -39,6 +39,7 @@ const renderProductItem = ({ item }) => (
         </View>
       )}
 
+<<<<<<< HEAD
       {/* Badge de estoque/encomenda */}
       {item.isOrdered ? (
         <View style={styles.badgeOrdered}>
@@ -53,6 +54,46 @@ const renderProductItem = ({ item }) => (
           <Text style={styles.badgeText}>Sem estoque</Text>
         </View>
       )}
+=======
+        <ArrowRightIcon color={"#7F00FF"} size={30} />
+        </TouchableOpacity>
+      </View>
+      <View>
+        <Text style={styles.text}>{description}</Text>
+        <ScrollView
+          horizontal
+          contentContainerStyle={{
+            paddingHorizontal: 1,
+          }}
+          showsHorizontalScrollIndicator={false}>
+          {products != null && products?.map((item, index) => {
+            const item2 = { item: item }
+            return (
+              <>
+                <ProductCard 
+                  id={item._id}
+                  name={item.brand}
+                  logo={item.image}
+                  description={item.description}
+                  rating={item.rating}
+                  numReviews={''}
+                  province={item.ProviceDetails}
+                  address={item.address}
+                  latitude={''}
+                  longitude={''}
+                  countInStock={item.countInStock}
+                  seller={item.sellerDetails}
+                  item={item2}
+                />
+              </>
+            )
+          }
+
+          )}
+
+        </ScrollView>
+      </View>
+>>>>>>> main
     </View>
 
     <View style={styles.productInfo}>

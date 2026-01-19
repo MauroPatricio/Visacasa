@@ -27,6 +27,7 @@ const CustomTabBarButton = memo(({ children, onPress }) => (
 
 const ButtomTabNavegation = () => {
   return (
+<<<<<<< HEAD
     <Tab.Navigator
       screenOptions={{ 
         tabBarHideOnKeyboard: true, 
@@ -61,6 +62,24 @@ const ButtomTabNavegation = () => {
           )
         }}
       />
+=======
+    <Tab.Navigator screenOptions={screenOptions}>
+      <Tab.Screen name="Home" component={Home}
+      options={{tabBarIcon: ({focused})=>{
+        return <Ionicons name={focused? "home": "home-outline"}
+        size={24}
+        color={focused?'#7F00FF':"black"}
+        />
+      }}} />
+
+      <Tab.Screen name="Search" component={Search}
+      options={{tabBarIcon: ({focused})=>{
+        return <Ionicons name={focused? "search": "search-outline"}
+        size={24}
+        color={focused?'#7F00FF':"black"}
+        />
+      }}} />
+>>>>>>> main
 
  <Tab.Screen
   name=" "
@@ -73,6 +92,7 @@ const ButtomTabNavegation = () => {
   }}
 />
 
+<<<<<<< HEAD
       <Tab.Screen
         name="Pedidos"
         component={Orders}
@@ -86,6 +106,43 @@ const ButtomTabNavegation = () => {
           )
         }}
       />
+=======
+<Tab.Screen name="RequestDeliv" component={RequestDeliv}
+      options={{tabBarIcon: ({focused})=>{
+        return <Ionicons name={focused? "add-circle": "add-circle-outline"}
+        size={50}
+        color={focused?'#7F00FF':"black"}
+        />
+      }}} />
+
+
+<Tab.Screen name="Orders" component={Orders}
+      options={{tabBarIcon: ({focused})=>{
+        return <Ionicons name={focused? "file-tray-full": "file-tray-full-outline"}
+        size={24}
+        color={focused?'#7F00FF':"black"}
+        />
+      }}} />
+
+
+
+{/* <Tab.Screen name="Cart" component={Cart}
+      options={{tabBarIcon: ({focused})=>{
+        return <Ionicons name={focused? "cart": "cart-outline"}
+        size={24}
+        color={focused?'#E85A4F':"#f0edf6"}
+        />
+      }}} /> */}
+
+
+<Tab.Screen name="Profile" component={Profile}
+      options={{tabBarIcon: ({focused})=>{
+        return <Ionicons name={focused? "person": "person-outline"}
+        size={24}
+        color={focused?'#7F00FF':"black"}
+        />
+      }}} />
+>>>>>>> main
 
       <Tab.Screen
         name="Perfil"

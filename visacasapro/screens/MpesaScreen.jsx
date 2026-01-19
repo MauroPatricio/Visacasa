@@ -199,7 +199,7 @@ const checkIfUserExist = async () => {
           <Text>{amount} MT</Text>
       </View>
 
-      <Button  loader={loader} title={"Pagar"} onPress={isValid? handleSubmit: (values)=>makeThePayment(values)} isValid={isValid?'#E85A4F':'red'}/>
+      <Button  loader={loader} title={"Pagar"} onPress={isValid? handleSubmit: (values)=>makeThePayment(values)} isValid={isValid?'#7F00FF':'red'}/>
         </>
     )}
     </Formik>

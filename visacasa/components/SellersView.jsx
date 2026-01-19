@@ -46,12 +46,19 @@ const SellersView = ({ title, description }) => {
 
   return (
     <View>
+<<<<<<< HEAD
       <View style={styles.sellerWrapper}>
         <Text style={styles.title}>{title}</Text>
         <TouchableOpacity onPress={() => navigation.navigate('SellersList', { sellers })}>
           <ArrowRightIcon color={"#E85A4F"} size={30} />
         </TouchableOpacity>
       </View>
+=======
+    <View style={styles.sellerWrapper}>
+      <Text style={styles.title}>{title}</Text>
+      <TouchableOpacity onPress={()=> navigation.navigate('SellersList',{sellers})}>
+      <ArrowRightIcon color={"#7F00FF"} size={30} />
+>>>>>>> main
 
       <Text style={styles.text}>{description}</Text>
 

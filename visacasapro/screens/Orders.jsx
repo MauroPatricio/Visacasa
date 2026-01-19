@@ -108,6 +108,7 @@ const checkIfUserExist = async () => {
   };
 
   return (
+<<<<<<< HEAD
     <SafeAreaView style={styles.safe}>
       {/* Header */}
       <View style={styles.header}>
@@ -126,6 +127,20 @@ const checkIfUserExist = async () => {
       ) : (
         <ScrollView contentContainerStyle={styles.scroll}>
           {ordersHistory?.length > 0 ? ordersHistory?.map((order) => (
+=======
+    <SafeAreaView style={{ backgroundColor: "white",  flex:1 }}>
+      <Text style={{ fontSize: 25, fontWeight: '700', marginLeft: 14, marginBottom: 40, color: '#7F00FF', marginTop: 30 }}>
+        Histórico de pedidos
+      </Text>
+      <ScrollView
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{
+          paddingHorizontal: 15,
+        }}
+      >
+        {ordersHistory && ordersHistory.length > 0 ? (
+          ordersHistory.map((product) => (
+>>>>>>> main
             <TouchableOpacity 
               key={order._id}
               style={styles.card}
@@ -189,6 +204,7 @@ const styles = StyleSheet.create({
     fontWeight:'bold',
     color: '#333',
   },
+<<<<<<< HEAD
   scroll: {
     padding: 16,
   },
@@ -201,6 +217,15 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
+=======
+  container: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    backgroundColor: '#7F00FF',
+    borderRadius: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 3, height: 2 },
+>>>>>>> main
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
@@ -222,11 +247,18 @@ const styles = StyleSheet.create({
     justifyContent:'center',
   },
   cartIcon: {
+<<<<<<< HEAD
     fontSize: 24,
     color: '#E85A4F',
   },
   content: {
     flex: 1,
+=======
+    color: '#7F00FF',
+    padding: 20,
+    borderRadius: 22,
+    backgroundColor: 'white',
+>>>>>>> main
   },
   code: {
     fontSize: 16,

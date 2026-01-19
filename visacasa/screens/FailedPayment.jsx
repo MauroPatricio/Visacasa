@@ -68,6 +68,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#FAFAFA',
     paddingHorizontal: 20,
     justifyContent: 'center',
+<<<<<<< HEAD
+=======
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    marginTop:200
+>>>>>>> main
   },
   backIcon: {
     position: 'absolute',
@@ -111,8 +117,17 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingHorizontal: 10,
   },
+<<<<<<< HEAD
   button: {
     backgroundColor: '#E85A4F',
+=======
+  iconStyle:{
+    color:'red'
+  },
+  buttonContainer: {
+    backgroundColor: '#7F00FF',
+    borderRadius: 10,
+>>>>>>> main
     paddingVertical: 12,
     paddingHorizontal: 30,
     borderRadius: 10,

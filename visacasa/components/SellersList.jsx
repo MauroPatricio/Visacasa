@@ -127,6 +127,7 @@ const SellersList = () => {
 
 export default SellersList;
 const styles = StyleSheet.create({
+<<<<<<< HEAD
    container: {
     flex: 1,
     backgroundColor: '#fff',
@@ -189,5 +190,87 @@ const styles = StyleSheet.create({
   loadingSpinner: {
     marginVertical: 20,
   },
+=======
+    container: {
+      flex: 1,
+      backgroundColor: '#fafafa', // Keep the background white for contrast
+    },
+    // icons: {
+    //     position: 'absolute',
+    //     top: 30,
+    //     flexDirection: "row",
+    //     justifyContent: 'space-between',
+    //     alignItems: 'center',
+    //     width: '100%', // Ensure icons are spread across the width
+    //     // paddingHorizontal: 20,
+    //   },
+    //   icon: {
+    //     backgroundColor: 'white',
+    //     color: '#3e2465',
+    //     borderRadius: 20,
+    //   },
+    //   back: {
+    //     color: 'black',
+    //     backgroundColor: 'rgba(255, 255, 255, 0.8)', // Slight transparency for a modern look
+    //     borderRadius: 22,
+    //     padding: 5,
+    //   },
+    title: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: '##7F00FF', // Main color for the title
+      textAlign: 'center',
+      marginVertical: 20,
+    },
+    listContent: {
+      // paddingVertical: 10,
+      // paddingHorizontal: 15,
+    },
+    sellerCard: {
+      flexDirection: 'row',
+      width: width * 0.9,
+      padding: 15,
+      marginVertical: 10,
+      backgroundColor: '#F8F8F8', // Keep card background white for contrast
+      borderRadius: 12,
+      alignSelf: 'center',
+      shadowColor: 'black',
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.15,
+      shadowRadius: 3.84,
+      elevation: 3,
+      borderWidth: 1, // Added border to seller card
+      borderColor: '#7F00FF', // Border color matching the main color
+    },
+    sellerLogo: {
+      width: 60,
+      height: 60,
+      borderRadius: 30,
+      marginRight: 15,
+      borderWidth: 2,
+      borderColor: '#7F00FF', // Border color for logo matching main color
+    },
+    sellerInfo: {
+      flex: 1,
+      justifyContent: 'center',
+    },
+    sellerName: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: '#333', // Keep name color as dark for contrast
+      marginBottom: 5,
+    },
+    sellerDescription: {
+      fontSize: 14,
+      color: '#666', // Description color for contrast
+    },
+    // Optional: Add styles for loading spinner
+    loadingSpinner: {
+      marginVertical: 20,
+    },
+>>>>>>> main
   });
   

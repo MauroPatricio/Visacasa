@@ -84,8 +84,18 @@ const LoginPage = () => {
                 {/* Campo telefone */}
                 <View style={styles.wrapper}>
                   <Text style={styles.label}>Número de telefone</Text>
+<<<<<<< HEAD
                   <View style={styles.inputWrapper(touched.phoneNumber && errors.phoneNumber ? 'red' : '#E85A4F')}>
                     <MaterialCommunityIcons name="phone" size={20} color="grey" style={styles.iconStyle} />
+=======
+                  <View style={styles.inputWrapper(errors.phoneNumber && touched.phoneNumber ? 'red' : '#7F00FF')}>
+                    <MaterialCommunityIcons
+                      name="phone"
+                      size={20}
+                      color="grey"
+                      style={styles.iconStyle}
+                    />
+>>>>>>> main
                     <TextInput
                       placeholder="Insira o número de telefone"
                       keyboardType="phone-pad"
@@ -103,8 +113,18 @@ const LoginPage = () => {
                 {/* Campo senha */}
                 <View style={styles.wrapper}>
                   <Text style={styles.label}>Senha</Text>
+<<<<<<< HEAD
                   <View style={styles.inputWrapper(touched.password && errors.password ? 'red' : '#E85A4F')}>
                     <MaterialCommunityIcons name="lock" size={20} color="grey" style={styles.iconStyle} />
+=======
+                  <View style={styles.inputWrapper(errors.password && touched.password ? 'red' : '#7F00FF')}>
+                    <MaterialCommunityIcons
+                      name="lock"
+                      size={20}
+                      color="grey"
+                      style={styles.iconStyle}
+                    />
+>>>>>>> main
                     <TextInput
                       placeholder="Insira a senha"
                       secureTextEntry={hideText}
@@ -124,6 +144,7 @@ const LoginPage = () => {
 
                 {/* Botão login e registrar */}
                 <View>
+<<<<<<< HEAD
                   <Button
                     loader={loader}
                     title="Entrar"
@@ -133,6 +154,10 @@ const LoginPage = () => {
                   <Text style={styles.registration} onPress={() => navigation.replace('SignUp')}>
                     Registrar
                   </Text>
+=======
+                  <Button loader={loader} title="Entrar" onPress={isValid ? handleSubmit : null} isValid={isValid ? '#7F00FF' : 'red'} />
+                  <Text style={styles.registration} onPress={() => navigation.navigate('SignUp')}>Registrar</Text>
+>>>>>>> main
                 </View>
               </View>
             )}
@@ -146,6 +171,7 @@ const LoginPage = () => {
 export default LoginPage;
 
 const styles = StyleSheet.create({
+<<<<<<< HEAD
   cover: {
     height: 200,
     width: 320,
@@ -206,3 +232,89 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
 });
+=======
+    cover: {
+      height: 200,
+      width: 320,
+      resizeMode: "contain",
+      marginBottom: 0,
+      backgroundColor: 'white',
+      alignSelf: 'center',
+      marginVertical: 30,
+    },
+    title: {
+      fontWeight: "600",
+      textAlign: "center",
+      fontSize: 22,
+      marginBottom: 25,
+      color: '#4A4A4A',
+      letterSpacing: 1,
+    },
+    wrapper: {
+    //   marginBottom: 20,
+    },
+    label: {
+      fontSize: 14,
+      fontWeight: '500',
+      marginBottom: 5,
+      marginEnd: 2,
+      color: '#7F00FF',
+    },
+    inputWrapper: (borderColor) => ({
+      borderColor: borderColor,
+      backgroundColor: '#F8F8F8',
+      borderWidth: 0.5,
+      height: 55,
+      borderRadius: 12,
+      flexDirection: 'row',
+      paddingHorizontal: 15,
+      alignItems: 'center',
+      shadowColor: '#7F00FF',
+      shadowOpacity: 0.1,
+      shadowRadius: 5,
+      elevation: 3,
+    }),
+    errorMessage: {
+      color: 'red',
+      marginTop: 5,
+      marginLeft: 6,
+      fontSize: 12,
+    },
+    registration: {
+      marginTop: 25,
+      textAlign: "center",
+      fontWeight: "500",
+      borderColor: '#7F00FF',
+      borderWidth: 1.5,
+      height: 50,
+      borderRadius: 12,
+      justifyContent: 'center',
+      color: '#7F00FF',
+      paddingVertical: 10,
+      fontSize: 16,
+    },
+    iconStyle: {
+      marginRight: 10,
+    },
+    loginButton: {
+      backgroundColor: '#7F00FF',
+      borderRadius: 12,
+      height: 50,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: 20,
+    },
+    loginButtonText: {
+      color: 'white',
+      fontSize: 16,
+      fontWeight: '600',
+    },
+    forgotPasswordText: {
+      textAlign: 'center',
+      color: '#4A4A4A',
+      marginTop: 10,
+      fontSize: 14,
+    },
+  });
+  
+>>>>>>> main

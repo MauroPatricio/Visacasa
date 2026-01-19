@@ -144,14 +144,14 @@ const styles = StyleSheet.create({
     },
     minusIcon:{
         // color: 'white',
-        backgroundColor:'#E85A4F',
+        backgroundColor:'#7F00FF',
         borderRadius: 50,
         marginRight: 10,
       
     },
     plusIcon: {
         color: 'white',
-        backgroundColor:'#E85A4F',
+        backgroundColor:'#7F00FF',
         borderRadius: 22,
         marginLeft: 10
 

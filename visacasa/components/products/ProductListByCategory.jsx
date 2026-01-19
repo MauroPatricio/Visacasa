@@ -97,7 +97,7 @@ const ProductListByCategory = () => {
         keyExtractor={(item) => item._id.toString()}
         onEndReached={fetchProducts}
         onEndReachedThreshold={0.5}
-        ListFooterComponent={loading ? <ActivityIndicator size="large" color="#E85A4F" /> : null}
+        ListFooterComponent={loading ? <ActivityIndicator size="large" color="#7F00FF" /> : null}
       />
     </SafeAreaView>
   );
@@ -113,7 +113,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
+<<<<<<< HEAD
     color: '#E85A4F',
+=======
+    color: '#7F00FF', // Main color for title
+>>>>>>> main
     textAlign: 'center',
     marginVertical: 20,
   },
@@ -155,8 +159,13 @@ const styles = StyleSheet.create({
   },
   productPrice: {
     fontSize: 16,
+<<<<<<< HEAD
     color: '#E85A4F',
     fontWeight: '500',
+=======
+    color: '#7F00FF', // Green color for price
+    fontWeight: '500'
+>>>>>>> main
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
@@ -182,6 +191,10 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   back: {
+<<<<<<< HEAD
     color: '#E85A4F',
+=======
+    color: '#7F00FF', // Color for the back icon
+>>>>>>> main
   },
 });

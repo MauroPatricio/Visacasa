@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
     borderTopColor: 'white',
     borderLeftColor: 'white',
     borderRightColor:'white',
-    borderBottomColor: '#E85A4F',
+    borderBottomColor: '#7F00FF',
     padding:20,
     marginBottom: 10,
 },
@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     justifyContent: 'space-between',
     borderWidth:3 ,
-    borderTopColor: '#E85A4F',
+    borderTopColor: '#7F00FF',
     borderLeftColor: 'white',
     borderRightColor:'white',
     borderBottomColor: 'white',
@@ -152,10 +152,6 @@ const styles = StyleSheet.create({
         width:80,
         marginTop:2
   },
-
-  
-
-
   cart:{
     paddingBottom: 250
   },
@@ -174,7 +170,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 9,
     right:40,
-    backgroundColor: '#E85A4F',
+    backgroundColor: '#7F00FF',
     borderRadius: 50,
     marginTop: 10
 
@@ -202,7 +198,7 @@ const styles = StyleSheet.create({
     fontWeight: '500'
   },
   remove:{
-    color: '#E85A4F',
+    color: '#7F00FF',
     fontWeight: '500',
     marginTop: 15
 

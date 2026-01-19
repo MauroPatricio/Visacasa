@@ -97,7 +97,7 @@ const TransportType = () => {
       )}
       />
   <View>
-<TouchableOpacity style={{backgroundColor: '#E85A4F'}}>
+<TouchableOpacity style={{backgroundColor: '#7F00FF'}}>
     <Text style={{color: 'white'}}>{selected?.title}</Text>
 </TouchableOpacity>
 </View>

@@ -198,6 +198,7 @@ const Home = () => {
       <View style={{ height: StatusBar.currentHeight }} />
       <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
+<<<<<<< HEAD
       <View style={styles.appBarWrapper}>
         <View style={styles.headerRow}>
           <Text style={styles.welcomeText('black', 30, 0)}>
@@ -231,6 +232,11 @@ const Home = () => {
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Text style={styles.sectionTitle}>Pedidos</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.statusScrollContainer}>
+=======
+      <ScrollView>
+        <Text style={{ fontSize: 25, fontWeight: '700', marginLeft: 20, marginBottom: 10, color: '#7F00FF' }}>Pedidos</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 15 }}>
+>>>>>>> main
           {availableStatuses.map((status) => (
             <TouchableOpacity
               key={status}
@@ -275,6 +281,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f8f9fb', // fundo claro moderno
   },
+<<<<<<< HEAD
   appBarWrapper: {
     paddingHorizontal: 20,
     paddingTop: 15,
@@ -287,10 +294,18 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 10,
     elevation: 5,
+=======
+  wrapper: {
+    marginRight: 7,
+    backgroundColor: '#7F00FF',
+    padding: 10,
+    borderRadius: 15,
+>>>>>>> main
   },
   headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+<<<<<<< HEAD
     alignItems: 'center',
   },
   welcomeText: (color, size, margin) => ({
@@ -302,6 +317,33 @@ const styles = StyleSheet.create({
   }),
   balanceText: {
     fontSize: 16,
+=======
+    backgroundColor: '#7F00FF',
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 3, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 5,
+    marginBottom: 10,
+    padding: 10,
+  },
+  cartIcon: {
+    color: '#7F00FF',
+    padding: 20,
+    borderRadius: 22,
+    backgroundColor: 'white',
+  },
+  code: {
+    fontWeight: '500',
+    fontSize: 17,
+    color: 'white',
+    marginLeft: 10,
+    textAlign: 'center',
+    top: 20,
+  },
+  status: {
+>>>>>>> main
     fontWeight: '700',
     color: '#374151',
     backgroundColor: '#eef2ff',

@@ -26,11 +26,26 @@ const ProductCard = ({ id, name, logo, description, rating, numReviews, seller, 
           </View>
         )}
 
+<<<<<<< HEAD
         {item.item.onSale && (
           <View style={styles.promoBadge}>
             <Text style={styles.promoText}>-{item.item.onSalePercentage}%</Text>
           </View>
         )}
+=======
+          {/* <Text style={styles.countInStock} numberOfLines={1}>{item.item.countInStock} unidade(s)</Text> */}
+          <Text style={styles.price} numberOfLines={1}>{item.item.price} MT</Text>
+          <Text>
+            {item.item.isOrdered ? <Badge style={{ color: 'white', backgroundColor: 'green' }}> Por encomenda </Badge> : item.item.countInStock !== 0 ? item.item.countInStock + ` unidade(s)` : <Badge bg='danger'>Sem stock</Badge>}
+          </Text>
+
+        </View>
+        <TouchableOpacity style={styles.addBtn} >
+          <Ionicons name='cart' size={25}
+            color={'#7F00FF'}
+          />
+        </TouchableOpacity>
+>>>>>>> main
       </View>
 
       <View style={styles.infoContainer}>

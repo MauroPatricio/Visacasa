@@ -60,7 +60,7 @@ const Map = () => {
       destination={destination.description}
       apikey={EXPO_GOOGLE_MAPS_APIKEY}
       strokeWidth={3}
-      strokeColor='#E85A4F'
+      strokeColor='#7F00FF'
   />
 )} */}
 

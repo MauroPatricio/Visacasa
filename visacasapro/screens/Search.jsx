@@ -46,7 +46,7 @@ const Search = () => {
       </View>
 
       {isLoading ? (
-        <ActivityIndicator size={'large'} color={'#4B0082'} />
+        <ActivityIndicator size={'large'} color={'#7F00FF'} />
       ) : searchKey.length === 0 ? (
         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
           <Image

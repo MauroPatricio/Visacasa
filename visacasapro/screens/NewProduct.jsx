@@ -706,7 +706,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 16,
     textAlign: 'center',
+<<<<<<< HEAD
     color: '#E85A4F',
+=======
+    color:'#7F00FF'
+>>>>>>> main
   },
   input: {
     borderColor: '#ccc',
@@ -722,7 +726,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   imagePicker: {
-    backgroundColor: '#E85A4F',
+    backgroundColor: '#7F00FF',
     padding: 16,
     borderRadius: 8,
     alignItems: 'center',
@@ -743,7 +747,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   active: {
-    backgroundColor: '#E85A4F',
+    backgroundColor: '#7F00FF',
   },
   inactive: {
     backgroundColor: '#ccc',
@@ -752,7 +756,7 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   submitButton: {
-    backgroundColor: '#E85A4F',
+    backgroundColor: '#7F00FF',
     padding: 16,
     borderRadius: 8,
     alignItems: 'center',

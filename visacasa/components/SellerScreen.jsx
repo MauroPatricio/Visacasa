@@ -121,6 +121,7 @@ const SellerScreen = () => {
         <View style={styles.view}>
           <Text style={styles.sellerName}>{name}</Text>
 
+<<<<<<< HEAD
           {latitude && longitude ? (
             <View style={styles.mapContainer}>
               <Text style={styles.mapTitle}>Localização do Fornecedor</Text>
@@ -141,6 +142,13 @@ const SellerScreen = () => {
                   title="Localização do Vendedor"
                 />
               </MapView> */}
+=======
+          <Text style={{ fontWeight: '500', marginLeft: 10 }}>Endereço:</Text>
+          <View style={styles.details}>
+            <View style={styles.address}>
+              <Ionicons name='location-outline' color="#7F00FF" size={22} />
+              <Text><Text style={{ fontWeight: '500' }}>{province.name}</Text> - {address}</Text>
+>>>>>>> main
             </View>
           ) : (
             <Text style={styles.locationText}>Localização do vendedor não disponível.</Text>
@@ -265,7 +273,23 @@ const styles = StyleSheet.create({
   addressText: {
     fontSize: 16,
     color: '#666666',
+<<<<<<< HEAD
     marginLeft: 5,
+=======
+  },
+  rating: {
+    flexDirection: "row",
+    alignItems: 'center',
+    marginTop: 5,
+  },
+  title: {
+    marginTop: 20,
+    marginLeft: 10,
+    marginBottom: 12,
+    fontWeight: '600',
+    fontSize: 22,
+    color: '#333333',
+>>>>>>> main
   },
   mapContainer: {
     marginTop: 10,
@@ -273,8 +297,14 @@ const styles = StyleSheet.create({
   mapTitle: {
     fontSize: 18,
     fontWeight: '600',
+<<<<<<< HEAD
     color: '#E85A4F',
     marginBottom: 10,
+=======
+    marginBottom: 10,
+    color: '#7F00FF',
+    marginLeft: 10,
+>>>>>>> main
   },
   map: {
     height: 150,

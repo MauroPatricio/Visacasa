@@ -11,8 +11,13 @@ const welcome = () => {
   return (
 
     <View>
+<<<<<<< HEAD
         <View style={{paddingBottom:30}}>
                 <Text style={styles.welcomeText('black', 30, 0)}><Text style={{ color: '#E85A4F' }}>Visa</Text>Casa</Text>
+=======
+      <View style={styles.container}>
+        <Text style={styles.welcomeText('black', 30, 0)}><Text style={{ color: '#7F00FF' }}>Visa</Text>Casa</Text>
+>>>>>>> main
 
               <Text style={styles.welcomeText2('black', 11, 0)}>MATERIAIS DE CONSTRUÇÃO</Text>
             

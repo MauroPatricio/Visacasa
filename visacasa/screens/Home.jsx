@@ -685,6 +685,7 @@ responseListener.remove();
 };
 
 const styles = StyleSheet.create({
+<<<<<<< HEAD
   // Estilos para produtos em destaque
   featuredSection: {
     marginVertical: 20,
@@ -919,6 +920,122 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: 10,
   },
+=======
+ bottomSheetContent: {
+   // flex: 1,
+   // padding: 30,
+   backgroundColor: '#fff', // Light background for the bottom sheet
+   // borderTopLeftRadius: 20,
+   // borderTopRightRadius: 20,
+   // elevation: 5,
+ },
+ bottomSheetTitle: {
+   fontSize: 20,
+   fontWeight: 'bold',
+   marginBottom: 12,
+   color: '#333333', // Darker text for better readability
+ },
+ productContainer: {
+   // padding: 15,
+   borderBottomWidth: 1,
+   borderBottomColor: '#E0E0E0',
+   backgroundColor: '#FFF', // White background for product items
+ },
+ wrapper: {
+   letterSpacing: 1,
+   marginRight: 10,
+   backgroundColor: '#7F00FF', // Bold category color
+   paddingVertical: 8,
+   paddingHorizontal: 12,
+   borderRadius: 20,
+   borderColor: '#4B0082',
+   borderWidth: 0,
+   // shadowColor: '#000',
+   // shadowOffset: { width: 0, height: 2 },
+   // shadowOpacity: 0.2,
+   // shadowRadius: 5,
+   elevation: 5,
+ },
+ title: {
+   fontSize: 15,
+   fontWeight: 'bold',
+   color: 'white',
+   textAlign: 'center',
+ },
+ productRow: {
+   flexDirection: 'row',
+   alignItems: 'center',
+ },
+ logo: {
+   width: 60,
+   height: 60,
+   marginRight: 15,
+   borderRadius: 10, // Rounded corners for images
+ },
+ productDetails: {
+   flex: 1,
+ },
+ productBrand: {
+   fontSize: 16,
+   fontWeight: 'bold',
+   color: '#333333',
+ },
+ productDescription: {
+   fontSize: 14,
+   fontWeight: '400',
+   color: '#666666',
+   marginTop: 4,
+ },
+ ratingRow: {
+   flexDirection: 'row',
+   alignItems: 'center',
+   marginTop: 6,
+ },
+ productPrice: {
+   fontSize: 16,
+   fontWeight: 'bold',
+   color: '#7F00FF', // Highlight price color
+ },
+ cartCount: {
+   position: 'absolute',
+   top: -8,
+   right: -10,
+   backgroundColor: 'red', // Red for cart count badge
+   borderRadius: 10,
+   paddingHorizontal: 5,
+   paddingVertical: 2,
+ },
+ cartNumber: {
+   color: 'white',
+   fontWeight: 'bold',
+ },
+ appBarWrapper: {
+   backgroundColor: '#FFFFFF',
+   elevation: 5,
+   paddingBottom: 10,
+   borderBottomLeftRadius: 20,
+   borderBottomRightRadius: 20,
+ },
+ appBar: {
+   flexDirection: 'row',
+   alignItems: 'center',
+   paddingHorizontal: 20,
+   paddingTop: 15,
+   paddingBottom: 10,
+ },
+ cover: {
+   width: '100%',
+   height: 150,
+   borderRadius: 10,
+ },
+ location: {
+   fontSize: 16,
+   fontWeight: '500',
+   color: '#7F00FF', // Highlighted user greeting
+   marginTop: 5,
+   marginLeft: 10,
+ },
+>>>>>>> main
 });
 
 export default Home;

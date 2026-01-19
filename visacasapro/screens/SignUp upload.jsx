@@ -157,7 +157,7 @@ const SignUp = ({ navigation }) => {
               {/* User Details */}
               <Text style={styles.sectionHeader}>Dados do representante</Text>
               <Text>Nome e Apelido</Text>
-              <View style={styles.inputWrapper(touched.name ? '#E85A4F' : 'black')}>
+              <View style={styles.inputWrapper(touched.name ? '#7F00FF' : 'black')}>
                 <TextInput
                   autoCapitalize='none'
                   autoCorrect={false}
@@ -169,7 +169,7 @@ const SignUp = ({ navigation }) => {
               {touched.name && errors.name && <Text style={styles.error}>{errors.name}</Text>}
 
               <Text>Número de telefone</Text>
-              <View style={styles.inputWrapper(touched.phoneNumber ? '#E85A4F' : 'black')}>
+              <View style={styles.inputWrapper(touched.phoneNumber ? '#7F00FF' : 'black')}>
                 <TextInput
                   onChangeText={handleChange('phoneNumber')}
                   onBlur={handleBlur('phoneNumber')}
@@ -180,7 +180,7 @@ const SignUp = ({ navigation }) => {
               {touched.phoneNumber && errors.phoneNumber && <Text style={styles.error}>{errors.phoneNumber}</Text>}
 
               <Text>Email</Text>
-              <View style={styles.inputWrapper(touched.email ? '#E85A4F' : 'black')}>
+              <View style={styles.inputWrapper(touched.email ? '#7F00FF' : 'black')}>
                 <TextInput
                   onChangeText={handleChange('email')}
                   onBlur={handleBlur('email')}
@@ -191,7 +191,7 @@ const SignUp = ({ navigation }) => {
               {touched.email && errors.email && <Text style={styles.error}>{errors.email}</Text>}
 
               <Text>Senha</Text>
-              <View style={styles.inputWrapper(touched.password ? '#E85A4F' : 'black')}>
+              <View style={styles.inputWrapper(touched.password ? '#7F00FF' : 'black')}>
                 <TextInput
                   onChangeText={handleChange('password')}
                   onBlur={handleBlur('password')}
@@ -202,7 +202,7 @@ const SignUp = ({ navigation }) => {
               {touched.password && errors.password && <Text style={styles.error}>{errors.password}</Text>}
 
               <Text>Confirmar Senha</Text>
-              <View style={styles.inputWrapper(touched.confirmPassword ? '#E85A4F' : 'black')}>
+              <View style={styles.inputWrapper(touched.confirmPassword ? '#7F00FF' : 'black')}>
                 <TextInput
                   placeholder="Confirmar Senha"
                   secureTextEntry
@@ -214,7 +214,7 @@ const SignUp = ({ navigation }) => {
               {touched.confirmPassword && errors.confirmPassword && <Text style={styles.error}>{errors.confirmPassword}</Text>}
 
               <Text>Localização</Text>
-              <View style={styles.inputWrapper(touched.location ? '#E85A4F' : 'black')}>
+              <View style={styles.inputWrapper(touched.location ? '#7F00FF' : 'black')}>
                 <TextInput
                   editable={false}
                   value={location ? `${location.coords.latitude}, ${location.coords.longitude}` : ''}

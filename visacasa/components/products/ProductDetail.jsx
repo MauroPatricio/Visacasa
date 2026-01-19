@@ -178,10 +178,17 @@ const ProductDetail = () => {
 export default ProductDetail;
 
 const styles = StyleSheet.create({
+<<<<<<< HEAD
   scrollView: { backgroundColor: '#F9F9F9' },
   container: { flex: 1 },
 
   imageWrapper: { position: 'relative' },
+=======
+  container: {
+    flex: 1,
+    backgroundColor: '#FAFAFA',
+  },
+>>>>>>> main
   image: {
     width: '100%',
     height: 360,
@@ -191,26 +198,81 @@ const styles = StyleSheet.create({
   },
   backButton: {
     position: 'absolute',
+<<<<<<< HEAD
     top: 45,
     left: 15,
     backgroundColor: 'rgba(0,0,0,0.5)',
     padding: 8,
     borderRadius: 25,
     elevation: 6,
+=======
+    top: 40,
+    left: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '90%',
+  },
+  back: {
+    color: 'black',
+    backgroundColor: 'rgba(127, 0, 255, 0.7)',
+    borderRadius: 22,
+    padding: 5,
+>>>>>>> main
   },
 
   details: {
+<<<<<<< HEAD
     marginHorizontal: 20,
     marginTop: -20,
     backgroundColor: '#fff',
     borderRadius: 15,
     padding: 16,
+=======
+    padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    elevation: 3,
+    marginBottom: 10,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  price: {
+    fontSize: 22,
+    color: '#7F00FF',
+    fontWeight: '800',
+  },
+  ratingRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 15,
+  },
+  rating: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  countControl: {
+    marginTop: 0, 
+    marginBottom: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#F4F4F4',
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    width: 140,
+>>>>>>> main
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 4 },
     elevation: 5,
   },
+<<<<<<< HEAD
   seller: { fontSize: 15, color: '#E85A4F', marginBottom: 4 },
   title: { fontSize: 26, fontWeight: 'bold', color: '#222', marginBottom: 10 },
 
@@ -246,6 +308,28 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
     marginHorizontal: 20,
+=======
+  countText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#7F00FF',
+    marginHorizontal: 10,
+  },
+  descriptionWrapper: {
+    marginTop: 20,
+    paddingHorizontal: 15,
+  },
+  description: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    color: '#333',
+  },
+  descText: {
+    fontSize: 14,
+    color: '#555',
+    lineHeight: 20,
+>>>>>>> main
   },
   disabledButton: { backgroundColor: '#CCC' },
   countText: { fontSize: 22, fontWeight: '700', color: '#0e0d0dff', minWidth: 30, textAlign: 'center' },

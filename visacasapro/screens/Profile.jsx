@@ -259,10 +259,29 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   loginBtn: {
+<<<<<<< HEAD
     backgroundColor: "#E85A4F",
     paddingVertical: 10,
     paddingHorizontal: 30,
     borderRadius: 25,
+=======
+    backgroundColor: "#7F00FF", // Gradient background color for buttons
+    padding: 10,
+    borderWidth: 0.4,
+    borderColor: "white",
+    borderRadius: 24,
+    width: '80%', // Full width for buttons
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 10, // Space between buttons
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+>>>>>>> main
     elevation: 3,
   },
   loginText: {

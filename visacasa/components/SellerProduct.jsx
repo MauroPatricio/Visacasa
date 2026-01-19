@@ -180,6 +180,7 @@ const SellerProduct = ({
 export default SellerProduct;
 
 const styles = StyleSheet.create({
+<<<<<<< HEAD
   card: {
     backgroundColor: '#fff',
     borderRadius: 12,
@@ -262,3 +263,66 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
 });
+=======
+
+    container :{
+        backgroundColor: '#fff',
+        
+        // marginLeft: 10,
+        borderWidth: 0.5,
+        borderColor: '#E0E0E0',
+        marginLeft: 10,
+    },
+    wrapper:{
+        flexDirection: 'row',
+        flex: 1,
+        justifyContent: 'space-between'
+        
+    },
+
+    productName: {
+        fontSize: 15,
+        fontWeight: '500',
+        width: 240
+    },
+    details:{
+        fontSize:13,
+        color: 'grey',
+        width: 280,
+    },
+    price:{
+        fontWeight: '500'
+    },
+    image:{
+        marginTop:5,
+        marginBottom:5,
+        borderRadius: 1,
+        marginRight:5
+
+    },
+    minusIcon:{
+        // color: 'white',
+        backgroundColor:'#7F00FF',
+        borderRadius: 50,
+        marginRight: 10,
+      
+    },
+    plusIcon: {
+        color: 'white',
+        backgroundColor:'#7F00FF',
+        borderRadius: 22,
+        marginLeft: 10
+
+    },
+    circleIcons: {
+        flexDirection: 'row',
+        flex: 1,
+        alignContent: 'center',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom:10,
+        marginTop:10,
+
+    }
+})
+>>>>>>> main

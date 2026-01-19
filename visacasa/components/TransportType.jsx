@@ -162,6 +162,6 @@ const styles = StyleSheet.create({
       marginTop: 30,
       marginBottom: 30,
       marginLeft: 10,
-      color: '#E85A4F'
+      color: '#7F00FF'
     },
 })

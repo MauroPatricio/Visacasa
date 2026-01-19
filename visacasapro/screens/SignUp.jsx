@@ -279,6 +279,7 @@ const SignUp = () => {
               {/* User Details */}
               <Text style={styles.sectionTitle}>Dados do representante</Text>
 
+<<<<<<< HEAD
               <Text style={styles.label}>Nome e apelido</Text>
               <View style={styles.inputWrapper(touched.name ? '#E85A4F' : '#E85A4F')}>
                 <TextInput
@@ -287,6 +288,148 @@ const SignUp = () => {
                   onChangeText={handleChange('name')}
                   onBlur={handleBlur('name')}
                 />
+=======
+
+            // workDayAndTime: [
+            //     { dayNumber: '', dayOfWeek: '', opentime: '', closetime: '' },
+            //   ]
+          },
+        }}
+        validationSchema={validationSchema}
+        onSubmit={async (values) => {
+
+          values.seller.latitude = location?.coords.latitude;
+          values.seller.longitude = location?.coords.longitude
+
+          try {
+            const userSeller = await api.post('users/signup', values);
+
+
+            const projectId = "92c183ff-d0ca-4dc4-a4ce-e7c112be9ee0";
+            let token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
+            await updatePushToken(userSeller._id, token);
+            setExpoPushToken(token);
+
+            Toast.show({
+                type: 'success',
+                text1: 'Perfil criado com sucesso',
+                position: 'top',
+                visibilityTime: 4000, // Time for how long the toast will show
+                autoHide: true,
+                topOffset: 30,
+                bottomOffset: 40,
+                style: {
+                    
+                backgroundColor: '#4CAF50', // Green background for success
+                borderLeftWidth: 10,
+                borderLeftColor: '#00C851', // Left border accent for success
+                },
+                text1Style: {
+                fontSize: 18,
+                fontWeight: 'bold',
+                color: 'black', // Text color
+                
+                },
+              });
+              navigation.navigate('NewProduct')
+          } catch (error) {
+          
+            const errorMessage = error?.response?.data?.message || 'Ocorreu um erro inesperado.';
+            // Alert.alert('Erro', errorMessage);
+
+            Toast.show({
+                type: 'error',
+                text1: errorMessage,
+                // text2: 'Clique em Registar',
+                position: 'top',
+              });
+          }
+          // Submit logic goes here
+        }}
+
+        
+      >
+        {({ handleChange, handleBlur, handleSubmit,setFieldValue,values, errors, touched }) => (
+          
+          <>
+            {/* User Details */}
+            <Text style={{fontSize: 18, fontWeight: '500', paddingTop:15, paddingBottom: 5}}>Dados do representante</Text>
+
+            <Text style={styles.label}>Nome e apelido</Text>
+          
+
+                 <View style={styles.inputWrapper(touched.name? '#7F00FF':'#ccc')}>
+             
+                <TextInput 
+                autoCapitalize='none'
+                autoCorrect={false}
+                style={{flex:1}}
+                value={values.name}
+                onChangeText={(text) => {
+                  const filteredText = text.replace(/[^a-zA-ZÀ-ÿ\s]/g, ''); // Permitir apenas letras e espaços
+                  setFieldValue('name', filteredText); // Atualiza o campo de nome com o texto filtrado
+                }}
+                />
+            </View>
+                {touched.name && errors.name && <Text style={styles.error}>{errors.name}</Text>}
+
+            <Text style={{fontSize: 18, fontWeight: '500', paddingTop:15, paddingBottom: 5}}>Dados de acesso</Text>
+
+            <Text style={styles.label}>Número de telefone</Text>
+            <View style={styles.inputWrapper(touched.phoneNumber? '#7F00FF':'#ccc')}>
+            <TextInput
+              onChangeText={handleChange('phoneNumber')}
+              onBlur={handleBlur('phoneNumber')}
+              value={values.phoneNumber}
+              keyboardType="numeric"
+              style={{flex:1}}
+
+            />
+            </View>
+            {touched.phoneNumber && errors.phoneNumber && <Text style={styles.error}>{errors.phoneNumber}</Text>}
+
+
+
+            <Text  style={styles.label}>Email</Text>
+
+            <View style={styles.inputWrapper(touched.email? '#7F00FF':'#ccc')}>
+
+            <TextInput
+                            style={{flex:1}}
+
+              onChangeText={handleChange('email')}
+              onBlur={handleBlur('email')}
+              value={values.email}
+              keyboardType="email-address"
+            />
+            </View>
+            {touched.email && errors.email && <Text style={styles.error}>{errors.email}</Text>}
+
+            <Text  style={styles.label}>Senha</Text>
+            <View style={styles.inputWrapper(touched.password? '#7F00FF':'#ccc')}>
+            <TextInput
+                            style={{flex:1}}
+
+              onChangeText={handleChange('password')}
+              onBlur={handleBlur('password')}
+              value={values.password}
+              secureTextEntry
+            />
+            </View>
+            {touched.password && errors.password && <Text style={styles.error}>{errors.password}</Text>}
+
+   
+            <Text  style={styles.label}>Confirmar Senha</Text>
+            <View style={styles.inputWrapper(touched.password? '#7F00FF':'#ccc')}>
+            <TextInput
+                            style={{flex:1}}
+                placeholder="Confirmar Senha"
+                secureTextEntry
+                value={values.confirmPassword}
+                onChangeText={handleChange('confirmPassword')}
+                onBlur={handleBlur('confirmPassword')}
+              />
+>>>>>>> main
               </View>
               {touched.name && errors.name && <Text style={styles.error}>{errors.name}</Text>}
 
@@ -338,6 +481,7 @@ const SignUp = () => {
               </View>
               {touched.password && errors.password && <Text style={styles.error}>{errors.password}</Text>}
 
+<<<<<<< HEAD
               <Text style={styles.label}>Confirmar Senha</Text>
               <View style={styles.inputWrapper(touched.confirmPassword ? '#E85A4F' : '#E85A4F')}>
                 <TextInput
@@ -360,6 +504,156 @@ const SignUp = () => {
               </View>
               {touched.confirmPassword && errors.confirmPassword && (
                 <Text style={styles.error}>{errors.confirmPassword}</Text>
+=======
+              {/* Upload da Logo */}
+              {image ? (
+  <Image source={{ uri: image }} style={styles.logo} />
+) : (
+  <Text style={{color: 'red'}}>É obrigatório a imagem</Text>
+)}
+          <TouchableOpacity style={styles.button} onPress={() => handleImagePicker(setFieldValue)}>
+            <Text style={styles.buttonText}>Adicionar a logo da empresa</Text>
+          </TouchableOpacity>
+
+            {/* Seller Details */}
+            <Text  style={styles.label}>Nome da empresa</Text>
+            <View style={styles.inputWrapper(touched.location? '#7F00FF':'#ccc')}>
+            <TextInput
+             style={{flex:1}}
+             onChangeText={(text) => {
+              const filteredText = text.replace(/[^a-zA-ZÀ-ÿ\s]/g, ''); // Permitir apenas letras e espaços
+              setFieldValue('seller.name', filteredText); // Atualiza o campo de nome com o texto filtrado
+            }}
+             onBlur={handleBlur('seller.name')}
+              value={values.seller.name}
+            />
+            </View>
+            {touched.seller?.name && errors.seller?.name && <Text style={styles.error}>{errors.seller?.name}</Text>}
+
+            <Text  style={styles.label}>Descrição do estabelecimento [Especialidade]</Text>
+            <View style={styles.inputWrapper(touched.location? '#7F00FF':'#ccc')}>
+
+            <TextInput
+              style={{flex:1}}
+              onChangeText={handleChange('seller.description')}
+              onBlur={handleBlur('seller.description')}
+              value={values.seller.description}
+            />
+            </View>
+
+            {touched.seller?.description && errors.seller?.description && (
+              <Text style={styles.error}>{errors.seller?.description}</Text>
+            )}
+
+
+           
+
+{/* <Text  style={styles.label}>Localização</Text> */}
+
+{/* <View style={styles.inputWrapper(touched.location? '#7F00FF':'#ccc')}> */}
+          <Picker
+            selectedValue={values.province}
+            onValueChange={(itemValue) => setFieldValue('seller.province', itemValue)}
+            style={styles.picker}
+          >
+            <Picker.Item label="Localização do estabelecimento" value="" />
+            {provinces && provinces.map((province) => (
+              <Picker.Item key={province._id} label={province.name} value={province._id} />
+            ))}
+          </Picker>
+{/* </View> */}
+{touched.seller?.province && errors.seller?.province && (
+            <Text style={styles.error}>{errors.seller.province}</Text> // Mensagem de erro
+          )}
+
+            <Text  style={styles.label}>Endereço do estabelecimento [Rua/Av.]</Text>
+            <View style={styles.inputWrapper(touched.location? '#7F00FF':'#ccc')}>
+            <TextInput
+                            style={{flex:1}}
+              onChangeText={handleChange('seller.address')}
+              onBlur={handleBlur('seller.address')}
+              value={values.seller.address}
+            />
+            </View>
+            {touched.seller?.address && errors.seller?.address && (
+              <Text style={styles.error}>{errors.seller?.address}</Text>
+            )}
+
+            <Text  style={styles.label}>Número de conta da empresa [MPESA]</Text>
+            <View style={styles.inputWrapper(touched.location? '#7F00FF':'#ccc')}>
+            <TextInput
+               style={{flex:1}}
+              onChangeText={handleChange('seller.phoneNumberAccount')}
+              onBlur={handleBlur('seller.phoneNumberAccount')}
+              value={values.seller.phoneNumberAccount}
+              keyboardType="numeric"
+            />
+            {touched.seller?.phoneNumberAccount && errors.seller?.phoneNumberAccount && (
+              <Text style={styles.error}>{errors.seller?.phoneNumberAccount}</Text>
+            )}
+            </View>
+
+              {/* Work Day and Time Fields */}
+              {/* <FieldArray name="seller.workDayAndTime">
+              {({ remove, push }) => (
+                <View>
+                  <Text style={styles.sectionTitle}>Work Days and Time</Text>
+                  {values.seller.workDayAndTime.map((day, index) => (
+                    <View key={index} style={styles.dayContainer}>
+                      <Text>Day Number</Text>
+                      <TextInput
+                        style={styles.input}
+                        onChangeText={handleChange(`seller.workDayAndTime.${index}.dayNumber`)}
+                        onBlur={handleBlur(`seller.workDayAndTime.${index}.dayNumber`)}
+                        value={values.seller.workDayAndTime[index].dayNumber}
+                        keyboardType="numeric"
+                      />
+                      {touched.seller?.workDayAndTime?.[index]?.dayNumber && errors.seller?.workDayAndTime?.[index]?.dayNumber && (
+                        <Text style={styles.error}>{errors.seller.workDayAndTime[index].dayNumber}</Text>
+                      )}
+
+                      <Text>Day of the Week</Text>
+                      <TextInput
+                        style={styles.input}
+                        onChangeText={handleChange(`seller.workDayAndTime.${index}.dayOfWeek`)}
+                        onBlur={handleBlur(`seller.workDayAndTime.${index}.dayOfWeek`)}
+                        value={values.seller.workDayAndTime[index].dayOfWeek}
+                      />
+                      {touched.seller?.workDayAndTime?.[index]?.dayOfWeek && errors.seller?.workDayAndTime?.[index]?.dayOfWeek && (
+                        <Text style={styles.error}>{errors.seller.workDayAndTime[index].dayOfWeek}</Text>
+                      )}
+
+                      <Text>Open Time</Text>
+                      <TextInput
+                        style={styles.input}
+                        onChangeText={handleChange(`seller.workDayAndTime.${index}.opentime`)}
+                        onBlur={handleBlur(`seller.workDayAndTime.${index}.opentime`)}
+                        value={values.seller.workDayAndTime[index].opentime}
+                      />
+                      {touched.seller?.workDayAndTime?.[index]?.opentime && errors.seller?.workDayAndTime?.[index]?.opentime && (
+                        <Text style={styles.error}>{errors.seller.workDayAndTime[index].opentime}</Text>
+                      )}
+
+                      <Text>Close Time</Text>
+                      <TextInput
+                        style={styles.input}
+                        onChangeText={handleChange(`seller.workDayAndTime.${index}.closetime`)}
+                        onBlur={handleBlur(`seller.workDayAndTime.${index}.closetime`)}
+                        value={values.seller.workDayAndTime[index].closetime}
+                      />
+                      {touched.seller?.workDayAndTime?.[index]?.closetime && errors.seller?.workDayAndTime?.[index]?.closetime && (
+                        <Text style={styles.error}>{errors.seller.workDayAndTime[index].closetime}</Text>
+                      )}
+
+                      <TouchableOpacity onPress={() => remove(index)} style={styles.removeButton}>
+                        <Text style={styles.removeText}>Remover</Text>
+                      </TouchableOpacity>
+                    </View>
+                  ))}
+
+                  <Button title="Adicionar dias de trabalho" onPress={() => push({ dayNumber: '', dayOfWeek: '', opentime: '', closetime: '' })} />
+                </View>
+>>>>>>> main
               )}
 
               <Text style={styles.sectionTitle}>Detalhes do estabelecimento</Text>
@@ -526,10 +820,17 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     marginBottom: 20,
   },
+<<<<<<< HEAD
+=======
+   label: {
+    color: '#7F00FF'
+   },
+>>>>>>> main
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
+<<<<<<< HEAD
     color: '#E85A4F',
     marginBottom: 20,
   },
@@ -548,13 +849,30 @@ const styles = StyleSheet.create({
   inputWrapper: (borderColor) => ({
     borderColor: borderColor,
     backgroundColor: '#FFF',
+=======
+    color: '#7F00FF', // Sleek dark violet for branding
+    marginBottom: 25,
+  },
+  inputWrapper: (borderColor) => ({
+    borderColor: borderColor || '#7F00FF',
+    backgroundColor: '#F8F8F8',
+>>>>>>> main
     borderWidth: 1,
     height: 50,
     borderRadius: 12,
     flexDirection: 'row',
     paddingHorizontal: 15,
     alignItems: 'center',
+<<<<<<< HEAD
     marginBottom: 15,
+=======
+    // marginBottom: 20, // Additional spacing for cleaner layout
+    shadowColor: '#7F00FF',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4, // Softer shadow for more depth
+    elevation: 3,
+>>>>>>> main
   }),
   input: {
     flex: 1,
@@ -577,14 +895,30 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#DDD',
   },
+<<<<<<< HEAD
   picker: {
     borderWidth: 1,
     borderColor: '#E85A4F',
+=======
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    marginVertical: 20,
+    color: '#7F00FF', // Modern purple accent
+    textAlign: 'center',
+  },
+  removeButton: {
+    backgroundColor: '#7F00FF', // Vibrant orange-red for emphasis
+>>>>>>> main
     borderRadius: 12,
     marginBottom: 15,
   },
   button: {
+<<<<<<< HEAD
     backgroundColor: '#E85A4F',
+=======
+    backgroundColor: '#7F00FF', // Fresh green for action buttons
+>>>>>>> main
     paddingVertical: 15,
     borderRadius: 12,
     alignItems: 'center',
@@ -595,6 +929,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
   },
+<<<<<<< HEAD
   buttonDisabled: {
     backgroundColor: '#A9A9A9',
   },
@@ -607,6 +942,30 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 10,
   },
+=======
+    button: {
+      backgroundColor: '#7F00FF', // Vibrant purple color
+      paddingVertical: 15,
+      paddingHorizontal: 30, // Added horizontal padding for a wider button
+      borderRadius: 12, // Rounded corners for a modern look
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginVertical: 10, // Spacing from other elements
+      shadowColor: '#7F00FF', // Subtle shadow with the same color for depth
+      shadowOffset: { width: 0, height: 3 },
+      shadowOpacity: 0.3,
+      shadowRadius: 6,
+      elevation: 5, // Shadow effect for Android
+    },
+    buttonText: {
+      color: '#FFF', // White text for contrast
+      fontSize: 18, // Slightly larger text for emphasis
+      fontWeight: '700', // Bold for strong CTA
+      letterSpacing: 1, // Spaced letters for elegance
+    },
+
+  
+>>>>>>> main
 });
 
 export default SignUp;

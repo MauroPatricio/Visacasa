@@ -14,7 +14,7 @@ const Radio = ({options, checkedValue, onChange, style}) => {
         >
             <MaterialIcons name={active?'radio-button-checked': 'radio-button-unchecked'}
            size={24}
-           color={active?'#E85A4F':'#64748b'} 
+           color={active?'#7F00FF':'#64748b'} 
             />
             <Text style={active?[styles.text, styles.activeText]:styles.text}>{option.label}</Text>
         </TouchableOpacity>)
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
         //  color:'#6b7280'
     },
     activeRadio: {
-        backgroundColor: '#E85A4F' + '11'
+        backgroundColor: '#7F00FF' + '11'
     },
     activeText: {
         color: '#374151'

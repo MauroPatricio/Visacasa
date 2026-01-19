@@ -272,6 +272,7 @@ const MpesaScreen = () => {
               {isUserWantDelivery ? totalToPay.toFixed(2) : (totalToPay - deliveryPrice).toFixed(2)} MT
             </Text>
 
+<<<<<<< HEAD
             <Button
               loader={loader}
               title="Pagar"
@@ -279,6 +280,11 @@ const MpesaScreen = () => {
               isValid={isValid ? '#E85A4F' : 'red'}
             />
           </View>
+=======
+              <Button loader={loader} title="Pagar" onPress={handleSubmit} isValid={isValid ? '#7F00FF' : 'red'} />
+            </View>
+          </>
+>>>>>>> main
         )}
       </Formik>
     </SafeAreaView>
