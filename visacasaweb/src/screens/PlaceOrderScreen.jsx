@@ -167,7 +167,7 @@ export default function PlaceOrderScreen() {
     try {
       dispatch({ type: 'CREATE_MPESA_REQUEST' });
 
-      const { data } = await axios.post(`/api/payments/mpesa`, { customerNumber, amount }, {
+      const { data } = await axios.post(`/api/payments/mpesa/c2b`, { customerNumber, amount }, {
         headers: {
           authorization: `Bearer ${userInfo.token}`,
         },
@@ -299,7 +299,7 @@ export default function PlaceOrderScreen() {
     (cart.itemsPrice + cart.addressPrice + cart.siteTax + cart.ivaTax).toFixed(2);
 
   let itemsPriceForSeller = 0;
-  cart.cartItems && cart.cartItems.map((item) => {
+  cart.cartItems && cart.cartItems.forEach((item) => {
     if (item.onSale) {
       itemsPriceForSeller = itemsPriceForSeller + (item.priceFromSeller - item.priceFromSeller * item.onSalePercentage) * item.quantity
     } else {
@@ -339,19 +339,19 @@ export default function PlaceOrderScreen() {
       }
     });
     window.scrollTo(0, 0);
-  }, []);
+  }, [cart.cartItems, cart.paymentMethod]);
 
   const placeOrderHandler = async () => {
 
     // Get the current time
     const currentTime = new Date();
-    const currentDay = currentTime.getDay();
+    // const currentDay = currentTime.getDay();
 
 
     const hours = currentTime.getHours().toString().padStart(2, '0'); // Get the hours and pad with leading 0 if needed
     const minutes = currentTime.getMinutes().toString().padStart(2, '0'); // Get the minutes and pad with leading 0 if needed
 
-    const formattedDatetime = `${hours}:${minutes}`;
+    // const formattedDatetime = `${hours}:${minutes}`;
 
 
 
@@ -691,3 +691,4 @@ export default function PlaceOrderScreen() {
     </div>
   );
 }
+

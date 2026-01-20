@@ -323,12 +323,12 @@ export default function ProductCreateScreen() {
           description,
           rating,
           numReviews,
-          conditionStatu,
-          qualityTyp,
+          conditionStatus: conditionStatu,
+          qualityType: qualityTyp,
           onSale,
           onSalePercentage,
-          selectedColors,
-          selectedSizes,
+          color: selectedColors, // <- aqui
+          size: selectedSizes, // <- e aqui
           isGuaranteed,
           isOrdered,
           orderPeriod, 
@@ -629,24 +629,26 @@ export default function ProductCreateScreen() {
                   required
                 >
                   <option value="">{t('select')}</option>
-                  <option value="0.05">5%</option>
-                  <option value="0.1">10%</option>
-                  <option value="0.15">15%</option>
-                  <option value="0.2">20%</option>
-                  <option value="0.25">25%</option>
-                  <option value="0.3">30%</option>
-                  <option value="0.35">35%</option>
-                  <option value="0.4">40%</option>
-                  <option value="0.45">45%</option>
-                  <option value="0.5">50%</option>
-                  <option value="0.55">55%</option>
-                  <option value="0.6">60%</option>
-                  <option value="0.6">65%</option>
-                  <option value="0.7">70%</option>
-                  <option value="0.75">75%</option>
-                  <option value="0.80">80%</option>
-                  <option value="0.85">85%</option>
-                  <option value="0.9">90%</option>
+                  <option value="5">5%</option>
+                  <option value="10">10%</option>
+                  <option value="15">15%</option>
+                  <option value="20">20%</option>
+                  <option value="25">25%</option>
+                  <option value="30">30%</option>
+                  <option value="35">35%</option>
+                  <option value="40">40%</option>
+                  <option value="45">45%</option>
+                  <option value="50">50%</option>
+                  <option value="55">55%</option>
+                  <option value="60">60%</option>
+                  <option value="65">65%</option>
+                  <option value="70">70%</option>
+                  <option value="75">75%</option>
+                  <option value="80">80%</option>
+                  <option value="85">85%</option>
+                  <option value="90">90%</option>
+                  <option value="95">95%</option>
+
                 </Form.Select>
               </Form.Group>
             )}

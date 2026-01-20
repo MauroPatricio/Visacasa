@@ -13,7 +13,7 @@ export default function DeliveryOptionScreen() {
 
   const navigate = useNavigate();
   const { state, dispatch: ctxDispatch } = useContext(Store);
-
+  
   const {
     cart: { address, deliveryOptionValue },
   } = state;
@@ -25,7 +25,7 @@ export default function DeliveryOptionScreen() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
+  
   useEffect(() => {
     if (!address.address) {
       navigate('/address');
@@ -49,8 +49,8 @@ export default function DeliveryOptionScreen() {
           <h1>{t('deliveryoptions')}</h1>
           <Form onSubmit={submitHandler}>
             <div className="mb-3">
-
-              <Form.Check
+              
+               <Form.Check
                 type="radio"
                 label={t('includedelivery')}
                 id="include"
@@ -68,7 +68,7 @@ export default function DeliveryOptionScreen() {
                 onChange={(e) => setDeliveryOption(e.target.value)}
               ></Form.Check>
 
-
+             
             </div>
             <div className="mb-3">
               <Button className='customButtom' variant='light' type="submit">{t('next')}</Button>
@@ -79,3 +79,4 @@ export default function DeliveryOptionScreen() {
     </div>
   );
 }
+

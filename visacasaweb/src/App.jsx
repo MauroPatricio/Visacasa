@@ -1,7 +1,7 @@
 import './App.css';
 import HomeScreen from './screens/HomeScreen';
 import ProductScreen from './screens/ProductScreen';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import NavDropdown from 'react-bootstrap/NavDropdown';
@@ -18,6 +18,7 @@ import { Store } from './Store';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCartShopping } from '@fortawesome/free-solid-svg-icons';
+import { FaRegHeart, FaExchangeAlt } from 'react-icons/fa';
 import CartScreen from './screens/CartScreen';
 import SignInScreen from './screens/SignInScreen';
 import AddressScreen from './screens/AddressScreen';
@@ -49,6 +50,9 @@ import ChatBox from './components/ChatBox';
 import CategoryListScreen from './screens/CategoryListScreen';
 import CategoryCreateScreen from './screens/CategoryCreateScreen';
 import CategoryEditScreen from './screens/CategoryEditScreen';
+import SubcategoryListScreen from './screens/SubcategoryListScreen';
+import SubcategoryCreateScreen from './screens/SubcategoryCreateScreen';
+import SubcategoryEditScreen from './screens/SubcategoryEditScreen';
 import DocumentTypeListScreen from './screens/DocumentTypeListScreen';
 import DocumentTypeCreateScreen from './screens/DocumentTypeCreateScreen';
 import DocumentTypeEditScreen from './screens/DocumentTypeEditScreen';
@@ -75,7 +79,6 @@ import ForgetPasswordScreen from './screens/ForgetPasswordScreen';
 import ResetPasswordScreen from './screens/ResetPasswordScreen';
 import DeliveryOptionScreen from './screens/DeliveryOptionScreen';
 import axios from 'axios';
-import PaybackInfoAndSecurity from './components/PaybackInfoAndSecurity';
 import AdicionalInfoHeader from './components/AdicionalInfoHeader';
 import ScrollTopButton from './components/ScrollTopButton';
 import SearchSellersScreen from './screens/SearchSellersScreen';
@@ -86,7 +89,7 @@ import { getError } from './utils';
 import { useTranslation } from 'react-i18next';
 import OrderHistoryBySellerScreen from './screens/OrderHistoryBySellerScreen';
 import ReturnPolicy from './screens/ReturnPolicy';
-import NhiquelaBenef from './screens/NhiquelaBenef';
+import VisacasaBenef from './screens/VisacasaBenef';
 import SellersToPayListScreen from './screens/SellersToPayListScreen';
 import DeliverersToPayListScreen from './screens/DeliverersToPayListScreen';
 import RequestDeliverman from './screens/RequestDelivermanScreen';
@@ -94,9 +97,18 @@ import RequestDelivermanConfirmScreen from './screens/RequestDelivermanConfirmSc
 import RequestDelivermanProgressScreen from './screens/RequestDelivermanProgressScreen';
 import RequestDelivermanHistoryByUserScreen from './screens/RequestDelivermanHistoryByUserScreen';
 import RequestDelivermanHistoryByAdminScreen from './screens/RequestDelivermanHistoryByAdminScreen';
+import AboutUs from './screens/AboutUs';
+import Privacy from './screens/Privacy';
+import LoginPopup from './components/LoginPopup';
+import EstablishmentListScreen from './screens/EstablishmentListScreen';
+import EstablishmentCreateScreen from './screens/EstablishmentCreateScreen';
+import EstablishmentEditScreen from './screens/EstablishmentEditScreen';
+import Broadcast from './screens/Broadcast';
+import FavoritesScreen from './screens/FavoritesScreen';
+import ComparisonScreen from './screens/ComparisonScreen';
 
 
-export  function App() {
+export function App() {
   const { state, dispatch: ctxDispatch } = useContext(Store);
 
   const { cart, userInfo } = state;
@@ -104,7 +116,7 @@ export  function App() {
 
   const { t } = useTranslation();
 
- 
+
   const toggleExpanded = () => {
     setExpanded(!expanded);
   };
@@ -114,229 +126,302 @@ export  function App() {
   };
 
 
-  useEffect(()=>{
-
-
-    const refresh = async () =>{
-
-      if(userInfo){
-
+  useEffect(() => {
+    const refresh = async () => {
+      if (userInfo) {
         try {
-          const {data} = await axios.get(`/api/orders/sellerview?seller=${userInfo._id}`, {
+          const { data } = await axios.get(`/api/orders/sellerview?seller=${userInfo._id}`, {
             headers: { authorization: `Bearer ${userInfo.token}` },
-          });    
-          ctxDispatch({type: 'ORDERS_BY_SELLER', payload: data.orders});
+          });
+          ctxDispatch({ type: 'ORDERS_BY_SELLER', payload: data.orders });
         } catch (err) {
           toast.error(getError(err));
         }
       }
     }
     refresh();
-
-
-  
-  },[userInfo, ctxDispatch])
+  }, [userInfo, ctxDispatch])
 
   return (
     <BrowserRouter>
-      <div className="d-flex flex-column site-background">
-        <Helmet>
-          <title>VisaCasa</title>
-        </Helmet>
-        <ToastContainer position="top-right" autoClose={3000} />
+      <AppContent expanded={expanded} setExpanded={setExpanded} signOutHandler={signOutHandler} userInfo={userInfo} t={t} cart={cart} state={state} ctxDispatch={ctxDispatch} />
+    </BrowserRouter>
+  );
+}
 
-         <header >
-          <Navbar
-             expanded={expanded}
-             bg="light"
-            variant="light"
-            expand="lg"
-            fixed="top"
-          >
-            <Container>
-              <LinkContainer to="/" >
-                <Navbar.Brand className="Navbar-Brand"  >
-                VisaCasa
-                </Navbar.Brand>
-              </LinkContainer>
-              <SearchBox />
-              <Navbar.Toggle
-                 onClick={toggleExpanded}
-                aria-controls="basic-navbar-nav"
-              />
-              <Link to="/cart" className="nav-link black-icon hide-icon-screen">
-                    <FontAwesomeIcon icon={faCartShopping}></FontAwesomeIcon>
-                    {cart.cartItems.length > 0 && (
-                      <Badge
-                        bg="danger"
-                        variant="danger"
-                        className="cart-number"
-                      >
-                        {cart.cartItems.reduce(
-                          (prev, current) => prev + current.quantity,
-                          0
-                        )}
-                      </Badge>
-                    )}
-                  </Link>
+function AppContent({ expanded, setExpanded, signOutHandler, userInfo, t, cart, state, ctxDispatch }) {
+  const location = useLocation();
 
-                 
-              <Navbar.Collapse  id="collapse basic-navbar-nav">
-                <Nav  className="mr-auto nav-cart w-100 justify-content-end">
-                  {userInfo ? (
-                    <NavDropdown title={userInfo.name} id="basic-nav-dropdown">
-                      <LinkContainer to="/profile">
-                        <NavDropdown.Item>{t('profile')}</NavDropdown.Item>
+  useEffect(() => {
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+        }
+      });
+    }, observerOptions);
+
+    const revealElements = document.querySelectorAll('.reveal');
+    revealElements.forEach(el => observer.observe(el));
+
+    return () => {
+      revealElements.forEach(el => observer.unobserve(el));
+    };
+  }, [location.pathname]);
+
+  return (
+    <div className="d-flex flex-column site-background">
+      <Helmet>
+        <title>Visacasa - Materiais de Construção</title>
+      </Helmet>
+      <ToastContainer position="top-right" autoClose={3000} />
+
+      <header >
+        <Navbar
+          expanded={expanded}
+          bg="light"
+          variant="light"
+          expand="lg"
+          fixed="top"
+        >
+          <Container>
+            <LinkContainer to="/" >
+              <Navbar.Brand className="Navbar-Brand d-flex align-items-center"  >
+                <img
+                  src="images/visacasa.jpg"
+                  width="45"
+                  height="45"
+                  className="d-inline-block align-top rounded-circle me-2 shadow-sm"
+                  alt="Visacasa logo"
+                />
+                <span className="fw-bolder">Visacasa</span>
+              </Navbar.Brand>
+            </LinkContainer>
+            <SearchBox />
+            <Navbar.Toggle
+              onClick={() => setExpanded(!expanded)}
+              aria-controls="basic-navbar-nav"
+            />
+            <Link to="/cart" className="nav-link black-icon hide-icon-screen me-3">
+              <FontAwesomeIcon icon={faCartShopping}></FontAwesomeIcon>
+              {cart.cartItems.length > 0 && (
+                <Badge
+                  bg="danger"
+                  variant="danger"
+                  className="cart-number"
+                >
+                  {cart.cartItems.reduce(
+                    (prev, current) => prev + current.quantity,
+                    0
+                  )}
+                </Badge>
+              )}
+            </Link>
+            <Link to="/favorites" className="nav-link black-icon hide-icon-screen me-3">
+              <FaRegHeart />
+              {state.favorites.length > 0 && (
+                <Badge bg="danger" className="cart-number">{state.favorites.length}</Badge>
+              )}
+            </Link>
+            <Link to="/compare" className="nav-link black-icon hide-icon-screen me-3">
+              <FaExchangeAlt />
+              {state.compareProducts.length > 0 && (
+                <Badge bg="primary" className="cart-number">{state.compareProducts.length}</Badge>
+              )}
+            </Link>
+
+
+            <Navbar.Collapse id="collapse basic-navbar-nav">
+              <Nav className="ms-auto align-items-center">
+                <Link to="/cart" className="nav-link premium-nav-icon me-lg-3">
+                  <FontAwesomeIcon icon={faCartShopping} />
+                  {cart.cartItems.length > 0 && (
+                    <Badge pill bg="danger" className="premium-badge">
+                      {cart.cartItems.reduce((a, c) => a + c.quantity, 0)}
+                    </Badge>
+                  )}
+                </Link>
+                <Link to="/favorites" className="nav-link premium-nav-icon me-lg-3">
+                  <FaRegHeart />
+                  {state.favorites.length > 0 && (
+                    <Badge pill bg="danger" className="premium-badge">{state.favorites.length}</Badge>
+                  )}
+                </Link>
+
+                {userInfo ? (
+                  <NavDropdown title={<span className="fw-bold">{userInfo.name}</span>} id="basic-nav-dropdown" className="premium-dropdown">
+                    <LinkContainer to="/profile">
+                      <NavDropdown.Item>{t('profile')}</NavDropdown.Item>
+                    </LinkContainer>
+
+                    {userInfo && !userInfo.isDeliveryMan && (
+                      <LinkContainer to="/orderHistory">
+                        <NavDropdown.Item>{t('myorders')}</NavDropdown.Item>
                       </LinkContainer>
-                    
-                      {userInfo && !userInfo.isDeliveryMan && (
-                        <LinkContainer to="/orderHistory">
-                          <NavDropdown.Item>{t('myorders')}</NavDropdown.Item>
-                        </LinkContainer>
-                      )}
+                    )}
 
-                      {userInfo && userInfo.isDeliveryMan && (
-                                              <LinkContainer to="/delivery/orderlist">
-                                                <NavDropdown.Item>
-                                                {t('orderstodeliver')}
-                                                  
-                                                </NavDropdown.Item>
-                                              </LinkContainer>
-                                            )}
+                    {userInfo && userInfo.isDeliveryMan && (
+                      <LinkContainer to="/delivery/orderlist">
+                        <NavDropdown.Item>
+                          {t('orderstodeliver')}
 
-
-                        <LinkContainer to="/requestdelivermanhistory">
-                          <NavDropdown.Item>{t('deliveryrequesthistory')}</NavDropdown.Item>
-                        </LinkContainer>
-
-
-                        <LinkContainer to="/allrequestdelivermanhistory">
-                          <NavDropdown.Item>{t('alldeliveryrequesthistory')}</NavDropdown.Item>
-                        </LinkContainer>
-
-                 
-                    
-                      <LinkContainer to="/signin">
-                        <NavDropdown.Item onClick={signOutHandler}>
-                          <b>{t('logout')}</b>
                         </NavDropdown.Item>
                       </LinkContainer>
-                    </NavDropdown>
-
-                    
-                  ) : (<>
-                  
-                    {/* { <Nav.Link as={Link} to="/requestdeliverman"><b className='link'>{t('requestdeliverman')}</b></Nav.Link>} */}
-
-                    <Link className="nav-link" to="/signin">
-                      {t('login')}
-                    </Link>
-                  </>
-                  )}
+                    )}
 
 
-                  {userInfo && userInfo.isSeller && userInfo.isApproved && (
-                    <NavDropdown title={userInfo.seller.name} id="admin-nav-dropdown">
-                      <LinkContainer to="/productlist/seller">
-                        <NavDropdown.Item>{t('myproducts')}</NavDropdown.Item>
-                      </LinkContainer>
-                      <LinkContainer to="/orderlist/seller">
-                        <NavDropdown.Item>{t('orderclients')}
+                    <LinkContainer to="/requestdelivermanhistory">
+                      <NavDropdown.Item>{t('deliveryrequesthistory')}</NavDropdown.Item>
+                    </LinkContainer>
+
+
+                    <LinkContainer to="/allrequestdelivermanhistory">
+                      <NavDropdown.Item>{t('alldeliveryrequesthistory')}</NavDropdown.Item>
+                    </LinkContainer>
+
+
+
+                    <LinkContainer to="/signin">
+                      <NavDropdown.Item onClick={signOutHandler}>
+                        <b>{t('logout')}</b>
+                      </NavDropdown.Item>
+                    </LinkContainer>
+                  </NavDropdown>
+
+
+                ) : (<>
+
+                  {/* { <Nav.Link as={Link} to="/requestdeliverman"><b className='link'>{t('requestdeliverman')}</b></Nav.Link>} */}
+
+                  <Link className="nav-link" to="/signin">
+                    {t('login')}
+                  </Link>
+                </>
+                )}
+
+
+                {userInfo && userInfo.isSeller && userInfo.isApproved && (
+                  <NavDropdown title={userInfo.seller.name} id="admin-nav-dropdown">
+                    <LinkContainer to="/productlist/seller">
+                      <NavDropdown.Item>{t('myproducts')}</NavDropdown.Item>
+                    </LinkContainer>
+                    <LinkContainer to="/orderlist/seller">
+                      <NavDropdown.Item>{t('orderclients')}
                         <Badge
-                        bg="danger"
-                        variant="danger"
-                        className="cart-number"
-                      >
-                        {cart.ordersBySeller && cart.ordersBySeller.length > 0 && cart.ordersBySeller.length}
-                      </Badge>
-                        </NavDropdown.Item>
-                      </LinkContainer>
-                      <LinkContainer to="/orderhistorybycustomer/seller">
-                        <NavDropdown.Item>{t('paymentfromnhiquela')}</NavDropdown.Item>
-                      </LinkContainer>
-                    </NavDropdown>
+                          bg="danger"
+                          variant="danger"
+                          className="cart-number"
+                        >
+                          {cart.ordersBySeller && cart.ordersBySeller.length > 0 && cart.ordersBySeller.length}
+                        </Badge>
+                      </NavDropdown.Item>
+                    </LinkContainer>
+                    <LinkContainer to="/orderhistorybycustomer/seller">
+                      <NavDropdown.Item>{t('paymenthistory')}</NavDropdown.Item>
+                    </LinkContainer>
+                  </NavDropdown>
+                )}
+                {userInfo && userInfo.isAdmin && (
+                  <NavDropdown title="Admin" id="admin-nav-dropdown">
+                    <LinkContainer to="/admin/dashboard">
+                      <NavDropdown.Item>{t('dashboard')}</NavDropdown.Item>
+                    </LinkContainer>
+                    <LinkContainer to="/provinceList">
+                      <NavDropdown.Item>{t('provinces')}</NavDropdown.Item>
+                    </LinkContainer>
+                    <LinkContainer to="/documentTypeList">
+                      <NavDropdown.Item>{t('doctypes')}</NavDropdown.Item>
+                    </LinkContainer>
+                    <LinkContainer to="/categoryList">
+                      <NavDropdown.Item>{t('categories')}</NavDropdown.Item>
+                    </LinkContainer>
+                    <LinkContainer to="/subcategoryList">
+                      <NavDropdown.Item>Subcategorias</NavDropdown.Item>
+                    </LinkContainer>
+                    <LinkContainer to="/colorList">
+                      <NavDropdown.Item>{t('availablecolors')}</NavDropdown.Item>
+                    </LinkContainer>
+                    <LinkContainer to="/sizeList">
+                      <NavDropdown.Item>{t('availablesizes')}</NavDropdown.Item>
+                    </LinkContainer>
+                    <LinkContainer to="/conditionstatusList">
+                      <NavDropdown.Item>{t('productcondition')}</NavDropdown.Item>
+                    </LinkContainer>
+                    <LinkContainer to="/qualitytypeList">
+                      <NavDropdown.Item>{t('productquality')}</NavDropdown.Item>
+                    </LinkContainer>
+                    <LinkContainer to="/admin/productlist">
+                      <NavDropdown.Item>{t('products')}</NavDropdown.Item>
+                    </LinkContainer>
+                    <LinkContainer to="/admin/orderlist">
+                      <NavDropdown.Item>{t('orders')}</NavDropdown.Item>
+                    </LinkContainer>
+                    <LinkContainer to="/admin/userlist">
+                      <NavDropdown.Item>{t('userslist')}</NavDropdown.Item>
+                    </LinkContainer>
+                    <LinkContainer to="/support">
+                      <NavDropdown.Item>{t('Support')}</NavDropdown.Item>
+                    </LinkContainer>
+                    <LinkContainer to="/broadcast">
+                      <NavDropdown.Item>{t('broadcast')}</NavDropdown.Item>
+                    </LinkContainer>
+                    <LinkContainer to="/admin/sellerstopay">
+                      <NavDropdown.Item>{t('sellerstopay')}</NavDropdown.Item>
+                    </LinkContainer>
+                    <LinkContainer to="/admin/deliverstopay">
+                      <NavDropdown.Item>{t('deliverstopay')}</NavDropdown.Item>
+                    </LinkContainer>
+
+                    <LinkContainer to="/admin/tipoestabelecimentos">
+                      <NavDropdown.Item>{t('tipoestabelecimento')}</NavDropdown.Item>
+                    </LinkContainer>
+
+
+
+                  </NavDropdown>
+
+                )}
+                {/* {userInfo && <Nav.Link as={Link} to="/requestdeliverman"><b className='link'>{t('requestdeliveryman')}</b></Nav.Link>} */}
+
+
+
+                <Link to="/cart" className="nav-link  hide-cart">
+                  <FontAwesomeIcon icon={faCartShopping}></FontAwesomeIcon>
+                  {cart.cartItems.length > 0 && (
+                    <Badge
+                      bg="danger"
+                      variant="danger"
+                      className="cart-number"
+                    >
+                      {cart.cartItems.reduce(
+                        (prev, current) => prev + current.quantity,
+                        0
+                      )}
+                    </Badge>
                   )}
-                  {userInfo && userInfo.isAdmin && (
-                    <NavDropdown title="Admin" id="admin-nav-dropdown">
-                      <LinkContainer to="/admin/dashboard">
-                        <NavDropdown.Item>{t('dashboard')}</NavDropdown.Item>
-                      </LinkContainer>
-                      <LinkContainer to="/provinceList">
-                        <NavDropdown.Item>{t('provinces')}</NavDropdown.Item>
-                      </LinkContainer>
-                      <LinkContainer to="/documentTypeList">
-                        <NavDropdown.Item>{t('doctypes')}</NavDropdown.Item>
-                      </LinkContainer>
-                      <LinkContainer to="/categoryList">
-                        <NavDropdown.Item>{t('categories')}</NavDropdown.Item>
-                      </LinkContainer>
-                      <LinkContainer to="/colorList">
-                        <NavDropdown.Item>{t('availablecolors')}</NavDropdown.Item>
-                      </LinkContainer>
-                      <LinkContainer to="/sizeList">
-                        <NavDropdown.Item>{t('availablesizes')}</NavDropdown.Item>
-                      </LinkContainer>
-                      <LinkContainer to="/conditionstatusList">
-                        <NavDropdown.Item>{t('productcondition')}</NavDropdown.Item>
-                      </LinkContainer>
-                      <LinkContainer to="/qualitytypeList">
-                        <NavDropdown.Item>{t('productquality')}</NavDropdown.Item>
-                      </LinkContainer>
-                      <LinkContainer to="/admin/productlist">
-                        <NavDropdown.Item>{t('products')}</NavDropdown.Item>
-                      </LinkContainer>
-                      <LinkContainer to="/admin/orderlist">
-                        <NavDropdown.Item>{t('orders')}</NavDropdown.Item>
-                      </LinkContainer>
-                      <LinkContainer to="/admin/userlist">
-                        <NavDropdown.Item>{t('userslist')}</NavDropdown.Item>
-                      </LinkContainer>
-                      <LinkContainer to="/support">
-                        <NavDropdown.Item>{t('Support')}</NavDropdown.Item>
-                      </LinkContainer>
-                      <LinkContainer to="/admin/sellerstopay">
-                        <NavDropdown.Item>{t('sellerstopay')}</NavDropdown.Item>
-                      </LinkContainer>
-                      <LinkContainer to="/admin/deliverstopay">
-                        <NavDropdown.Item>{t('deliverstopay')}</NavDropdown.Item>
-                      </LinkContainer>
-                  
-                    </NavDropdown>
-        
-        )}
-              {/* {userInfo && <Nav.Link as={Link} to="/requestdeliverman"><b className='link'>{t('requestdeliveryman')}</b></Nav.Link>} */}
-
-                            
-
-                  <Link to="/cart" className="nav-link  hide-cart">
-                    <FontAwesomeIcon icon={faCartShopping}></FontAwesomeIcon>
-                    {cart.cartItems.length > 0 && (
-                      <Badge
-                        bg="danger"
-                        variant="danger"
-                        className="cart-number"
-                      >
-                        {cart.cartItems.reduce(
-                          (prev, current) => prev + current.quantity,
-                          0
-                        )}
-                      </Badge>
-                    )}
-                  </Link>
-
-                
+                </Link>
 
 
-                </Nav>
-              </Navbar.Collapse>
-              
-            </Container>
-          </Navbar>
-        </header> 
-         <main style={{ marginTop: '30px' }} >
-      <PaybackInfoAndSecurity/>
 
-      <AdicionalInfoHeader/>
+
+              </Nav>
+            </Navbar.Collapse>
+
+          </Container>
+        </Navbar>
+      </header>
+
+      <div className="main-content">
+
+        <main  >
+          {/* <PaybackInfoAndSecurity/> */}
+
+          <AdicionalInfoHeader />
 
           <Container className={expanded ? 'collapse-open' : ''}>
             <Routes>
@@ -345,74 +430,81 @@ export  function App() {
               <Route path="/cart" element={<CartScreen />} />
               <Route path="/signin" element={<SignInScreen />} />
               <Route path="/signup" element={<SignupScreen />} />
-          
+
               <Route
                 path="/terms"
                 element={
-                    <Terms />
+                  <Terms />
                 }
               />
-<Route
+              <Route
                 path="/howtobeseller"
                 element={
-                    <HowToBeSeller />
+                  <HowToBeSeller />
                 }
               />
 
-            <Route
+              <Route
                 path="/help"
                 element={
-                    <Help />
+                  <Help />
                 }
               />
               <Route
                 path="/address"
                 element={
-                    <AddressScreen />
+                  <AddressScreen />
                 }
               />
 
               <Route
                 path="/deliveryoption"
                 element={
-                    <DeliveryOptionScreen />
+                  <DeliveryOptionScreen />
                 }
               />
 
-<Route
+              <Route
                 path="/requestdeliverman"
                 element={
-                    <RequestDeliverman />
+                  <RequestDeliverman />
                 }
               />
 
 
-<Route
+              <Route
                 path="/requestdelivermanconfirm"
                 element={
-                    <RequestDelivermanConfirmScreen />
+                  <RequestDelivermanConfirmScreen />
                 }
               />
 
-<Route
+              <Route
                 path="/requestdelivermanprogress/:id"
                 element={
-                    <RequestDelivermanProgressScreen />
+                  <RequestDelivermanProgressScreen />
+                }
+              />
+
+              <Route
+                path="/aboutus"
+                element={
+                  <AboutUs />
                 }
               />
 
 
-<Route
+              <Route
                 path="/requestdelivermanhistory"
                 element={
-                    <RequestDelivermanHistoryByUserScreen />
+                  <RequestDelivermanHistoryByUserScreen />
                 }
               />
 
-<Route
+              <Route
                 path="/allrequestdelivermanhistory"
                 element={
-                    <RequestDelivermanHistoryByAdminScreen />
+                  <RequestDelivermanHistoryByAdminScreen />
                 }
               />
 
@@ -422,14 +514,14 @@ export  function App() {
               <Route
                 path="/payment"
                 element={
-                    <PaymentMethodScreen />
+                  <PaymentMethodScreen />
                 }
               />
-                
+
               <Route
                 path="/placeorder"
                 element={
-                    <PlaceOrderScreen />
+                  <PlaceOrderScreen />
                 }
               />
               <Route
@@ -464,7 +556,7 @@ export  function App() {
               />
 
 
-             <Route
+              <Route
                 path="/colorList/"
                 element={
                   <ProtectedRoute>
@@ -473,7 +565,7 @@ export  function App() {
                 }
               />
 
-            <Route
+              <Route
                 path="/sizeList/"
                 element={
                   <ProtectedRoute>
@@ -483,7 +575,7 @@ export  function App() {
               />
 
 
-<Route
+              <Route
                 path="/size/:id"
                 element={
                   <ProtectedRoute>
@@ -493,17 +585,36 @@ export  function App() {
               />
 
 
-        <Route
+              <Route
                 path="/color/create"
                 element={
                   <ProtectedRoute>
-                    <ColorCreateScreen/>
+                    <ColorCreateScreen />
                   </ProtectedRoute>
                 }
               />
 
 
-          <Route
+              <Route
+                path="/tipoestabelecimento/create"
+                element={
+                  <ProtectedRoute>
+                    <EstablishmentCreateScreen />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/tipoestabelecimento/:id"
+                element={
+                  <ProtectedRoute>
+                    <EstablishmentEditScreen />
+                  </ProtectedRoute>
+                }
+              />
+
+
+              <Route
                 path="/color/:id"
                 element={
                   <ProtectedRoute>
@@ -513,18 +624,18 @@ export  function App() {
               />
 
 
-          <Route
+              <Route
                 path="/size/create"
                 element={
                   <ProtectedRoute>
-                    <SizeCreateScreen/>
+                    <SizeCreateScreen />
                   </ProtectedRoute>
                 }
               />
 
 
 
-            <Route
+              <Route
                 path="/qualitytypeList/"
                 element={
                   <ProtectedRoute>
@@ -533,7 +644,7 @@ export  function App() {
                 }
               />
 
-<Route
+              <Route
                 path="/qualitytype/create"
                 element={
                   <ProtectedRoute>
@@ -542,7 +653,7 @@ export  function App() {
                 }
               />
 
-<Route
+              <Route
                 path="/qualitytype/:id"
                 element={
                   <ProtectedRoute>
@@ -552,7 +663,7 @@ export  function App() {
               />
 
 
-<Route
+              <Route
                 path="/conditionstatusList/"
                 element={
                   <ProtectedRoute>
@@ -561,7 +672,7 @@ export  function App() {
                 }
               />
 
-<Route
+              <Route
                 path="/conditionstatus/create"
                 element={
                   <ProtectedRoute>
@@ -570,7 +681,7 @@ export  function App() {
                 }
               />
 
-<Route
+              <Route
                 path="/conditionstatus/:id"
                 element={
                   <ProtectedRoute>
@@ -579,7 +690,7 @@ export  function App() {
                 }
               />
 
-            <Route
+              <Route
                 path="/documentTypeList/"
                 element={
                   <ProtectedRoute>
@@ -588,7 +699,7 @@ export  function App() {
                 }
               />
 
-                <Route
+              <Route
                 path="/document/create"
                 element={
                   <ProtectedRoute>
@@ -597,7 +708,7 @@ export  function App() {
                 }
               />
 
-        <Route
+              <Route
                 path="/document/:id"
                 element={
                   <ProtectedRoute>
@@ -609,7 +720,7 @@ export  function App() {
 
 
 
-<Route
+              <Route
                 path="/provinceList/"
                 element={
                   <ProtectedRoute>
@@ -621,21 +732,21 @@ export  function App() {
               <Route
                 path="/forget-password"
                 element={
-                    <ForgetPasswordScreen />
+                  <ForgetPasswordScreen />
                 }
               />
 
-            <Route
+              <Route
                 path="/reset-password/:token"
                 element={
-                    <ResetPasswordScreen />
+                  <ResetPasswordScreen />
                 }
               />
 
-<Route
+              <Route
                 path="/email-sent"
                 element={
-                    <EmailSentScreen />
+                  <EmailSentScreen />
                 }
               />
 
@@ -644,7 +755,7 @@ export  function App() {
 
 
 
-                <Route
+              <Route
                 path="/province/create"
                 element={
                   <ProtectedRoute>
@@ -653,7 +764,7 @@ export  function App() {
                 }
               />
 
-<Route
+              <Route
                 path="/province/:id"
                 element={
                   <ProtectedRoute>
@@ -664,7 +775,7 @@ export  function App() {
 
 
 
-          <Route
+              <Route
                 path="/category/create"
                 element={
                   <ProtectedRoute>
@@ -673,11 +784,35 @@ export  function App() {
                 }
               />
 
-<Route
+              <Route
                 path="/category/:id"
                 element={
                   <ProtectedRoute>
                     <CategoryEditScreen />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/subcategoryList/"
+                element={
+                  <ProtectedRoute>
+                    <SubcategoryListScreen />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/subcategory/create"
+                element={
+                  <ProtectedRoute>
+                    <SubcategoryCreateScreen />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/subcategory/:id"
+                element={
+                  <ProtectedRoute>
+                    <SubcategoryEditScreen />
                   </ProtectedRoute>
                 }
               />
@@ -700,7 +835,7 @@ export  function App() {
               />
 
 
-<Route
+              <Route
                 path="/support"
                 element={
                   <AdminRoute>
@@ -719,10 +854,23 @@ export  function App() {
                 }
               />
 
-            <Route
-                path="/product/create"
+              <Route
+                exact
+                path="/orderlist/seller"
                 element={
-                    <ProductCreateScreen />
+                  <SellerRoute>
+                    <OrderListBySellerScreen />
+                  </SellerRoute>
+                }
+              />
+
+              <Route
+                exact
+                path="/orderhistorybycustomer/seller"
+                element={
+                  <SellerRoute>
+                    <OrderHistoryBySellerScreen />
+                  </SellerRoute>
                 }
               />
 
@@ -735,46 +883,25 @@ export  function App() {
                 }
               />
 
-              <Route
-                path="/admin/product/:id"
-                element={
-                    <ProductEditScreen />
-                }
-              />
+
 
               <Route
-                exact
-                path="/orderlist/seller"
-                element={
-                  <SellerRoute>
-                    <OrderListBySellerScreen />
-                  </SellerRoute>
-                }
-              />
-
-            <Route
-                exact
-                path="/orderhistorybycustomer/seller"
-                element={
-                  <SellerRoute>
-                    <OrderHistoryBySellerScreen />
-                  </SellerRoute>
-                }
-              />
-              <Route
-                path="/delivery/orderlist"
-                element={
-                    <OrderListScreen />
-                }
-              />
-
-          <Route
                 path="/admin/orderlist"
                 element={
+                  <AdminRoute>
                     <OrderAdminListScreen />
+                  </AdminRoute>
                 }
               />
 
+              <Route
+                path="/admin/orderlistall"
+                element={
+                  <AdminRoute>
+                    <OrderListScreen />
+                  </AdminRoute>
+                }
+              />
               <Route
                 path="/admin/userlist"
                 element={
@@ -783,7 +910,35 @@ export  function App() {
                   </AdminRoute>
                 }
               />
-               <Route
+              <Route
+                path="/admin/user/:id"
+                element={
+                  <AdminRoute>
+                    <UserEditScreen />
+                  </AdminRoute>
+                }
+              />
+
+              <Route
+                path="/admin/product/create"
+                element={
+                  <AdminRoute>
+                    <ProductCreateScreen />
+                  </AdminRoute>
+                }
+              />
+
+
+              <Route
+                path="/admin/product/:id"
+                element={
+                  <AdminRoute>
+                    <ProductEditScreen />
+                  </AdminRoute>
+                }
+              />
+
+              <Route
                 path="/admin/sellerstopay"
                 element={
                   <AdminRoute>
@@ -791,7 +946,8 @@ export  function App() {
                   </AdminRoute>
                 }
               />
-               <Route
+
+              <Route
                 path="/admin/deliverstopay"
                 element={
                   <AdminRoute>
@@ -808,34 +964,62 @@ export  function App() {
                 }
               />
 
-<Route
+              <Route path="/admin/tipoestabelecimentos" element={
+                <AdminRoute>
+                  <EstablishmentListScreen />
+                </AdminRoute>
+
+              } />
+
+
+              <Route
                 path="/benefits"
                 element={
-                    <NhiquelaBenef />
+                  <VisacasaBenef />
                 }
-              />  
+              />
 
-            <Route
+              <Route
+                path="/broadcast"
+                element={
+                  <Broadcast />
+                }
+              />
+
+              <Route
                 path="/returnpolicy"
                 element={
-                    <ReturnPolicy />
+                  <ReturnPolicy />
                 }
-              />  
-            </Routes>  
+              />
+
+              <Route
+                path="/privacy"
+                element={
+                  <Privacy />
+                }
+              />
 
 
-                  
+
+              <Route path="/favorites" element={<FavoritesScreen />} />
+              <Route path="/compare" element={<ComparisonScreen />} />
+            </Routes>
+
+
+
             <ScrollTopButton />
 
-            {userInfo&&<ChatBox  userInfo={userInfo}/>}
-          </Container> 
-        </main> 
+            {userInfo && <ChatBox userInfo={userInfo} />}
+          </Container>
+          <LoginPopup />
+        </main>
+      </div>
       <footer className='center'>
 
         <Footer></Footer>
-              </footer> 
-      </div>
-    </BrowserRouter>
+      </footer>
+    </div>
   );
 }
 

@@ -49,15 +49,6 @@ export default function PaymentMethodScreen() {
           <h1>{t('paymentmethod')}</h1>
           <Form onSubmit={submitHandler}>
             <div className="mb-3">
-              {/* <Form.Check
-                type="radio"
-                label="Em dinheiro"
-                id="Dinheiro"
-                value="Dinheiro"
-                checked={paymentMethodName === 'Dinheiro'}
-                onChange={(e) => setPaymentMethod(e.target.value)}
-              ></Form.Check> */}
-
               <Form.Check
                 type="radio"
                 label="Mpesa"
@@ -66,43 +57,14 @@ export default function PaymentMethodScreen() {
                 checked={paymentMethodName === 'Mpesa'}
                 onChange={(e) => setPaymentMethod(e.target.value)}
               ></Form.Check>
-
-              <Form.Check
-                type="radio"
-                label="Emola"
-                id="Emola"
-                value="Emola"
-                checked={paymentMethodName === 'Emola'}
-                onChange={(e) => setPaymentMethod(e.target.value)}
-              ></Form.Check>
-
-
-              {/* <Form.Check
-                type="radio"
-                label="BCI"
-                id="BCI"
-                value="BCI"
-                checked={paymentMethodName === 'BCI'}
-                onChange={(e) => setPaymentMethod(e.target.value)}
-              ></Form.Check> */}
-
-              {/* <Form.Check
-                type="radio"
-                label="BIM"
-                id="BIM"
-                value="BIM"
-                checked={paymentMethodName === 'BIM'}
-                onChange={(e) => setPaymentMethod(e.target.value)}
-              ></Form.Check> */}
-
-
             </div>
             <div className="mb-3">
               <Button className='customButtom' variant='light' type="submit">{t('next')}</Button>
             </div>
           </Form>
         </div>
-      </Container>
-    </div>
+      </Container >
+    </div >
   );
 }
+

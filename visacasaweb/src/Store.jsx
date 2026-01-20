@@ -3,42 +3,48 @@ import { createContext, useReducer } from 'react';
 export const Store = createContext();
 
 const initialState = {
-  userInfo: localStorage.getItem('userInfo') 
+  userInfo: localStorage.getItem('userInfo')
     ? JSON.parse(localStorage.getItem('userInfo'))
     : null,
 
-    requestDeliverman: localStorage.getItem('requestDeliverman') 
+  requestDeliverman: localStorage.getItem('requestDeliverman')
     ? JSON.parse(localStorage.getItem('requestDeliverman'))
     : null,
 
   cart: {
-    address: localStorage.getItem('address') 
+    address: localStorage.getItem('address')
       ? JSON.parse(localStorage.getItem('address'))
       : {},
     cartItems: localStorage.getItem('cartItems')
       ? JSON.parse(localStorage.getItem('cartItems'))
       : [],
 
-    paymentMethod: localStorage.getItem('paymentMethod') 
+    paymentMethod: localStorage.getItem('paymentMethod')
       ? JSON.parse(localStorage.getItem('paymentMethod'))
       : '',
 
-      deliveryOptionValue: localStorage.getItem('deliveryOptionValue')
-    ? JSON.parse(localStorage.getItem('deliveryOptionValue'))
-    : '',
+    deliveryOptionValue: localStorage.getItem('deliveryOptionValue')
+      ? JSON.parse(localStorage.getItem('deliveryOptionValue'))
+      : '',
 
     ordersBySeller: localStorage.getItem('ordersBySeller') !== 'undefined'
-    ? JSON.parse(localStorage.getItem('ordersBySeller'))
-    : [],
+      ? JSON.parse(localStorage.getItem('ordersBySeller'))
+      : [],
   },
   changelng: localStorage.getItem('changelng') ? JSON.parse(localStorage.getItem('changelng'))
-  : 'pt',
+    : 'pt',
+  favorites: localStorage.getItem('favorites')
+    ? JSON.parse(localStorage.getItem('favorites'))
+    : [],
+  compareProducts: localStorage.getItem('compareProducts')
+    ? JSON.parse(localStorage.getItem('compareProducts'))
+    : [],
 };
 
 function reducer(state, action) {
 
   switch (action.type) {
-    
+
     case 'ADD_ITEM_ON_CART':
       // ADICIONANDO NO CARRINHO
       const newItem = action.payload;
@@ -46,8 +52,8 @@ function reducer(state, action) {
       const existItem = stateCartItems.find((item) => item._id === newItem._id);
       const cartItems = existItem
         ? state.cart.cartItems.map((item) =>
-            item._id === existItem._id ? newItem : item
-          )
+          item._id === existItem._id ? newItem : item
+        )
         : [...state.cart.cartItems, newItem];
 
       localStorage.setItem('cartItems', JSON.stringify(cartItems));
@@ -58,14 +64,14 @@ function reducer(state, action) {
           ...state.cart,
           cartItems,
         },
-        error:''
+        error: ''
       };
 
-      case 'ADD_ITEM_FAIL':{
-        return {...state, error: action.payload}
-      }
+    case 'ADD_ITEM_FAIL': {
+      return { ...state, error: action.payload }
+    }
 
-  
+
 
     case 'REMOVE_ITEM_ON_CART': {
       const cartItems = state.cart.cartItems.filter(
@@ -83,7 +89,7 @@ function reducer(state, action) {
 
     case 'USER_SIGNIN': {
       localStorage.setItem('userInfo', JSON.stringify(action.payload));
-      return { ...state, error: '',userInfo: action.payload };
+      return { ...state, error: '', userInfo: action.payload };
     }
     case 'USER_SIGNUP': {
       localStorage.setItem('newUser', JSON.stringify(action.payload));
@@ -104,7 +110,7 @@ function reducer(state, action) {
         userInfo: null,
 
         cart: { cartItems: [], address: {}, paymentMethod: '' },
-        changelng:''
+        changelng: ''
       };
     }
 
@@ -166,9 +172,9 @@ function reducer(state, action) {
     }
 
 
-    case 'ADD_REQUEST_DELIVERMAN':{
+    case 'ADD_REQUEST_DELIVERMAN': {
       localStorage.setItem('requestDeliverman', JSON.stringify(action.payload));
-      return {...state, requestDeliverman: action.payload}
+      return { ...state, requestDeliverman: action.payload }
     }
 
 
@@ -183,6 +189,30 @@ function reducer(state, action) {
           ordersBySeller: action.payload,
         },
       };
+    }
+    case 'ADD_FAVORITE': {
+      const favorites = [...state.favorites, action.payload];
+      localStorage.setItem('favorites', JSON.stringify(favorites));
+      return { ...state, favorites };
+    }
+    case 'REMOVE_FAVORITE': {
+      const favorites = state.favorites.filter((x) => x._id !== action.payload._id);
+      localStorage.setItem('favorites', JSON.stringify(favorites));
+      return { ...state, favorites };
+    }
+    case 'ADD_COMPARE': {
+      const compareProducts = [...state.compareProducts, action.payload];
+      localStorage.setItem('compareProducts', JSON.stringify(compareProducts));
+      return { ...state, compareProducts };
+    }
+    case 'REMOVE_COMPARE': {
+      const compareProducts = state.compareProducts.filter((x) => x._id !== action.payload._id);
+      localStorage.setItem('compareProducts', JSON.stringify(compareProducts));
+      return { ...state, compareProducts };
+    }
+    case 'CLEAR_COMPARE': {
+      localStorage.removeItem('compareProducts');
+      return { ...state, compareProducts: [] };
     }
     default:
       return state;

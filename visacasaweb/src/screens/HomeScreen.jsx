@@ -1,143 +1,140 @@
-import { useEffect, useReducer, useState } from 'react';
+import { useContext, useEffect, useReducer, useState } from 'react';
 import axios from 'axios';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
+import { Row, Col, Container, Button } from 'react-bootstrap';
+import { Carousel } from 'react-responsive-carousel';
+import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { FaHardHat, FaTools, FaPaintRoller, FaBolt, FaShower, FaBoxOpen, FaLayerGroup, FaBuilding, FaWarehouse, FaLightbulb, FaToilet, FaCube, FaTint, FaShieldAlt, FaHammer, FaHome } from 'react-icons/fa';
+import { GiBrickWall, GiStoneStack, GiWrench } from 'react-icons/gi';
+import { MdWaterDrop, MdOutlineConstruction } from 'react-icons/md';
+
 import Product from '../components/Product';
 import LoadingBox from '../components/LoadingBox';
 import MessageBox from '../components/MessageBox';
-import { getError } from '../utils';
-import Container from 'react-bootstrap/Container';
-import 'react-responsive-carousel/lib/styles/carousel.min.css';
-import CategoriesFilter from '../components/CategoriesFilter';
-import Button from 'react-bootstrap/Button';
+import SkeletonProduct from '../components/SkeletonProduct';
 import CarouselSlide from '../components/CarouselSlide';
-import { Carousel } from 'react-responsive-carousel';
-import { t } from 'i18next';
-import Emphasis from '../components/emphasis';
 
+import { getError, handleImageError, isValidImageUrl } from '../utils';
+import { Store } from '../Store';
+import '../styles/HomeScreen.css';
 
 const reducer = (state, action) => {
   switch (action.type) {
     case 'FETCH_REQUEST':
       return { ...state, loading: true };
-
     case 'FETCH_SUCCESS':
-      return {
-        ...state,
-        products: action.payload.products,
-        pages: action.payload.pages,
-        loading: false,
-      };
-
-    case 'FETCH_FAIL':
-      return { ...state, loading: false, error: action.payload };
-
+      return { ...state, loading: false };
     case 'TOP_SELLERS_REQUEST':
       return { ...state, loadingTopUsers: true };
-
     case 'TOP_SELLERS_SUCCESS':
-      return { ...state, topSellers: action.payload.sellers, loadingTopUsers: false };
-
+      return { ...state, topSellers: action.payload, loadingTopUsers: false };
     case 'TOP_SELLERS_FAIL':
-      return {
-        ...state,
-        loadingTopUsers: false,
-        errorTopUsers: action.payload,
-      };
-
+      return { ...state, loadingTopUsers: false, errorTopUsers: action.payload };
+    case 'CATEGORIES_REQUEST':
+      return { ...state, loadingCategories: true };
+    case 'CATEGORIES_SUCCESS':
+      return { ...state, categories: action.payload, loadingCategories: false };
+    case 'CATEGORIES_FAIL':
+      return { ...state, loadingCategories: false };
     default:
       return state;
   }
 };
+
+const getCategoryIcon = (name) => {
+  if (!name) return <FaLayerGroup />;
+  const lowerName = name.toLowerCase();
+  if (lowerName.includes('cimento')) return <FaHardHat />;
+  if (lowerName.includes('ferragens')) return <FaTools />;
+  if (lowerName.includes('tinta')) return <FaPaintRoller />;
+  if (lowerName.includes('elétrica') || lowerName.includes('electricidade')) return <FaBolt />;
+  if (lowerName.includes('canalização') || lowerName.includes('esgotos')) return <FaShower />;
+  if (lowerName.includes('ferramenta')) return <FaBoxOpen />;
+  if (lowerName.includes('aluminio')) return <FaBuilding />;
+  if (lowerName.includes('alvenaria')) return <GiBrickWall />;
+  if (lowerName.includes('betão') || lowerName.includes('betões')) return <MdOutlineConstruction />;
+  if (lowerName.includes('cobertura')) return <FaHome />;
+  if (lowerName.includes('iluminação')) return <FaLightbulb />;
+  if (lowerName.includes('louça') || lowerName.includes('sanitária')) return <FaToilet />;
+  if (lowerName.includes('pre-fabricado')) return <FaCube />;
+  if (lowerName.includes('água')) return <FaTint />;
+  if (lowerName.includes('revestimento') || lowerName.includes('revistimento')) return <FaBoxOpen />;
+  if (lowerName.includes('torneira')) return <MdWaterDrop />;
+  if (lowerName.includes('vedação')) return <FaShieldAlt />;
+  if (lowerName.includes('impermeabilização')) return <FaShieldAlt />;
+  if (lowerName.includes('ferro')) return <FaLayerGroup />;
+  if (lowerName.includes('inerte')) return <GiStoneStack />;
+  return <FaLayerGroup />;
+};
+
 export function HomeScreen() {
-  const [
-    {
-      loading,
-      error,
-      topSellers,
-      loadingTopUsers,
-      errorTopUsers,
-    },
-    dispatch,
-  ] = useReducer(reducer, {
+  const { t } = useTranslation();
+  const { state } = useContext(Store);
+  const { changelng } = state;
+  const [{ topSellers, loadingTopUsers, errorTopUsers, loading, categories, loadingCategories }, dispatch] = useReducer(reducer, {
     topSellers: [],
+    categories: [],
     loading: true,
+    loadingCategories: true,
     error: '',
   });
 
   const [page, setPage] = useState(1);
   const [pageSize] = useState(10);
   const [items, setItems] = useState([]);
-  const [showCaroselTopSellers, setShowCaroselTopSellers] = useState(false);
-  const [showDivTopSellers, setShowDivTopSellers] = useState(false);
+  const [showCarouselTopSellers, setShowCarouselTopSellers] = useState(false);
 
-
-
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        dispatch({ type: 'CATEGORIES_REQUEST' });
+        const { data } = await axios.get('/api/categories');
+        dispatch({ type: 'CATEGORIES_SUCCESS', payload: data.categories });
+      } catch (err) {
+        dispatch({ type: 'CATEGORIES_FAIL' });
+      }
+    };
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-
   useEffect(() => {
     function handleResize() {
-      if (window.innerWidth <= 540) {
-        setShowCaroselTopSellers(true);
-        setShowDivTopSellers(false)
-      } else {
-        setShowCaroselTopSellers(false);
-        setShowDivTopSellers(true)
-
-      }
+      setShowCarouselTopSellers(window.innerWidth <= 768);
     }
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchProducts = async () => {
       try {
         dispatch({ type: 'FETCH_REQUEST' });
-        const sortedProductsByCategory = [];
-        let currentCategory = null;
-
         const { data } = await axios.get(`/api/products?page=${page}`);
-        data.products.forEach(product => {
-
-          if (product.category !== currentCategory) {
-            currentCategory = product.category;
-            sortedProductsByCategory.push(product);
-          }
-        });
-
-        setItems(sortedProductsByCategory);
-
-
-        // setItems(data.products);
-
-        dispatch({ type: 'FETCH_SUCCESS', payload: data });
+        setItems(data.products);
+        dispatch({ type: 'FETCH_SUCCESS' });
       } catch (err) {
         dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
       }
     };
-    if (page === 1) {
-      fetchData();
-    }
+    if (page === 1) fetchProducts();
   }, [page]);
 
   useEffect(() => {
-    const topSellers = async () => {
+    const fetchTopSellers = async () => {
       try {
         dispatch({ type: 'TOP_SELLERS_REQUEST' });
-        const result = await axios.get('/api/users/top-sellers');
-        dispatch({ type: 'TOP_SELLERS_SUCCESS', payload: result.data });
+        const { data } = await axios.get('/api/users/top-sellers');
+        dispatch({ type: 'TOP_SELLERS_SUCCESS', payload: data.sellers });
       } catch (err) {
         dispatch({ type: 'TOP_SELLERS_FAIL', payload: getError(err) });
       }
     };
-    topSellers();
+    fetchTopSellers();
   }, []);
 
   const handleShowMore = async () => {
@@ -147,111 +144,142 @@ export function HomeScreen() {
     setPage(newPage);
   };
 
-  // const sortedProducts = items.sort((a, b) => {
-  //   if (a.category._id < b.category._id) {
-  //     return -1;
-  //   } else if (a.category._id > b.category._id) {
-  //     return 1;
-  //   } else {
-  //     return 0;
-  //   }
-  // });
-
   return (
-    <div>
-      <Container>
+    <Container fluid className="px-lg-5">
+      <div className="hero-section mt-4">
+        <CarouselSlide />
+      </div>
+
+      <section className="mb-5">
+        <h3 className="section-title-premium">{t('Explore Categorias')}</h3>
+        <div className="categories-grid-premium">
+          {loadingCategories ? (
+            [1, 2, 3, 4, 5, 6, 7].map((n) => (
+              <div key={n} className="category-card-premium skeleton" style={{ height: '120px' }}></div>
+            ))
+          ) : (
+            <>
+              {categories.slice(0, 18).map((category, index) => (
+                <Link
+                  key={category._id}
+                  to={`/search?category=${category.nome}`}
+                  className={`category-card-premium reveal delay-${(index % 5 + 1) * 100}`}
+                >
+                  <span className="category-icon-wrapper">
+                    {getCategoryIcon(category.nome)}
+                  </span>
+                  <span>{changelng === 'pt' ? category.nome : category.name}</span>
+                </Link>
+              ))}
+              <Link to="/search" className="category-card-premium reveal delay-600">
+                <span className="category-icon-wrapper"><FaLayerGroup /></span>
+                <span>{t('Ver Tudo')}</span>
+              </Link>
+            </>
+          )}
+        </div>
+      </section>
+
+      <div className="reveal delay-200">
+        <h2 className="section-title-premium">
+          <FaHome className="text-primary" />
+          Produtos em destaque
+        </h2>
         <Row>
-          <Col md={3}>
-
-            <CategoriesFilter></CategoriesFilter>
-
-          </Col>
-          <Col md={9}>
-            <CarouselSlide></CarouselSlide>
-            <h3>{t('thebestsuppliers')}</h3>
-
-            {loadingTopUsers ? (
-              <LoadingBox />
-            ) : errorTopUsers ? (
-              <MessageBox variant="danger">{errorTopUsers}</MessageBox>
-            ) : (
-              <>
-                {topSellers.length === 0 && (
-                  <MessageBox>{t('suppliersnotfound')}</MessageBox>
-                )}
-                {/* <Carousel showArrows autoPlay showThumbs={false}> */}
-
-                <Row className="row-widget">
-                  {topSellers && topSellers.length === 0 && (
-                    <MessageBox>{t('suppliersnotadd')}</MessageBox>
-                  )}
-
-                  {showCaroselTopSellers && <Carousel showArrows infiniteLoop={true} autoPlay showThumbs={false} showIndicators={false} className='carousel-custom'>
-                    {topSellers && topSellers.map((seller) => (
-                      <Col key={seller._id} sm={2} md={4} lg={3} className="mb-3">
-                        <Product seller={seller}></Product>
-                      </Col>
-                    ))}
-                  </Carousel>}
-
-
-                  {showDivTopSellers && topSellers && topSellers.map((seller) => (
-                    <Col key={seller._id} sm={2} md={4} lg={3} className="mb-3">
-                      <Product seller={seller}></Product>
-                    </Col>
-                  ))}
-                </Row>
-              </>
-            )}
-
-            <h3>{t('Productsforyou')}</h3>
-            <div className="products">
-              {loading ? (
-                <LoadingBox />
-              ) : error ? (
-                <MessageBox variant="danger">{error}</MessageBox>
-              ) : (
-                <>
-                  <Row className="row-widget">
-                    {items && items.length === 0 && (
-                      <MessageBox>{t('therearenoaddedproducts')}</MessageBox>
-                    )}
-                    {items && items.map((product) => (
-                      <Col
-                        key={product._id}
-                        sm={2}
-                        md={4}
-                        lg={3}
-                        className="mb-3"
-                      >
-                        <Product product={product}></Product>
-                      </Col>
-
-
-
-
-                    ))}
-
-                    <div>
-                      {items && items.length === pageSize * page && (
-                        // <Button className="end-margin-bottom" variant="light" onClick={handleShowMore}>
-                        //   Ver mais
-                        // </Button>
-
-                        <Button className="customButtom" variant="light" onClick={handleShowMore}>
-                          {t('showmore')}
-                        </Button>
-                      )}
-                    </div>
-                  </Row>
-
-                </>
-              )}
-            </div>
-          </Col>
+          {loading ? (
+            [1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+              <Col key={n} xs={6} md={4} lg={3} className="mb-4">
+                <SkeletonProduct />
+              </Col>
+            ))
+          ) : (
+            items.map((product, index) => (
+              <Col key={product._id} xs={6} md={4} lg={3} className={`mb-4 reveal delay-${(index % 4 + 1) * 100}`}>
+                <Product product={product} />
+              </Col>
+            ))
+          )}
         </Row>
-      </Container>
-    </div>
+
+        {items.length === pageSize * page && (
+          <div className="text-center mt-2 mb-5">
+            <Button className="customButton" onClick={handleShowMore}>
+              {t('showmore')}
+            </Button>
+          </div>
+        )}
+      </div>
+
+      <section className="mb-5 reveal delay-300">
+        <h3 className="section-title-premium">{t('thebestsuppliers')}</h3>
+        {loadingTopUsers ? (
+          <Row>
+            {[1, 2, 3, 4].map((n) => (
+              <Col key={n} xs={6} md={4} lg={3}>
+                <SkeletonProduct />
+              </Col>
+            ))}
+          </Row>
+        ) : errorTopUsers ? (
+          <MessageBox variant="danger">{errorTopUsers}</MessageBox>
+        ) : (
+          <>
+            {showCarouselTopSellers ? (
+              <Carousel
+                showArrows={false}
+                showStatus={false}
+                showThumbs={false}
+                infiniteLoop
+                autoPlay
+                centerMode
+                centerSlidePercentage={85}
+              >
+                {topSellers.map((seller) => (
+                  <div key={seller._id} className="px-2">
+                    <Product seller={seller} />
+                  </div>
+                ))}
+              </Carousel>
+            ) : (
+              <Row>
+                {topSellers.map((seller) => (
+                  <Col key={seller._id} sm={6} md={4} lg={3} className="mb-4">
+                    <Product seller={seller} />
+                  </Col>
+                ))}
+              </Row>
+            )}
+          </>
+        )}
+      </section>
+
+      <section className="mb-5">
+        <h3 className="section-title-premium">{t('Productsforyou')}</h3>
+        <Row>
+          {loading ? (
+            [1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+              <Col key={n} xs={6} md={4} lg={3} className="mb-4">
+                <SkeletonProduct />
+              </Col>
+            ))
+          ) : (
+            items.map((product) => (
+              <Col key={product._id} xs={6} md={4} lg={3} className="mb-4">
+                <Product product={product} />
+              </Col>
+            ))
+          )}
+        </Row>
+
+        {items.length === pageSize * page && (
+          <div className="text-center mt-2 mb-5">
+            <Button className="customButton" onClick={handleShowMore}>
+              {t('showmore')}
+            </Button>
+          </div>
+        )}
+      </section>
+    </Container>
   );
 }
 

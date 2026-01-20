@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import LanguageSwitcher from './../LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPhone, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPhone } from '@fortawesome/free-solid-svg-icons';
 
 
 
@@ -20,28 +20,28 @@ export default function Footer() {
 
     const facebookUrl = "https://web.facebook.com/profile.php?id=61551226670311";
     const newTab = window.open(facebookUrl, '_blank');
-    newTab.focus(); 
+    newTab.focus();
   };
 
   const handleYoutubeClick = (e) => {
     e.preventDefault(); // Prevent the default navigation behavior
     const youtubeUrl = "https://www.youtube.com/channel/UCgP2pdDdw5F_y40-nh4Vw9A";
     const newTab = window.open(youtubeUrl, '_blank');
-    newTab.focus(); 
+    newTab.focus();
   };
 
   const handleTiktokClick = (e) => {
     e.preventDefault(); // Prevent the default navigation behavior
-    const tiktokUrl = "https://www.tiktok.com/@nhiquelashopofficial";
+    const tiktokUrl = "https://www.tiktok.com/@visacasaofficial";
     const newTab = window.open(tiktokUrl, '_blank');
-    newTab.focus(); 
+    newTab.focus();
   };
 
   const handleInstagramClick = (e) => {
     e.preventDefault(); // Prevent the default navigation behavior
-    const instagramUrl = "https://www.instagram.com/nhiquelashop/";
+    const instagramUrl = "https://www.instagram.com/visacasa/";
     const newTab = window.open(instagramUrl, '_blank');
-    newTab.focus(); 
+    newTab.focus();
   };
 
   useEffect(() => {
@@ -50,110 +50,135 @@ export default function Footer() {
 
   return (
     <>
-&nbsp;
-    <footer
+      &nbsp;
+      <footer
         className="text-center text-lg-start text-white"
-        style={{backgroundColor: '#1c2331'}}
+        style={{ backgroundColor: '#1c2331' }}
+      >
+        <section
+          className="d-flex justify-content-between p-4 social-bar"
+          style={{ background: 'var(--primary-gradient, #E85A4F)' }}
         >
-  <section
-           className="d-flex justify-content-between p-4"
-           style={{backgroundColor: '#6351ce'}}
-           >
-    <div className="me-5">
-      <span>{t('stayconnected')}</span>
-    </div>
+          <div className="me-5 d-none d-md-block">
+            <span className="fw-semibold">{t('stayconnected')}</span>
+          </div>
 
-    <div>
-      <a href="#" onClick={handleFacebookClick} className="text-white me-4">
-        <i className="fab fa-facebook-f"></i>
-      <FaFacebookF></FaFacebookF>
-        </a>
-      <a href="#" onClick={handleYoutubeClick} className="text-white me-4">
-        <FaYoutube></FaYoutube>
-      </a>
-      <a href="#" onClick={handleTiktokClick} className="text-white me-4">
-      <FaTiktok></FaTiktok>
-        </a>
-      <a href="#" onClick={handleInstagramClick} className="text-white me-4">
-      <FaInstagram></FaInstagram>
-      </a>
-    <LanguageSwitcher />
-    </div>
-  </section>
+          <div>
+            <a href="#!" onClick={handleFacebookClick} className="text-white me-4">
+              <i className="fab fa-facebook-f"></i>
+              <FaFacebookF></FaFacebookF>
+            </a>
+            <a href="#!" onClick={handleYoutubeClick} className="text-white me-4">
+              <FaYoutube></FaYoutube>
+            </a>
+            <a href="#!" onClick={handleTiktokClick} className="text-white me-4">
+              <FaTiktok></FaTiktok>
+            </a>
+            <a href="#!" onClick={handleInstagramClick} className="text-white me-4">
+              <FaInstagram></FaInstagram>
+            </a>
+            <LanguageSwitcher />
+          </div>
+        </section>
 
-  <section className="">
-    <div className="container text-center text-md-start mt-5">
-      <div className="row mt-3">
-      <div className="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4">
-      <img style={{width: '12rem', height: '12rem', textAlign: 'center'}}
-            src="nhiquelalogo.png" 
-            alt="Nhiquela" ></img>   
+        <section className="">
+          <div className="container text-center text-md-start mt-5">
+            <div className="row mt-3">
+              <div className="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4">
+                <img style={{ width: '12rem', height: '12rem', textAlign: 'center', borderRadius: '50%' }}
+                  src="images/visacasa.jpg"
+                  alt="Visacasa" ></img>                </div>
+              <div className="col-md-3 col-lg-4 col-xl-3 mx-auto mb-4">
+                <h6 className="text-uppercase fw-bold">Visacasa</h6>
+                <hr
+                  className="mb-4 mt-0 d-inline-block mx-auto"
+                  style={{ backgroundColor: '#7c4dff', width: '60px', height: '2px' }}
+
+                />
+                <p>
+                  {t('everythinginhands')} <br />{t('wedeliveryourorder')}
+                </p>
+              </div>
+
+              <div className="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4">
+                <h6 className="text-uppercase fw-bold">{t('importantlinks')}</h6>
+                <hr
+                  className="mb-4 mt-0 d-inline-block mx-auto"
+                  style={{ backgroundColor: '#7c4dff', width: '60px', height: '2px' }}
+
+                />
+
+                <p>
+                  <Link to="/benefits" className="text-white link-none">{t('benefits')}</Link>
+                </p>
+                <p>
+                  <Link to="/help" className="text-white link-none">{t('howtobuy')}</Link>
+                </p>
+                <p>
+                  <Link to="/howtobeseller" className="text-white link-none">{t('howtobesupplier')}</Link>
+                </p>
+                <p>
+                  <Link to="/terms" className="text-white link-none">{t('termsandcondition')}</Link>
+                </p>
+                <p>
+                  <Link to="/returnpolicy" className="text-white link-none">{t('returnpolicy')}</Link>
+                </p>
+                <p>
+                  <Link to="/privacy" className="text-white link-none">{t('privacy')}</Link>
+                </p>
+
+                <p>
+                  <Link to="/aboutus" className="text-white link-none">{t('aboutus')}</Link>
+                </p>
+
+              </div>
+
+              <div className="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
+                <h6 className="text-uppercase fw-bold">{t('contacts')}</h6>
+                <hr
+                  className="mb-4 mt-0 d-inline-block mx-auto"
+                  style={{ backgroundColor: '#7c4dff', width: '60px', height: '2px' }}
+
+                />
+                <p> <FontAwesomeIcon icon={faPhone} ></FontAwesomeIcon>{' '}{t('hotline')}: +258 853600036<br /> </p>
+                <p> +258 853600036<br /> </p>
+                <p>{t('emaillang')}<br /></p>
+                <p> {t('mozambique')},{t('maputocity')}, Malhangalene</p>
+
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <div
+          className="text-center p-3 mt-4"
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)', fontSize: '0.9rem' }}
+        >
+          © {new Date().getFullYear()} {t('reservedrights')} -
+          <span className="ms-2 fw-semibold" style={{ color: 'var(--secondary-color)' }}>Visacasa</span>
         </div>
-            <div className="col-md-3 col-lg-4 col-xl-3 mx-auto mb-4">
-          <h6 className="text-uppercase fw-bold">VisaCasa</h6>
-          <hr
-              className="mb-4 mt-0 d-inline-block mx-auto"
-              style={{backgroundColor: '#7c4dff', width: '60px', height: '2px'}}
+      </footer>
 
-              />
-          <p>
-         {t('everythinginhands')} <br/>{t('wedeliveryourorder')}
-          </p>
-        </div>
-   
-        <div className="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4">
-          <h6 className="text-uppercase fw-bold">{t('importantlinks')}</h6>
-          <hr
-              className="mb-4 mt-0 d-inline-block mx-auto"
-              style={{backgroundColor: '#7c4dff', width: '60px', height: '2px'}}
-
-              />
-       
-       <p>
-            <Link to="/benefits" className="text-white link-none">{t('benefits')}</Link>
-          </p>
-          <p>
-            <Link to="/help" className="text-white link-none">{t('howtobuy')}</Link>
-          </p>
-          <p>
-            <Link to="/howtobeseller" className="text-white link-none">{t('howtobesupplier')}</Link>
-          </p>
-          <p>
-            <Link to="/terms" className="text-white link-none">{t('termsandcondition')}</Link>
-          </p>
-          <p>
-            <Link to="/returnpolicy" className="text-white link-none">{t('returnpolicy')}</Link>
-          </p>
-          
-        </div>
-
-        <div className="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
-          <h6 className="text-uppercase fw-bold">{t('contacts')}</h6>
-          <hr
-              className="mb-4 mt-0 d-inline-block mx-auto"
-              style={{backgroundColor: '#7c4dff', width: '60px', height: '2px'}}
-
-              />
-          <p> <FontAwesomeIcon icon={faPhone} ></FontAwesomeIcon>{' '}{t('hotline')}: +258 853600036<br/> </p>
-          <p> +258 853600036<br/> </p>
-          <p> +258 879300036<br/></p>
-          <p>{t('emaillang')}<br/></p>         
-          <p> {t('mozambique')},{t('maputocity')}, Malhangalene</p>
-
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div
-       className="text-center p-3"
-       style={{backgroundColor: 'rgba(0, 0, 0, 0.2)'}}
-
-       >
-    © 2024 {t('reservedrights')} {' '}
-    {/* <a className="text-white" href="https://deliveryshop.herokuapp.com/">nhiquelashop.co.mz</a > */}
-  </div>
-  </footer>
+      <style>{`
+        .social-bar {
+          border-bottom: 4px solid rgba(255,255,255,0.1);
+        }
+        .social-bar a {
+          transition: all 0.3s ease;
+          display: inline-block;
+        }
+        .social-bar a:hover {
+          transform: translateY(-3px) scale(1.2);
+        }
+        .footer-logo {
+          transition: all 0.5s ease;
+          border: 4px solid rgba(255,255,255,0.1);
+        }
+        .footer-logo:hover {
+          transform: rotate(360deg) scale(1.05);
+          border-color: var(--primary-color);
+        }
+      `}</style>
 
     </>
 

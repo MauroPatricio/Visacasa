@@ -1,7 +1,7 @@
-import React, { useContext, useEffect, useReducer, useState } from 'react';
+import React, { useContext, useEffect, useReducer } from 'react';
 import { Store } from '../Store';
 import axios from 'axios';
-import { formatedDate, getError } from '../utils';
+import { getError } from '../utils';
 import { Helmet } from 'react-helmet-async';
 import LoadingBox from '../components/LoadingBox';
 import MessageBox from '../components/MessageBox';
@@ -9,9 +9,11 @@ import Button from 'react-bootstrap/Button';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
-import { faList } from '@fortawesome/free-solid-svg-icons';
 import Badge from 'react-bootstrap/Badge';
+import Col from 'react-bootstrap/Col';
+import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import '@fortawesome/fontawesome-svg-core/styles.css';
+
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -19,7 +21,7 @@ const reducer = (state, action) => {
       return { ...state, loading: true };
 
     case 'FETCH_SUCCESS':
-      return { ...state, loading: false, orders: action.payload.orders, pages: action.payload.pages };
+      return { ...state, loading: false, subcategories: action.payload.subcategories, pages: action.payload.pages };
 
     case 'FETCH_FAIL':
       return { ...state, loading: false, error: action.payload };
@@ -40,8 +42,8 @@ const reducer = (state, action) => {
   }
 };
 
-export default function OrderListScreen() {
-  const [{ loading, error, orders, loadingDelete, successDelete, pages }, dispatch] =
+export default function SubcategoryListScreen() {
+  const [{ loading, error, subcategories, loadingDelete, successDelete, pages }, dispatch] =
     useReducer(reducer, {
       loading: true,
       error: '',
@@ -49,33 +51,20 @@ export default function OrderListScreen() {
 
   const { state } = useContext(Store);
   const { userInfo } = state;
+
   const navigate = useNavigate();
 
-  const {search} =useLocation();
+  const { search } = useLocation();
   const sp = new URLSearchParams(search);
-  const page = sp.get('page') || 1 ;
-
-
-  const [searchQuery, setSearchQuery] = useState('');
-
-
-  const filteredData = orders&&orders.filter((row) =>
-  row.code.toLowerCase().includes(searchQuery.toLowerCase())
-);
-
-
-useEffect(() => {
-  window.scrollTo(0, 0);
-}, []);
-
+  const page = sp.get('page') || 1;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         dispatch({ type: 'FETCH_REQUEST' });
 
-        const { data } = await axios.get(`/api/orders/deliveryman?page=${page}`, {
-          headers: { authorization: `Bearer ${userInfo.token}` },
+        const { data } = await axios.get(`/api/subcategories?page=${page}`, {
+          headers: { Authorization: `Bearer ${userInfo.token}` },
         });
 
         dispatch({ type: 'FETCH_SUCCESS', payload: data });
@@ -90,11 +79,15 @@ useEffect(() => {
     }
   }, [userInfo, successDelete, page]);
 
+  const createHandler = async () => {
+    navigate('/subcategory/create');
+  }
+
   const deleteHandler = async (id) => {
-    if (window.confirm('Tem a certeza que deseja remover este pedido?')) {
+    if (window.confirm('Tem a certeza que deseja remover esta subcategoria?')) {
       try {
         dispatch({ type: 'DELETE_REQUEST' });
-        const { data } = await axios.delete(`/api/orders/${id}`, {
+        const { data } = await axios.delete(`/api/subcategories/${id}`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
         toast.success(data.message);
@@ -103,16 +96,27 @@ useEffect(() => {
         dispatch({
           type: 'DELETE_FAIL',
         });
-        toast.error(getError(error));
+        toast.error(getError(err));
       }
     }
   };
+
+
   return (
     <div>
       <Helmet>
-        <title>Pedidos</title>
+        <title>Subcategorias</title>
       </Helmet>
-      <h1>Pedidos</h1>
+      <h1>Subcategorias</h1>
+
+      <Col className='col text-end'>
+        <div >
+          <Button className='customButtom' variant='light' type="button" onClick={createHandler}>
+            Criar Subcategoria
+          </Button>
+        </div>
+      </Col>
+
       {loadingDelete && <LoadingBox></LoadingBox>}
       {loading ? (
         <LoadingBox></LoadingBox>
@@ -120,76 +124,48 @@ useEffect(() => {
         <MessageBox>{error}</MessageBox>
       ) : (
         <>
-        <div style={{textAlign: "right"}}> Pesquise pelo código de pedido:{' '}
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          </div>
           <table className="table">
             <thead>
               <tr>
-                <th>Código do pedido</th>
-                <th>Data</th>
-                <th>Total</th>
-                <th>Pago</th>
-                <th>Entregue</th>
+                <th>Nome</th>
+                <th>Descrição</th>
+                <th>Categoria Pai</th>
                 <th>Estado</th>
                 <th>Acções</th>
               </tr>
             </thead>
             <tbody>
-              {filteredData.map((o) => (
-                <tr key={o._id}>
-                  <td>Nº {o.code}</td>
-                  <td>{formatedDate(o.createdAt)}</td>
-                  <td>{o.totalPrice} MT</td>
+              {subcategories?.map((c) => (
+                <tr key={c._id}>
+                  <td>{c.name}</td>
+                  <td>{c.description}</td>
+                  <td>{c.category ? c.category.name : 'N/A'}</td>
                   <td>
-                    {o.isPaid ? (
+                    {c.isActive ? (
                       <Badge bg="success" variant="success">
-                        Sim
+                        Activo
                       </Badge>
                     ) : (
                       <Badge bg="danger" variant="danger">
-                        Não
+                        Inactivo
                       </Badge>
                     )}
-                  </td>
-                  <td>
-                    {o.isDelivered ? (
-                      <Badge bg="success" variant="success">
-                        Sim
-                      </Badge>
-                    ) : (
-                      <Badge bg="danger" variant="danger">
-                        Não
-                      </Badge>
-                    )}
-                  </td>
-                  <td>
-                  <Badge
-                      bg={o.status === 'Finalizado' ? 'success' : o.status === 'Cancelado' ? 'danger' : 'primary'}
-                      variant={o.status === 'Finalizado' ? 'success' : 'primary'}
-                    >
-                      {o.status}
-                    </Badge>
                   </td>
                   <td>
                     <Button
                       type="Button"
                       variant="light"
                       onClick={() => {
-                        navigate(`/order/${o._id}`);
+                        navigate(`/subcategory/${c._id}`);
                       }}
                     >
-                      <FontAwesomeIcon icon={faList}></FontAwesomeIcon>
+                      <FontAwesomeIcon icon={faEdit}></FontAwesomeIcon>
                     </Button>
                     &nbsp;
                     <Button
                       type="Button"
                       variant="light"
-                      onClick={() => deleteHandler(o._id)}
+                      onClick={() => deleteHandler(c._id)}
                     >
                       <FontAwesomeIcon icon={faTrash}></FontAwesomeIcon>
                     </Button>
@@ -198,13 +174,14 @@ useEffect(() => {
               ))}
             </tbody>
           </table>
+
           <div>
-            {[...Array(pages).keys()].map((x)=>(
-                <Link className={x + 1 === Number(page)? 'btn text-bold': 'btn'} key={x+1} to={`/delivery/orderlist?page=${x+1}`}>
-                    {x+1}
-                </Link>
+            {[...Array(pages).keys()].map((x) => (
+              <Link className={x + 1 === Number(page) ? 'btn text-bold' : 'btn'} key={x + 1} to={`/subcategoryList?page=${x + 1}`}>
+                {x + 1}
+              </Link>
             ))}
-        </div>
+          </div>
         </>
       )}
     </div>

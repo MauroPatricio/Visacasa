@@ -53,9 +53,10 @@
     "node": "18.16.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "dev": "nodemon --watch src --exec \"react-scripts start\"",
-    "build": "react-scripts build",
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
