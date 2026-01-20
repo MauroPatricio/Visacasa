@@ -79,7 +79,7 @@ export function HomeScreen() {
   const { state } = useContext(Store);
   const { changelng } = state;
   const [
-    { loading, error, loadingCategories, categories, loadingTopUsers, topSellers },
+    { loading, error, loadingCategories, categories, loadingTopUsers, topSellers, errorTopUsers },
     dispatch,
   ] = useReducer(reducer, {
     loading: true,
