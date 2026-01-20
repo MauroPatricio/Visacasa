@@ -37,8 +37,9 @@ const reducer = (state, action) => {
       console.log('📂 CATEGORIES_REQUEST - setting loadingCategories=true');
       return { ...state, loadingCategories: true };
     case 'CATEGORIES_SUCCESS':
-      console.log('✅ CATEGORIES_SUCCESS - setting loadingCategories=false, categories:', action.payload?.length);
-      return { ...state, categories: action.payload, loadingCategories: false };
+      const validCategories = Array.isArray(action.payload) ? action.payload : [];
+      console.log('✅ CATEGORIES_SUCCESS - setting loadingCategories=false, categories:', validCategories.length);
+      return { ...state, categories: validCategories, loadingCategories: false };
     case 'CATEGORIES_FAIL':
       console.log('❌ CATEGORIES_FAIL');
       return { ...state, loadingCategories: false };

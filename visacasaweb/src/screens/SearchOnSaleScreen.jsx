@@ -21,7 +21,7 @@ const reducer = (state, action) => {
       return {
         ...state,
         loading: false,
-        products: action.payload.products,
+        products: Array.isArray(action.payload.products) ? action.payload.products : [],
         page: action.payload.page,
         pages: action.payload.pages,
         countProducts: action.payload.countProducts,
