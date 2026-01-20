@@ -18,7 +18,7 @@ import conditionStatusRouter from './routes/conditionStatusRoutes.js';
 import colorRoutes from './routes/colorRoutes.js';
 import sizeRoutes from './routes/sizeRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
-import requestDeliverRoutes from './routes/requestDeliverRoutes.js';
+import { requestDeliverRouter as requestDeliverRoutes } from './routes/requestDeliverRoutes.js';
 import bodyParser from 'body-parser';
 import cartRoutes from './routes/cartRoutes.js';
 import { fileURLToPath } from 'url';

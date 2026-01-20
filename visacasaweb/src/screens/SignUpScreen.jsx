@@ -15,6 +15,7 @@ import { faClockFour } from '@fortawesome/free-solid-svg-icons';
 import { CiCreditCard1 } from "react-icons/ci";
 
 import Button from 'react-bootstrap/Button';
+import Card from 'react-bootstrap/Card';
 import Container from 'react-bootstrap/Container';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
@@ -343,353 +344,436 @@ export default function SignupScreen() {
 
 
   return (
-    <Container className="small-conteiner">
+    <div className="login-page-premium py-5">
       <Helmet>
         <title>{t('newaccount')}</title>
       </Helmet>
-      <h1 className="my-3">{t('newaccount')}</h1>
-      <Form onSubmit={submitHandler}>
-        <Form.Group className="mb-3" controlId="name">
-          <FontAwesomeIcon icon={faTextSlash} /> <Form.Label>{t('name')}</Form.Label>
-          <Form.Control
-            type="text"
-            required
-            onChange={(e) => {
-              setName(e.target.value);
-            }}
-          />
-        </Form.Group>
 
+      {/* Background Overlay */}
+      <div className="login-bg-overlay"></div>
 
-        <Form.Group className="mb-3" controlId="phoneNumber">
-          <FontAwesomeIcon icon={faMobile} /> <Form.Label>{t('phone')}:  <CountryFlag countryCode="MZ" svg className="mz-flag" /> [+258]</Form.Label>
-          <Form.Control
-            type="text"
-            max={9}
-            maxLength={9}
-            pattern="[0-9]*"
-            title="Insira apenas números"
-            placeholder="8********"
-            required
-            onChange={(e) => {
-              setPhoneNumber(e.target.value);
-            }}
-          />
-        </Form.Group>
-        <Form.Group className="mb-3" controlId="email">
-          <FontAwesomeIcon icon={faEnvelopeOpenText} /> <Form.Label>Email</Form.Label>
-          <Form.Control
-            type="email"
-            required
-            placeholder=".com"
-            onChange={(e) => {
-              setEmail(e.target.value);
-            }}
-          />
-        </Form.Group>
+      <Container className="d-flex flex-column align-items-center justify-content-center position-relative" style={{ zIndex: 10 }}>
+        <div className="reveal active w-100" style={{ maxWidth: '600px' }}>
 
+          <div className="text-center mb-4">
+            <h1 className="h1-premium mb-2">{t('newaccount')}</h1>
+            <p className="text-muted small px-4">
+              Crie sua conta e comece a vender ou comprar na melhor plataforma.
+            </p>
+          </div>
 
-        <Form.Group className="mb-3" controlId="password">
-          <FontAwesomeIcon icon={faLock} /> <Form.Label>{t('password')}: <small className='color-transparent'>{t('musthave6digits')}</small></Form.Label>
-          <Form.Control
-            type="password"
-            placeholder="******"
-            required
-            onChange={(e) => {
-              setPassword(e.target.value);
-            }}
-          />
-        </Form.Group>
+          <Card className="border-0 shadow-premium overflow-hidden position-relative" style={{ borderRadius: '28px', background: 'rgba(255, 255, 255, 0.95)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255, 255, 255, 0.4)' }}>
+            <Card.Body className="p-4 p-md-5">
+              <Form onSubmit={submitHandler}>
 
-        <Form.Group className="mb-3" controlId="confirmPassword">
-          <FontAwesomeIcon icon={faLockOpen} /> <Form.Label>{t('confirmpassword')}</Form.Label>
-          <Form.Control
-            type="password"
-            placeholder="******"
-            required
-            onChange={(e) => {
-              setConfirmPassword(e.target.value);
-            }}
-          />
-        </Form.Group>
+                <h5 className="mb-4 fw-bold text-primary border-bottom pb-2">Informações Pessoais</h5>
 
-        <Form.Check className='mb-3' type="checkbox" id="isSeller"
-          label={t('wanttobeoursupplier')} checked={isSeller}
-          onChange={(e) => setIsSeller(e.target.checked)}></Form.Check>
+                <Form.Group className="mb-4" controlId="name">
+                  <Form.Label className="d-flex align-items-center gap-2 small fw-bold text-muted mb-1">
+                    <FontAwesomeIcon icon={faTextSlash} className="text-primary" /> {t('name')}
+                  </Form.Label>
+                  <Form.Control
+                    type="text"
+                    className="form-control-premium"
+                    required
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </Form.Group>
 
-        {isSeller && (
-          <>
-            <br />
-            <div ><h4>{t('bankdata')}</h4>
+                <Form.Group className="mb-4" controlId="phoneNumber">
+                  <Form.Label className="d-flex align-items-center gap-2 small fw-bold text-muted mb-1">
+                    <FontAwesomeIcon icon={faMobile} className="text-primary" /> {t('phone')}
+                    <span className="ms-auto d-flex align-items-center gap-2 opacity-75 text-xs">
+                      <CountryFlag countryCode="MZ" svg style={{ width: '1.2em', height: '1.2em' }} /> [+258]
+                    </span>
+                  </Form.Label>
+                  <Form.Control
+                    type="text"
+                    className="form-control-premium"
+                    max={9}
+                    maxLength={9}
+                    pattern="[0-9]*"
+                    title="Insira apenas números"
+                    placeholder="8********"
+                    required
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                  />
+                </Form.Group>
 
-              <Form.Group className="mb-3" controlId="sellerPhoneNumberAccount">
-                <GoNumber /> <Form.Label>{t('phonenumbertransfers')}</Form.Label>
-                <Form.Control
-                  type="text"
-                  max={9}
-                  maxLength={9}
-                  pattern="[0-9]*"
-                  title="Insira apenas números"
-                  placeholder="8********"
-                  value={phoneNumberAccount}
-                  required
-                  onChange={(e) => {
-                    setPhoneNumberAccount(e.target.value);
-                  }}
-                />
-              </Form.Group>
+                <Form.Group className="mb-4" controlId="email">
+                  <Form.Label className="d-flex align-items-center gap-2 small fw-bold text-muted mb-1">
+                    <FontAwesomeIcon icon={faEnvelopeOpenText} className="text-primary" /> Email
+                  </Form.Label>
+                  <Form.Control
+                    type="email"
+                    className="form-control-premium"
+                    required
+                    placeholder="exemplo@email.com"
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </Form.Group>
 
-              <Form.Group className="mb-3" controlId="sellerPhoneNumberAccountAlternative">
-                <GoNumber /> <Form.Label>{t('phonenumbertransfersoptional')}</Form.Label>
-                <Form.Control
-                  type="text"
-                  max={9}
-                  maxLength={9}
-                  pattern="[0-9]*"
-                  title="Insira apenas números"
-                  placeholder="8********"
-                  value={alternativePhoneNumberAccount}
-                  onChange={(e) => {
-                    setAlternativePhoneNumberAccount(e.target.value);
-                  }}
-                />
-              </Form.Group>
+                <Form.Group className="mb-4" controlId="password">
+                  <Form.Label className="d-flex align-items-center gap-2 small fw-bold text-muted mb-1">
+                    <FontAwesomeIcon icon={faLock} className="text-primary" /> {t('password')}
+                    <small className='text-muted ms-2' style={{ fontSize: '0.7rem' }}>({t('musthave6digits')})</small>
+                  </Form.Label>
+                  <Form.Control
+                    type="password"
+                    className="form-control-premium"
+                    placeholder="******"
+                    required
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </Form.Group>
 
-              <Form.Group className="mb-3" controlId="sellerAccountType">
-                <CiCreditCard1 /> <Form.Label>{t('accounttype')}</Form.Label>
-                <Form.Select aria-label="Tipo de conta"
-                  value={accountType}
-                  onChange={(e) => setAccountType(e.target.value)} required>
-                  <option value="">{t('select')}</option>
-                  {accountTypes && accountTypes.map(accountType => (
-                    <option key={accountType._id} value={accountType.name}>
-                      {accountType.name}
-                    </option>
-                  ))}
-                </Form.Select>
-              </Form.Group>
+                <Form.Group className="mb-4" controlId="confirmPassword">
+                  <Form.Label className="d-flex align-items-center gap-2 small fw-bold text-muted mb-1">
+                    <FontAwesomeIcon icon={faLockOpen} className="text-primary" /> {t('confirmpassword')}
+                  </Form.Label>
+                  <Form.Control
+                    type="password"
+                    className="form-control-premium"
+                    placeholder="******"
+                    required
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                  />
+                </Form.Group>
 
-              <Form.Group className="mb-3" controlId="accountNumber">
-                <GoNumber /> <Form.Label>{t('accountnumber')}</Form.Label>
-                <Form.Control
-                  type="Number"
-                  value={accountNumber}
-                  onChange={(e) => {
-                    setAccountNumber(e.target.value);
-                  }}
-                />
-              </Form.Group>
-
-
-              <Form.Group className="mb-3" controlId="accountTypeAlternative">
-                <CiCreditCard1 /> <Form.Label>{t('accounttypeoptional')}</Form.Label>
-                <Form.Select aria-label="Tipo de conta para transferências"
-                  value={alternativeAccountType}
-                  onChange={(e) => setAlternativeAccountType(e.target.value)}>
-                  <option value="">{t('select')}</option>
-                  {accountTypes && accountTypes.map(accountType => (
-                    <option key={accountType.id} value={accountType.name}>
-                      {accountType.name}
-                    </option>
-                  ))}
-                </Form.Select>
-              </Form.Group>
-
-              <Form.Group className="mb-3" controlId="numeroAccountAlternative">
-                <GoNumber /><Form.Label>{t('accountnumberoptional')}</Form.Label>
-                <Form.Control
-                  type="Number"
-                  value={alternativeAccountNumber}
-                  onChange={(e) => {
-                    setAlternativeAccountNumber(e.target.value);
-                  }}
-                />
-              </Form.Group>
-            </div>
-
-
-            <br />
-            <div><h4>{t('storedetails')} </h4>
-              <Form.Group className="mb-3" controlId="sellerName">
-                <FontAwesomeIcon icon={faTextSlash} /> <Form.Label>{t('storename')}</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={sellerName}
-                  required
-                  onChange={(e) => {
-                    setSellerName(e.target.value);
-                  }}
-                />
-              </Form.Group>
-
-
-              <Form.Group className="mb-3" controlId="sellerLogo">
-                <Form.Label>{t('storelogo')}</Form.Label>
-                {sellerLogo && (
-                  <img
-                    style={{
-                      width: '6rem',
-                      height: '6rem',
-                      alignItems: 'center',
-                      alignContent: 'center',
-                    }}
-                    src={sellerLogo}
-                    alt={name}
-                    className="card-img-top"
-                  ></img>
-                )}
-              </Form.Group>
-
-              <Form.Group className="mb-3" controlId="imageFile">
-                <Form.Label>Upload logo</Form.Label>
-                <Form.Control type="file" onChange={uploadFileHandler} />
-                {loadingUpload && <LoadingBox></LoadingBox>}
-              </Form.Group>
-
-              <Form.Group className="mb-3" controlId="sellerDescription">
-                <FontAwesomeIcon icon={faTextSlash} /> <Form.Label>{t('storedescription')}</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={sellerDescription}
-                  as="textarea"
-                  required
-                  onChange={(e) => {
-                    setSellerDescription(e.target.value);
-                  }}
-                />
-              </Form.Group>
-
-
-
-
-              {latitude && longitude && (
-                <div className="mt-3">
-                  <p>
-                    {t('latitude')}: {latitude} &nbsp; {t('longitude')}: {longitude}
-                  </p>
+                <div className="p-3 bg-light rounded-3 mb-4 border border-light">
+                  <Form.Check
+                    type="switch"
+                    id="isSeller"
+                    label={<span className="fw-bold text-dark">{t('wanttobeoursupplier')}</span>}
+                    checked={isSeller}
+                    onChange={(e) => setIsSeller(e.target.checked)}
+                    className="premium-switch"
+                  />
                 </div>
-              )}
-              {/* Botão para capturar geolocalização */}
-              <Button variant="secondary" onClick={handleGeolocation}>
-                {t('getlocation')}
-              </Button>
 
-              <Form.Group className="mb-3" controlId="sellerLocation">
-                <FontAwesomeIcon icon={faTextSlash} /> <Form.Label>{t('province')}</Form.Label>
-                <Form.Select aria-label="Provincia"
-                  value={sellerLocation}
-                  onChange={(e) => setSellerLocation(e.target.value)} required>
-                  <option value="">{t('select')}</option>
-                  {provinces && provinces.map(province => (
-                    <option key={province._id} value={province._id}>
-                      {province.name}
-                    </option>
-                  ))}
-                </Form.Select>
-              </Form.Group>
+                {isSeller && (
+                  <div className="seller-section mt-4 animate__animated animate__fadeIn">
+                    <h5 className="mb-4 fw-bold text-primary border-bottom pb-2">{t('bankdata')}</h5>
 
+                    <div className="row">
+                      <div className="col-md-6">
+                        <Form.Group className="mb-3" controlId="sellerPhoneNumberAccount">
+                          <Form.Label className="small fw-bold text-muted"><GoNumber className="me-1" /> {t('phonenumbertransfers')}</Form.Label>
+                          <Form.Control
+                            type="text"
+                            className="form-control-premium"
+                            max={9}
+                            maxLength={9}
+                            pattern="[0-9]*"
+                            placeholder="8********"
+                            value={phoneNumberAccount}
+                            required
+                            onChange={(e) => setPhoneNumberAccount(e.target.value)}
+                          />
+                        </Form.Group>
+                      </div>
+                      <div className="col-md-6">
+                        <Form.Group className="mb-3" controlId="sellerPhoneNumberAccountAlternative">
+                          <Form.Label className="small fw-bold text-muted"><GoNumber className="me-1" /> {t('phonenumbertransfersoptional')}</Form.Label>
+                          <Form.Control
+                            type="text"
+                            className="form-control-premium"
+                            max={9}
+                            maxLength={9}
+                            pattern="[0-9]*"
+                            placeholder="8********"
+                            value={alternativePhoneNumberAccount}
+                            onChange={(e) => setAlternativePhoneNumberAccount(e.target.value)}
+                          />
+                        </Form.Group>
+                      </div>
+                    </div>
 
+                    <div className="row">
+                      <div className="col-md-6">
+                        <Form.Group className="mb-3" controlId="sellerAccountType">
+                          <Form.Label className="small fw-bold text-muted"><CiCreditCard1 className="me-1" /> {t('accounttype')}</Form.Label>
+                          <Form.Select
+                            className="form-control-premium"
+                            value={accountType}
+                            onChange={(e) => setAccountType(e.target.value)} required>
+                            <option value="">{t('select')}</option>
+                            {accountTypes && accountTypes.map(accountType => (
+                              <option key={accountType._id} value={accountType.name}>
+                                {accountType.name}
+                              </option>
+                            ))}
+                          </Form.Select>
+                        </Form.Group>
+                      </div>
+                      <div className="col-md-6">
+                        <Form.Group className="mb-3" controlId="accountNumber">
+                          <Form.Label className="small fw-bold text-muted"><GoNumber className="me-1" /> {t('accountnumber')}</Form.Label>
+                          <Form.Control
+                            type="Number"
+                            className="form-control-premium"
+                            value={accountNumber}
+                            onChange={(e) => setAccountNumber(e.target.value)}
+                          />
+                        </Form.Group>
+                      </div>
+                    </div>
 
+                    <div className="row">
+                      <div className="col-md-6">
+                        <Form.Group className="mb-3" controlId="accountTypeAlternative">
+                          <Form.Label className="small fw-bold text-muted"><CiCreditCard1 className="me-1" /> {t('accounttypeoptional')}</Form.Label>
+                          <Form.Select
+                            className="form-control-premium"
+                            value={alternativeAccountType}
+                            onChange={(e) => setAlternativeAccountType(e.target.value)}>
+                            <option value="">{t('select')}</option>
+                            {accountTypes && accountTypes.map(accountType => (
+                              <option key={accountType.id} value={accountType.name}>
+                                {accountType.name}
+                              </option>
+                            ))}
+                          </Form.Select>
+                        </Form.Group>
+                      </div>
+                      <div className="col-md-6">
+                        <Form.Group className="mb-3" controlId="numeroAccountAlternative">
+                          <Form.Label className="small fw-bold text-muted"><GoNumber className="me-1" /> {t('accountnumberoptional')}</Form.Label>
+                          <Form.Control
+                            type="Number"
+                            className="form-control-premium"
+                            value={alternativeAccountNumber}
+                            onChange={(e) => setAlternativeAccountNumber(e.target.value)}
+                          />
+                        </Form.Group>
+                      </div>
+                    </div>
 
-              <Form.Group className="mb-3" controlId="address">
-                <FontAwesomeIcon icon={faTextSlash} /> <Form.Label>{t('storeaddress')}</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={sellerAddress}
-                  as="textarea"
-                  required
-                  onChange={(e) => {
-                    setSellerAddress(e.target.value);
-                  }}
-                />
-              </Form.Group>
+                    <h5 className="mt-4 mb-4 fw-bold text-primary border-bottom pb-2">{t('storedetails')}</h5>
 
+                    <Form.Group className="mb-3" controlId="sellerName">
+                      <Form.Label className="small fw-bold text-muted"><FontAwesomeIcon icon={faTextSlash} className="me-1" /> {t('storename')}</Form.Label>
+                      <Form.Control
+                        type="text"
+                        className="form-control-premium"
+                        value={sellerName}
+                        required
+                        onChange={(e) => setSellerName(e.target.value)}
+                      />
+                    </Form.Group>
 
-              <div>
+                    <Form.Group className="mb-3" controlId="imageFile">
+                      <Form.Label className="small fw-bold text-muted">Upload logo</Form.Label>
+                      <div className="d-flex align-items-center gap-3">
+                        <Form.Control type="file" className="form-control-premium text-muted" onChange={uploadFileHandler} />
+                        {sellerLogo && (
+                          <img
+                            src={sellerLogo}
+                            alt="Logo"
+                            className="rounded-3 shadow-sm"
+                            style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+                          />
+                        )}
+                      </div>
+                      {loadingUpload && <LoadingBox></LoadingBox>}
+                    </Form.Group>
 
-                <Form.Group className="mb-3" controlId="dayWeek">
-                  <FaCalendarAlt /> <Form.Label>{t('weekday')}</Form.Label>
-                  <Form.Select aria-label="Week"
-                    value={dayOfWeek}
-                    onChange={(e) => setDayOfWeek(e.target.value)}>
-                    <option value="">{t('select')}</option>
-                    {daysOfWeek && daysOfWeek.map(day => (
-                      <option key={day} value={day}>
-                        {day}
-                      </option>
-                    ))}
-                  </Form.Select>
-                </Form.Group>
-                <Form.Group className="mb-3" controlId="sellerOpentime">
-                  <FontAwesomeIcon icon={faClock} /> <Form.Label>{t('openingtime')}</Form.Label>
-                  <Form.Control
-                    type="time"
-                    value={opentime}
-                    onChange={(e) => {
-                      setOpentime(e.target.value);
-                    }}
+                    <Form.Group className="mb-3" controlId="sellerDescription">
+                      <Form.Label className="small fw-bold text-muted"><FontAwesomeIcon icon={faTextSlash} className="me-1" /> {t('storedescription')}</Form.Label>
+                      <Form.Control
+                        type="text"
+                        className="form-control-premium"
+                        value={sellerDescription}
+                        as="textarea"
+                        rows={3}
+                        required
+                        onChange={(e) => setSellerDescription(e.target.value)}
+                      />
+                    </Form.Group>
+
+                    <div className="p-3 bg-light rounded-3 mb-3 border border-light">
+                      <div className="d-flex justify-content-between align-items-center mb-2">
+                        <span className="fw-bold small">{t('location')}</span>
+                        <Button variant="outline-primary" size="sm" onClick={handleGeolocation} className="rounded-pill">
+                          {t('getlocation')}
+                        </Button>
+                      </div>
+                      {latitude && longitude ? (
+                        <p className="mb-0 small text-success">
+                          {t('latitude')}: {latitude}, {t('longitude')}: {longitude}
+                        </p>
+                      ) : (
+                        <p className="mb-0 small text-muted fst-italic">Localização não definida</p>
+                      )}
+                    </div>
+
+                    <Form.Group className="mb-3" controlId="sellerLocation">
+                      <Form.Label className="small fw-bold text-muted"><FontAwesomeIcon icon={faTextSlash} className="me-1" /> {t('province')}</Form.Label>
+                      <Form.Select
+                        className="form-control-premium"
+                        value={sellerLocation}
+                        onChange={(e) => setSellerLocation(e.target.value)} required>
+                        <option value="">{t('select')}</option>
+                        {provinces && provinces.map(province => (
+                          <option key={province._id} value={province._id}>
+                            {province.name}
+                          </option>
+                        ))}
+                      </Form.Select>
+                    </Form.Group>
+
+                    <Form.Group className="mb-3" controlId="address">
+                      <Form.Label className="small fw-bold text-muted"><FontAwesomeIcon icon={faTextSlash} className="me-1" /> {t('storeaddress')}</Form.Label>
+                      <Form.Control
+                        type="text"
+                        className="form-control-premium"
+                        value={sellerAddress}
+                        as="textarea"
+                        rows={2}
+                        required
+                        onChange={(e) => setSellerAddress(e.target.value)}
+                      />
+                    </Form.Group>
+
+                    <h6 className="fw-bold mt-4 mb-3 text-secondary border-bottom pb-1">{t('businesshours')}</h6>
+                    <div className="d-flex flex-wrapp gap-2 align-items-end mb-3">
+                      <Form.Group className="flex-grow-1" controlId="dayWeek">
+                        <Form.Label className="small fw-bold text-muted d-block">{t('weekday')}</Form.Label>
+                        <Form.Select
+                          className="form-control-premium form-select-sm"
+                          value={dayOfWeek}
+                          onChange={(e) => setDayOfWeek(e.target.value)}>
+                          <option value="">{t('select')}</option>
+                          {daysOfWeek && daysOfWeek.map(day => (
+                            <option key={day} value={day}>{day}</option>
+                          ))}
+                        </Form.Select>
+                      </Form.Group>
+                      <Form.Group controlId="sellerOpentime">
+                        <Form.Label className="small fw-bold text-muted d-block">{t('openingtime')}</Form.Label>
+                        <Form.Control
+                          type="time"
+                          className="form-control-premium form-control-sm"
+                          value={opentime}
+                          onChange={(e) => setOpentime(e.target.value)}
+                        />
+                      </Form.Group>
+                      <Form.Group controlId="sellerClosetime">
+                        <Form.Label className="small fw-bold text-muted d-block">{t('closingtime')}</Form.Label>
+                        <Form.Control
+                          type="time"
+                          className="form-control-premium form-control-sm"
+                          value={closetime}
+                          onChange={(e) => setClosetime(e.target.value)}
+                        />
+                      </Form.Group>
+                      <Button onClick={handleAddItem} variant="dark" size="sm" className="rounded-circle" style={{ width: '38px', height: '38px' }}>+</Button>
+                    </div>
+
+                    <ul className="list-group list-group-flush rounded-3 mb-3">
+                      {workDaysWithTime.map((item, index) => (
+                        <li key={index} className="list-group-item d-flex justify-content-between align-items-center bg-transparent border-light">
+                          <span className="small">{item.dayOfWeek}: {item.opentime} - {item.closetime}</span>
+                          <Button
+                            variant="link"
+                            className="text-danger p-0"
+                            onClick={() => removeDayWeek(index)}
+                          >
+                            <FontAwesomeIcon icon={faTimesCircle} />
+                          </Button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                <div className="mb-4 form-check-premium">
+                  <Form.Check
+                    type="checkbox"
+                    label={<span className="small text-muted">
+                      Li e concordo com os <a href="/terms" className="text-primary fw-bold text-decoration-none">termos e condições</a>
+                    </span>}
+                    id="myCheckbox"
+                    required
+                    value={checkedTerms}
+                    onChange={(e) => setCheckedTerms(e.target.checked)}
+                    className="premium-checkbox"
                   />
-                </Form.Group>
+                </div>
 
-                <Form.Group className="mb-3" controlId="sellerClosetime">
-                  <FontAwesomeIcon icon={faClockFour} /> <Form.Label>{t('closingtime')}</Form.Label>
-                  <Form.Control
-                    type="time"
-                    value={closetime}
-                    onChange={(e) => {
-                      setClosetime(e.target.value);
-                    }}
-                  />
-                </Form.Group>
-                <Button onClick={handleAddItem}>{t('add')}</Button>
-              </div>
+                <Button className="w-100 btn-premium py-3 mb-4 fw-bold shadow-sm" type="submit" disabled={loadingUser}>
+                  {t('create')}
+                </Button>
+                {loadingUser && <LoadingBox></LoadingBox>}
 
-              {workDaysWithTime && <h6>{t('businessdays')}</h6>}
-              <ul>
-                {workDaysWithTime.map((item, index) => (
-                  <li key={index}>
-                    {item.dayOfWeek}: {item.opentime} - {item.closetime}
-                    <Button
-                      variant="light"
-                      onClick={() => removeDayWeek(index)}
-                    >
-                      {' '}
-                      <FontAwesomeIcon icon={faTimesCircle}></FontAwesomeIcon>
-                    </Button>
-                  </li>
-                ))}
-              </ul>
+                <div className="text-center small text-muted">
+                  {t('alreadyhaveaccount')}{' '}
+                  <Link className="text-primary fw-bold text-decoration-none hover-underline" to={`/signin?redirect=${redirect}`}>
+                    {t('start')}
+                  </Link>
+                </div>
 
-
-
-            </div>
-
-
-
-          </>
-        )}
-
-        <Form.Check
-          type="checkbox"
-          label={<span>
-            Li e concordo com os{' '}
-            <a href="/terms">termos e condições</a>
-          </span>}
-          id="myCheckbox"
-          required
-          value={checkedTerms}
-          onChange={(e) => setCheckedTerms(e.target.checked)}
-        />
-
-        <div className="mb-3">
-          <Button className='customButtom' variant='light' disabled={loadingUser} type="submit">{t('create')}</Button>
-          {loadingUser && <LoadingBox></LoadingBox>}
+              </Form>
+            </Card.Body>
+          </Card>
         </div>
-        <div className="mb-3">
-          {t('alreadyhaveaccount')}{' '}
-          <Link className="link " to={`/signin?redirect=${redirect}`}>{t('start')}</Link>
-        </div>
-      </Form>
-    </Container>
+      </Container>
+
+      <style>{`
+        .login-page-premium {
+          position: relative;
+          min-height: 100vh;
+          overflow-x: hidden;
+          background: #f8fafc;
+        }
+        .login-bg-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(rgba(255,255,255,0.7), rgba(255,255,255,0.4)), url('/images/login-premium-bg.jpg');
+          background-size: cover;
+          background-position: center;
+          z-index: 1;
+        }
+        .form-control-premium {
+          border-radius: 12px;
+          padding: 12px 16px;
+          border: 1px solid #e2e8f0;
+          background: #fdfdfd;
+          transition: all 0.2s ease;
+          font-size: 0.95rem;
+        }
+        .form-control-premium:focus {
+          border-color: var(--primary);
+          box-shadow: 0 0 0 4px rgba(232, 90, 79, 0.1);
+          background: #fff;
+        }
+        .btn-premium {
+          background: var(--primary-gradient, linear-gradient(to right, #FF512F 0%, #DD2476 51%, #FF512F 100%));
+          background-size: 200% auto;
+          border: none;
+          border-radius: 14px;
+          color: white;
+          transition: all 0.3s ease;
+        }
+        .btn-premium:hover:not(:disabled) {
+           background-position: right center;
+           transform: translateY(-2px);
+           box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .text-xs { font-size: 0.75rem; }
+        .hover-underline:hover { text-decoration: underline !important; }
+        
+        .seller-section {
+           animation: fadeIn 0.5s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
+    </div>
   );
 }
