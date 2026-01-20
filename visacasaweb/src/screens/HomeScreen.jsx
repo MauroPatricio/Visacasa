@@ -30,7 +30,7 @@ const reducer = (state, action) => {
     case 'TOP_SELLERS_REQUEST':
       return { ...state, loadingTopUsers: true };
     case 'TOP_SELLERS_SUCCESS':
-      return { ...state, topSellers: action.payload, loadingTopUsers: false };
+      return { ...state, topSellers: Array.isArray(action.payload) ? action.payload : [], loadingTopUsers: false };
     case 'TOP_SELLERS_FAIL':
       return { ...state, loadingTopUsers: false, errorTopUsers: action.payload };
     case 'CATEGORIES_REQUEST':

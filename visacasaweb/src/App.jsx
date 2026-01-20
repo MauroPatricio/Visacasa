@@ -79,6 +79,10 @@ import ForgetPasswordScreen from './screens/ForgetPasswordScreen';
 import ResetPasswordScreen from './screens/ResetPasswordScreen';
 import DeliveryOptionScreen from './screens/DeliveryOptionScreen';
 import axios from 'axios';
+
+if (import.meta.env.VITE_API_URL) {
+  axios.defaults.baseURL = import.meta.env.VITE_API_URL;
+}
 import AdicionalInfoHeader from './components/AdicionalInfoHeader';
 import ScrollTopButton from './components/ScrollTopButton';
 import SearchSellersScreen from './screens/SearchSellersScreen';
