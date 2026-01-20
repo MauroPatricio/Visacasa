@@ -1,7 +1,7 @@
-import React, { useContext, useEffect, useReducer } from 'react'; 
+import React, { useContext, useEffect, useReducer } from 'react';
 import { Store } from '../Store';
 import axios from 'axios';
-import { getError } from '../utils';
+import { getError, handleImageError } from '../utils';
 import { Helmet } from 'react-helmet-async';
 import LoadingBox from '../components/LoadingBox';
 import MessageBox from '../components/MessageBox';
@@ -54,7 +54,7 @@ export default function EstablishmentListScreen() {
     const fetchData = async () => {
       try {
         dispatch({ type: 'FETCH_REQUEST' });
-        const {data} = await axios.get(`/api/tipoestabelecimentos`, {
+        const { data } = await axios.get(`/api/tipoestabelecimentos`, {
           headers: { Authorization: `Bearer ${userInfo.token}` },
         });
         dispatch({ type: 'FETCH_SUCCESS', payload: data.tipoestabelecimentos });
@@ -122,16 +122,17 @@ export default function EstablishmentListScreen() {
               {tipos.map((tipo) => (
                 <tr key={tipo._id}>
                   <td>
-                        {tipo.img ? (
-                          <img
-                            src={tipo.img}
-                            alt={tipo.nome}
-                            style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }}
-                          />
-                        ) : (
-                          <Badge bg="secondary">Sem imagem</Badge>
-                        )}
-                      </td>
+                    {tipo.img ? (
+                      <img
+                        src={tipo.img}
+                        alt={tipo.nome}
+                        style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px' }}
+                        onError={handleImageError}
+                      />
+                    ) : (
+                      <Badge bg="secondary">Sem imagem</Badge>
+                    )}
+                  </td>
                   <td>{tipo.nome}</td>
                   <td>
                     <Button

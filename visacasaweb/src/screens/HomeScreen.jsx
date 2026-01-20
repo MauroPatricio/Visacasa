@@ -19,10 +19,13 @@ import { Store } from '../Store';
 import '../styles/HomeScreen.css';
 
 const reducer = (state, action) => {
+  console.log('🔄 Reducer action:', action.type, action.payload);
   switch (action.type) {
     case 'FETCH_REQUEST':
+      console.log('📥 FETCH_REQUEST - setting loading=true');
       return { ...state, loading: true };
     case 'FETCH_SUCCESS':
+      console.log('✅ FETCH_SUCCESS - setting loading=false');
       return { ...state, loading: false };
     case 'TOP_SELLERS_REQUEST':
       return { ...state, loadingTopUsers: true };
@@ -31,10 +34,13 @@ const reducer = (state, action) => {
     case 'TOP_SELLERS_FAIL':
       return { ...state, loadingTopUsers: false, errorTopUsers: action.payload };
     case 'CATEGORIES_REQUEST':
+      console.log('📂 CATEGORIES_REQUEST - setting loadingCategories=true');
       return { ...state, loadingCategories: true };
     case 'CATEGORIES_SUCCESS':
+      console.log('✅ CATEGORIES_SUCCESS - setting loadingCategories=false, categories:', action.payload?.length);
       return { ...state, categories: action.payload, loadingCategories: false };
     case 'CATEGORIES_FAIL':
+      console.log('❌ CATEGORIES_FAIL');
       return { ...state, loadingCategories: false };
     default:
       return state;
@@ -87,10 +93,15 @@ export function HomeScreen() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
+        console.log('🔍 Fetching categories');
         dispatch({ type: 'CATEGORIES_REQUEST' });
         const { data } = await axios.get('/api/categories');
+        console.log('✅ Categories received:', data);
+        console.log('📂 Categories array:', data.categories);
+        console.log('📊 Categories count:', data.categories?.length);
         dispatch({ type: 'CATEGORIES_SUCCESS', payload: data.categories });
       } catch (err) {
+        console.error('❌ Error fetching categories:', err);
         dispatch({ type: 'CATEGORIES_FAIL' });
       }
     };
@@ -113,15 +124,21 @@ export function HomeScreen() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
+        console.log('🔍 Fetching products for page:', page);
         dispatch({ type: 'FETCH_REQUEST' });
         const { data } = await axios.get(`/api/products?page=${page}`);
+        console.log('✅ Products received:', data);
+        console.log('📦 Products array:', data.products);
+        console.log('📊 Products count:', data.products?.length);
         setItems(data.products);
+        console.log('💾 Items state updated, new items:', data.products);
         dispatch({ type: 'FETCH_SUCCESS' });
       } catch (err) {
+        console.error('❌ Error fetching products:', err);
         dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
       }
     };
-    if (page === 1) fetchProducts();
+    fetchProducts();
   }, [page]);
 
   useEffect(() => {
@@ -144,6 +161,15 @@ export function HomeScreen() {
     setPage(newPage);
   };
 
+  console.log('🎨 Rendering HomeScreen with:', {
+    loading,
+    itemsCount: items.length,
+    items: items,
+    loadingCategories,
+    categoriesCount: categories.length,
+    categories: categories
+  });
+
   return (
     <Container fluid className="px-lg-5">
       <div className="hero-section mt-4">
@@ -157,13 +183,17 @@ export function HomeScreen() {
             [1, 2, 3, 4, 5, 6, 7].map((n) => (
               <div key={n} className="category-card-premium skeleton" style={{ height: '120px' }}></div>
             ))
+          ) : categories.length === 0 ? (
+            <div className="w-100 p-3">
+              <MessageBox>Nenhuma categoria encontrada</MessageBox>
+            </div>
           ) : (
             <>
-              {categories.slice(0, 18).map((category, index) => (
+              {categories.map((category, index) => (
                 <Link
                   key={category._id}
                   to={`/search?category=${category.nome}`}
-                  className={`category-card-premium reveal delay-${(index % 5 + 1) * 100}`}
+                  className="category-card-premium"
                 >
                   <span className="category-icon-wrapper">
                     {getCategoryIcon(category.nome)}
@@ -171,16 +201,12 @@ export function HomeScreen() {
                   <span>{changelng === 'pt' ? category.nome : category.name}</span>
                 </Link>
               ))}
-              <Link to="/search" className="category-card-premium reveal delay-600">
-                <span className="category-icon-wrapper"><FaLayerGroup /></span>
-                <span>{t('Ver Tudo')}</span>
-              </Link>
             </>
           )}
         </div>
       </section>
 
-      <div className="reveal delay-200">
+      <div>
         <h2 className="section-title-premium">
           <FaHome className="text-primary" />
           Produtos em destaque
@@ -192,9 +218,13 @@ export function HomeScreen() {
                 <SkeletonProduct />
               </Col>
             ))
+          ) : items.length === 0 ? (
+            <div className="w-100 p-3">
+              <MessageBox>Nenhum produto em destaque encontrado</MessageBox>
+            </div>
           ) : (
             items.map((product, index) => (
-              <Col key={product._id} xs={6} md={4} lg={3} className={`mb-4 reveal delay-${(index % 4 + 1) * 100}`}>
+              <Col key={product._id} xs={6} md={4} lg={3} className="mb-4">
                 <Product product={product} />
               </Col>
             ))

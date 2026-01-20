@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useReducer } from 'react';
 import { Store } from '../Store';
 import axios from 'axios';
 import { getError } from '../utils';
-import {  useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import LoadingBox from '../components/LoadingBox';
 import MessageBox from '../components/MessageBox';
 import Row from 'react-bootstrap/Row';
@@ -13,8 +13,16 @@ import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {faClockFour} from '@fortawesome/free-solid-svg-icons'
+import {
+  FiClock,
+  FiMapPin,
+  FiInfo,
+  FiPhone,
+  FiCreditCard,
+  FiShoppingBag,
+  FiStar
+} from 'react-icons/fi';
+
 const reducer = (state, action) => {
   switch (action.type) {
     case 'SELLER_DETAILS_REQUEST':
@@ -51,17 +59,10 @@ const reducer = (state, action) => {
 
 export default function SellerScreen() {
   const { t } = useTranslation();
-
   const params = useParams();
   const { id: sellerId } = params;
-
   const { state } = useContext(Store);
-
   const { userInfo } = state;
-
-  // const {search} =useLocation();
-  // const sp = new URLSearchParams(search);
-  // const page = sp.get('page') || 1 ;
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -77,29 +78,26 @@ export default function SellerScreen() {
       productsBySeller,
     },
     dispatch,
-  ] = useReducer(reducer, { sellerDetails: '', loading: true, error: '' });
+  ] = useReducer(reducer, { sellerDetails: null, loadingProducts: true });
 
   useEffect(() => {
     const fetchSellerDetails = async () => {
       try {
         dispatch({ type: 'SELLER_DETAILS_REQUEST' });
-        const { data } = await axios.get(`/api/users/${sellerId}`, {});
+        const { data } = await axios.get(`/api/users/${sellerId}`);
         dispatch({ type: 'SELLER_DETAILS_SUCCESS', payload: data });
       } catch (err) {
         dispatch({ type: 'SELLER_DETAILS_FAIL', payload: getError(err) });
       }
     };
     fetchSellerDetails();
-  }, [dispatch, userInfo, sellerId]);
+  }, [sellerId]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         dispatch({ type: 'PRODUCT_REQUEST' });
-        const { data } = await axios.get(
-          `/api/products?seller=${sellerId}`,
-          {}
-        );
+        const { data } = await axios.get(`/api/products?seller=${sellerId}`);
         dispatch({ type: 'PRODUCT_SUCCESS', payload: data });
       } catch (err) {
         dispatch({ type: 'PRODUCT_FAIL', payload: getError(err) });
@@ -107,89 +105,165 @@ export default function SellerScreen() {
     };
     fetchData();
   }, [sellerId]);
+
   return (
-    <div>
+    <div className="container-fluid py-4 mt-5">
       <Helmet>
         <title>{t('supplierpage')}</title>
       </Helmet>
-      <h3>{t('supplierproducts')}: <b className='text_color'>{sellerDetails && sellerDetails.seller.name}</b></h3>
+
       {loadingSeller ? (
-        <LoadingBox></LoadingBox>
+        <div className="text-center py-5">
+          <LoadingBox />
+        </div>
       ) : errorSeller ? (
         <MessageBox variant="danger">{errorSeller}</MessageBox>
-      ) : (
-        <>
-          {sellerDetails && (
+      ) : sellerDetails && (
+        <div className="reveal active">
+          <div className="d-flex align-items-center mb-4 gap-3">
+            <div className="bg-primary-soft p-3 rounded-circle" style={{ width: '60px', height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <FiShoppingBag className="text-primary fs-3" />
+            </div>
             <div>
-              <Row>
-                <Col md={3}>
-                  <Card>
-                    <Card.Img variant="top" style={{height: '250px'}} src={sellerDetails.seller.logo} alt={sellerDetails.seller.name} />
-                    <Card.Body    style={{
-                          alignItems: 'center',
-                        }}>
+              <h1 className="h1-premium mb-0">{t('supplierproducts')}</h1>
+              <p className="text-muted-premium mb-0">{sellerDetails.seller.name}</p>
+            </div>
+          </div>
 
-                   
-                       <br/>
-                      <FontAwesomeIcon icon={faClockFour}/> <span style={{color:'green'}}> {userInfo && t('workdays')}: </span>{userInfo && sellerDetails.seller.workDayAndTime.map((workDay)=>(
-                <Col  key={workDay.dayOfWeek}>
-                  {workDay.dayOfWeek} - {workDay.opentime} - {workDay.closetime}
-                </Col>
-              ))}<br/>
+          <Row className="g-4">
+            <Col lg={4} xl={3}>
+              <Card className="border-0 shadow-premium overflow-hidden sticky-top" style={{ top: '100px', borderRadius: '24px', background: 'var(--glass-bg)', backdropFilter: 'blur(10px)', border: '1px solid var(--glass-border)' }}>
+                <div className="position-relative">
+                  <Card.Img
+                    variant="top"
+                    src={sellerDetails.seller.logo}
+                    alt={sellerDetails.seller.name}
+                    style={{ height: '200px', objectFit: 'cover' }}
+                  />
+                  <div className="position-absolute bottom-0 start-0 w-100 p-3" style={{ background: 'linear-gradient(transparent, rgba(0,0,0,0.7))' }}>
+                    <div className="d-flex align-items-center gap-2 text-white">
+                      <FiStar className="text-warning" />
+                      <span className="fw-bold">{sellerDetails.seller.rating || '5.0'}</span>
+                      <small className="opacity-75">({sellerDetails.seller.numReviews || 0} reviews)</small>
+                    </div>
+                  </div>
+                </div>
 
-                      {/* <Rating
-                        rating={sellerDetails.seller.rating}
-                        numReviews={sellerDetails.seller.numReviews}
-                      ></Rating> */}
+                <Card.Body className="p-4">
+                  <section className="mb-4">
+                    <h6 className="text-uppercase ls-wide fs-xs fw-bold text-primary mb-3">Informações da Loja</h6>
 
-                     
+                    <div className="d-flex gap-3 mb-3">
+                      <FiInfo className="text-primary mt-1" />
+                      <div>
+                        <small className="d-block text-muted text-uppercase fw-bold ls-tight" style={{ fontSize: '0.65rem' }}>Especialidade</small>
+                        <span className="text-muted-premium small">{sellerDetails.seller.description || 'N/A'}</span>
+                      </div>
+                    </div>
 
-                    <b>{userInfo && t('address')}:</b> {userInfo && sellerDetails.seller.province && sellerDetails.seller.province.name},{userInfo && sellerDetails.seller.address}<br/>
-                   
-                    <b>{userInfo && t('specialty')}:</b>  {userInfo && sellerDetails.seller.description}<br/><br/>
-                     {userInfo && userInfo.isAdmin &&  <b>Numero(s) telefone para transferencia(s):</b>}{ userInfo && userInfo.isAdmin && sellerDetails.seller && sellerDetails.seller.phoneNumberAccount} {userInfo && userInfo.isAdmin && ';'}{userInfo && userInfo.isAdmin && sellerDetails.seller && sellerDetails.seller.alternativePhoneNumberAccount}<br/>
-                      
-                     {userInfo && userInfo.isAdmin && <b>Numero(s) conta para transferencia(s):</b> }{userInfo && userInfo.isAdmin && sellerDetails.seller && sellerDetails.seller.accountType} {userInfo && userInfo.isAdmin && '-'} {userInfo && userInfo.isAdmin && sellerDetails.seller && sellerDetails.seller.accountNumber}{ userInfo && userInfo.isAdmin &&';'} {userInfo && userInfo.isAdmin && sellerDetails.seller && sellerDetails.seller.alternativeAccountType} {userInfo && userInfo.isAdmin && '-'} {userInfo && userInfo.isAdmin && sellerDetails.seller && sellerDetails.seller.alternativeAccountNumber}<br/>
+                    <div className="d-flex gap-3 mb-3">
+                      <FiMapPin className="text-primary mt-1" />
+                      <div>
+                        <small className="d-block text-muted text-uppercase fw-bold ls-tight" style={{ fontSize: '0.65rem' }}>Endereço</small>
+                        <span className="text-muted-premium small">
+                          {sellerDetails.seller.province?.name ? `${sellerDetails.seller.province.name}, ` : ''}
+                          {sellerDetails.seller.address}
+                        </span>
+                      </div>
+                    </div>
+                  </section>
 
-                    </Card.Body>
-                  </Card>
-                </Col>
-                <Col md={9}>
-                  <div className="products">
-                    {loadingProducts ? (
-                      <LoadingBox />
-                    ) : productsError ? (
-                      <MessageBox variant="danger">{productsError}</MessageBox>
+                  <section className="mb-4">
+                    <h6 className="text-uppercase ls-wide fs-xs fw-bold text-primary mb-3">Horário de Funcionamento</h6>
+                    <div className="bg-light rounded-4 p-3">
+                      {sellerDetails.seller.workDayAndTime && sellerDetails.seller.workDayAndTime.length > 0 ? (
+                        sellerDetails.seller.workDayAndTime.map((workDay) => (
+                          <div key={workDay.dayOfWeek} className="d-flex justify-content-between mb-2 last-child-mb-0 small">
+                            <span className="fw-medium">{workDay.dayOfWeek}</span>
+                            <span className="text-muted">{workDay.opentime} - {workDay.closetime}</span>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="text-muted small italic">Horário não especificado</div>
+                      )}
+                    </div>
+                  </section>
+
+                  {userInfo && userInfo.isAdmin && (
+                    <section className="mt-4 pt-4 border-top">
+                      <h6 className="text-uppercase ls-wide fs-xs fw-bold text-danger mb-3">Dados Administrativos</h6>
+
+                      <div className="d-flex gap-3 mb-3">
+                        <FiPhone className="text-danger mt-1" />
+                        <div>
+                          <small className="d-block text-muted text-uppercase fw-bold ls-tight" style={{ fontSize: '0.65rem' }}>Telefones Transferência</small>
+                          <span className="text-muted-premium small">
+                            {sellerDetails.seller.phoneNumberAccount}
+                            {sellerDetails.seller.alternativePhoneNumberAccount && ` / ${sellerDetails.seller.alternativePhoneNumberAccount}`}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="d-flex gap-3">
+                        <FiCreditCard className="text-danger mt-1" />
+                        <div>
+                          <small className="d-block text-muted text-uppercase fw-bold ls-tight" style={{ fontSize: '0.65rem' }}>Dados Bancários</small>
+                          <div className="text-muted-premium small">
+                            <div>{sellerDetails.seller.accountType}: {sellerDetails.seller.accountNumber}</div>
+                            {sellerDetails.seller.alternativeAccountNumber && (
+                              <div className="mt-1">{sellerDetails.seller.alternativeAccountType}: {sellerDetails.seller.alternativeAccountNumber}</div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </section>
+                  )}
+                </Card.Body>
+              </Card>
+            </Col>
+
+            <Col lg={8} xl={9}>
+              <div className="products-section">
+                {loadingProducts ? (
+                  <Row className="g-4">
+                    {[1, 2, 3, 4, 5, 6].map((n) => (
+                      <Col key={n} sm={6} md={4} lg={3}>
+                        <div className="skeleton rounded-4" style={{ height: '300px', width: '100%' }}></div>
+                      </Col>
+                    ))}
+                  </Row>
+                ) : productsError ? (
+                  <MessageBox variant="danger">{productsError}</MessageBox>
+                ) : (
+                  <>
+                    {productsBySeller.length === 0 ? (
+                      <div className="bg-white rounded-5 shadow-premium p-5 text-center">
+                        <FiShoppingBag className="fs-1 text-muted mb-3 opacity-25" />
+                        <h4 className="fw-bold text-muted mb-2">{t('therearenoaddedproducts')}</h4>
+                        <p className="text-muted small mb-0">Este vendedor ainda não possui produtos listados.</p>
+                      </div>
                     ) : (
-                      
-                      <>
-                      <Row className="row-widget">
-                        {productsBySeller.length === 0 && (
-                          <MessageBox>
-                            {t('therearenoaddedproducts')}
-                          </MessageBox>
-                        )}
-                        {productsBySeller.map((product) => (
+                      <Row className="g-4">
+                        {productsBySeller.map((product, index) => (
                           <Col
                             key={product.slug}
                             sm={6}
                             md={4}
-                            lg={3}
-                            className="mb-3"
+                            lg={4}
+                            xl={3}
+                            className={`reveal active delay-${(index % 4 + 1) * 100}`}
                           >
                             <Product product={product}></Product>
                           </Col>
                         ))}
                       </Row>
-                     
-                      </>
                     )}
-                  </div>
-                </Col>
-              </Row>
-            </div>
-          )}
-        </>
+                  </>
+                )}
+              </div>
+            </Col>
+          </Row>
+        </div>
       )}
     </div>
   );

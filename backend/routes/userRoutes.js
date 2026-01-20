@@ -8,7 +8,7 @@ import jwt from 'jsonwebtoken';
 import nodemailer from 'nodemailer'
 import mongoose from 'mongoose';
 import TipoEstabelecimento from '../models/TipoEstabelecimento.js';
-import {updatePushToken} from '../controllers/userController.js'
+import { updatePushToken } from '../controllers/userController.js'
 import DeliverymanUpdateRequest from "../models/DeliverymanUpdateRequestModel.js";
 
 const userRouter = express.Router();
@@ -22,16 +22,16 @@ userRouter.get(
     try {
       const page = req.query.page || 1;
       const pageSize = 10;
-      
+
       const users = await User.find()
         .skip(pageSize * (page - 1))
         .limit(pageSize)
         .sort({ createdAt: -1 })
         .populate('seller.tipoEstabelecimento'); // Adicionado populate para tipoEstabelecimento
-      
+
       const countUsers = await User.countDocuments();
       const pages = Math.ceil(countUsers / pageSize);
-  
+
       res.send({ users, pages });
     } catch (e) {
       console.log(e);
@@ -51,7 +51,7 @@ userRouter.get(
       // Agora busque esses tipos no modelo TipoEstabelecimento
       const tipoestabelecimentos = await TipoEstabelecimento.find({ _id: { $in: usados } });
 
-      res.send({tipoestabelecimentos});
+      res.send({ tipoestabelecimentos });
     } catch (e) {
       console.log(e);
       res.status(500).send({ message: "Erro ao buscar tipos de estabelecimentos" });
@@ -64,26 +64,26 @@ userRouter.get(
   '/top-sellers',
   expressAsyncHandler(async (req, res) => {
     try {
-      const topSellers = await User.find({ 
-        isSeller: true, 
-        isApproved: true, 
+      const topSellers = await User.find({
+        isSeller: true,
+        isApproved: true,
         isBanned: false,
         'seller.tipoEstabelecimento': { $exists: true } // Garante que tem tipoEstabelecimento
       })
-      .select('-password -token')
-      .populate('seller.tipoEstabelecimento') // Popula os dados do tipo de estabelecimento
-      .sort({ 'seller.rating': -1, 'seller.numReviews': -1 })
-      .limit(4)
-      .lean();
+        .select('-password -token')
+        .populate('seller.tipoEstabelecimento') // Popula os dados do tipo de estabelecimento
+        .sort({ 'seller.rating': -1, 'seller.numReviews': -1 })
+        .limit(4)
+        .lean();
 
       if (!topSellers || topSellers.length === 0) {
-        return res.status(404).json({ 
-          success: false,
+        return res.status(200).json({
+          success: true,
           message: 'Nenhum vendedor encontrado',
-          data: []
+          sellers: []
         });
       }
-      
+
       // Formata a resposta para incluir o tipo de estabelecimento
       const formattedSellers = topSellers.map(seller => ({
         ...seller,
@@ -93,10 +93,10 @@ userRouter.get(
         }
       }));
 
-      res.json({ 
+      res.json({
         success: true,
         count: formattedSellers.length,
-        sellers: formattedSellers 
+        sellers: formattedSellers
       });
     } catch (error) {
       console.error('Erro ao buscar top sellers:', error);
@@ -168,7 +168,7 @@ userRouter.get(
       const user = await User.findById(req.params.id)
         .populate('seller.province')
         .populate('seller.tipoEstabelecimento'); // Adicionado populate para tipoEstabelecimento
-      
+
       if (user) {
         res.send({
           ...user.toObject(),
@@ -257,7 +257,7 @@ userRouter.put(
         }
 
         const updatedUser = await user.save();
-        
+
         res.send({
           _id: updatedUser._id,
           name: updatedUser.name,
@@ -295,13 +295,13 @@ userRouter.put(
       user.isDeliveryMan = Boolean(req.body.isDeliveryMan);
       user.isApproved = Boolean(req.body.isApproved);
 
-      if(user.isBanned){
-        user.isApproved=false;
-         await Product.deleteMany({ seller: user._id });
+      if (user.isBanned) {
+        user.isApproved = false;
+        await Product.deleteMany({ seller: user._id });
       }
 
-      if(user.isApproved){
-        user.isBanned=false;
+      if (user.isApproved) {
+        user.isBanned = false;
         await Product.updateMany({ seller: user._id }, { $set: { isActive: user.isApproved } });
       }
 
@@ -324,7 +324,7 @@ userRouter.get(
       const establishmentTypeId = req.params.id;
       const page = parseInt(req.query.page) || 1;
       const pageSize = 10;
-      
+
       if (!mongoose.Types.ObjectId.isValid(establishmentTypeId)) {
         return res.status(400).send({ message: 'Invalid establishment type ID' });
       }
@@ -379,9 +379,9 @@ userRouter.get(
 
     } catch (error) {
       console.error('Error fetching sellers by establishment:', error);
-      res.status(500).send({ 
+      res.status(500).send({
         message: 'Error fetching sellers',
-        error: error.message 
+        error: error.message
       });
     }
   })
@@ -399,10 +399,10 @@ userRouter.get(
 //     const user = await User.findById(req.params.id);
 
 //     if (user) {
-    
+
 //       user.seller.openstore = Boolean(req.body.isopenstore);
 
-     
+
 //       await user.save();
 //       res.status(201).send({user,  message: 'Loja Actualizada com Sucesso' });
 //     } else {
@@ -429,12 +429,12 @@ userRouter.put(
         { isSellerOpen: isOpenStore }
       );
 
-     // Emitir evento pelo socket
-    const io = req.app.get('io');
-    io.emit('storeStatusChanged', {
-      sellerId: req.params.id,
-      isOpen: user.seller.openstore,
-    });
+      // Emitir evento pelo socket
+      const io = req.app.get('io');
+      io.emit('storeStatusChanged', {
+        sellerId: req.params.id,
+        isOpen: user.seller.openstore,
+      });
 
       res.status(201).send({
         user,
@@ -454,53 +454,53 @@ const transporter = nodemailer.createTransport({
     user: 'mauro.patricio1@gmail.com',      // Your email address
     pass: 'kfgg cmdk hvsp ctil',         // Your email password
   },
-  tls:{
+  tls: {
     rejectUnauthorized: false
   }
 });
 
 userRouter.post('/forget-password',
-expressAsyncHandler(async(req, res)=>{
-  const user = await User.findOne({email: req.body.email});
+  expressAsyncHandler(async (req, res) => {
+    const user = await User.findOne({ email: req.body.email });
 
-  if(user){
-    const token = jwt.sign({_id: user._id}, process.env.JWT_SECRET, {expiresIn: '3h'})
+    if (user) {
+      const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, { expiresIn: '3h' })
 
-    user.token = token 
-    await user.save();
+      user.token = token
+      await user.save();
 
 
-// Composicao do texto
-const text = `<p>Por favor click no link abaixo para resetar a sua senha</p>
+      // Composicao do texto
+      const text = `<p>Por favor click no link abaixo para resetar a sua senha</p>
    <a href="${baseUrl()}/reset-password/${token}">Resetar a senha</a>`
 
 
-// Email message configuration
-const mailOptions = {
-  from: 'mauro.patricio1@gmail.com',         
-  to: user.email,       
-  subject: 'Recuperação de senha – Nhiquela Shop',                
-  text: text,
-};
+      // Email message configuration
+      const mailOptions = {
+        from: 'mauro.patricio1@gmail.com',
+        to: user.email,
+        subject: 'Recuperação de senha – Nhiquela Shop',
+        text: text,
+      };
 
-// Enviar email
-transporter.sendMail(mailOptions, function (error, info) {
-  if (error) {
-    console.error('Error sending email:', error);
-    res.status(404).send({message: 'Email não enviado'})
+      // Enviar email
+      transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+          console.error('Error sending email:', error);
+          res.status(404).send({ message: 'Email não enviado' })
 
-  } else {
-    res.send({ message: 'Email enviado com Sucesso' });
-  }
-});
-   
+        } else {
+          res.send({ message: 'Email enviado com Sucesso' });
+        }
+      });
 
-    
 
-  }else{
-    res.status(404).send({message: 'Utilizador não encontrado'})
-  }
-}));
+
+
+    } else {
+      res.status(404).send({ message: 'Utilizador não encontrado' })
+    }
+  }));
 
 
 // Atualiza apenas o estado da loja (aberta/fechada)
@@ -533,20 +533,20 @@ userRouter.patch(
 
 
 
-userRouter.post('/reset-password', expressAsyncHandler(async (req, res)=>{
-  jwt.verify(req.body.token, process.env.JWT_SECRET, async(err, decode)=>{
-    if(err){
-      res.status(401).send({message: 'Invalid Token'})
-    }else{
-      const user = await User.findOne({token: req.body.token});
-      if(user){
-        if(req.body.password){
+userRouter.post('/reset-password', expressAsyncHandler(async (req, res) => {
+  jwt.verify(req.body.token, process.env.JWT_SECRET, async (err, decode) => {
+    if (err) {
+      res.status(401).send({ message: 'Invalid Token' })
+    } else {
+      const user = await User.findOne({ token: req.body.token });
+      if (user) {
+        if (req.body.password) {
           user.password = bcrypt.hashSync(req.body.password, 8)
           await user.save()
-          res.send({message: 'Password Actualizada com successo'})
+          res.send({ message: 'Password Actualizada com successo' })
         }
-      }else{
-        res.status(404).send({message: 'Utilizador nao encontrado'})
+      } else {
+        res.status(404).send({ message: 'Utilizador nao encontrado' })
       }
     }
   })
@@ -571,8 +571,8 @@ userRouter.post(
       }
     }
 
-        // Verificar senha
-    if(user){
+    // Verificar senha
+    if (user) {
 
       const passwordMatch = bcrypt.compareSync(password, user?.password);
       if (!passwordMatch) {
@@ -708,7 +708,7 @@ userRouter.post(
           isSeller: req.body.isSeller,
         });
 
-console.log(req.body.seller?.logo)
+        console.log(req.body.seller?.logo)
         if (newUser.isSeller) {
           newUser.seller = {
             name: req.body.sellerName || req.body.seller?.name,
@@ -760,7 +760,7 @@ userRouter.delete(
 
     if (user) {
 
-      await Product.deleteMany({seller: user._id });
+      await Product.deleteMany({ seller: user._id });
 
       await user.deleteOne();
 

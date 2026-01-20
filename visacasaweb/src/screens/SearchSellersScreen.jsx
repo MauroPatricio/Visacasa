@@ -48,8 +48,6 @@ export default function SearchSellersScreen() {
   const province = searchParams.get('province') || 'all';
   const { t } = useTranslation();
 
-
-
   const [{ loading, error, sellers, pages, countSellers }, dispatch] =
     useReducer(reducer, { loading: true, error: '' });
 
@@ -57,80 +55,160 @@ export default function SearchSellersScreen() {
     const fetchSearchData = async () => {
       try {
         dispatch({ type: 'FETCH_REQUEST' });
-          const  {data}  = await axios.get(
-            `api/users/sellers?page=${page}`
-          );
-      
-
+        const { data } = await axios.get(
+          `api/users/sellers?page=${page}`
+        );
 
         dispatch({ type: 'FETCH_SUCCESS', payload: data });
       } catch (err) {
-
         dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
       }
     };
     fetchSearchData();
   }, [category, order, page, price, query, rating, province]);
 
-
   const getFilterUrl = (filter) => {
     const filterPage = filter.page || page;
     return `/sellers?page=${filterPage}`;
   };
 
-  
-
   return (
-    <div>
+    <div className="search-sellers-premium min-vh-100" style={{ background: '#f8fafc', paddingTop: '100px', paddingBottom: '60px' }}>
       <Helmet>
-        <title>Pesquisar fornecedores</title>
+        <title>Pesquisar fornecedores - Visacasa</title>
       </Helmet>
-      <h1><p>Pesquisa de fornecedores</p></h1>
-      <Row>
-        <Col md={3}>
-        <CategoriesFilter></CategoriesFilter>
-        </Col>
-        <Col md={9}>
-          {loading ? (
-            <LoadingBox></LoadingBox>
-          ) : error ? (
-            <MessageBox variant="danger">{error}</MessageBox>
-          ) : (
-            <>
-              <Row className="justify-content-between mb-3">
 
-                <Col md={6}>
+      <div className="container-fluid px-lg-5">
+        {/* Premium Page Header */}
+        <div className="text-center mb-5">
+          <h1 className="h1-premium mb-3">Pesquisa de fornecedores</h1>
+          <p className="text-muted-premium">Encontre os melhores fornecedores de materiais de construção</p>
+        </div>
+
+        <Row>
+          {/* Premium Sidebar */}
+          <Col lg={3} className="mb-4">
+            <div className="premium-sidebar-card" style={{
+              background: 'rgba(255, 255, 255, 0.9)',
+              backdropFilter: 'blur(16px)',
+              borderRadius: '24px',
+              padding: '28px',
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.05)',
+              border: '1px solid rgba(255, 255, 255, 0.4)',
+              position: 'sticky',
+              top: '100px'
+            }}>
+              <CategoriesFilter />
+            </div>
+          </Col>
+
+          {/* Main Content */}
+          <Col lg={9}>
+            {loading ? (
+              <div className="text-center py-5">
+                <LoadingBox />
+              </div>
+            ) : error ? (
+              <MessageBox variant="danger">{error}</MessageBox>
+            ) : (
+              <>
+                {/* Results Header */}
+                <div className="results-header mb-4 p-4" style={{
+                  background: 'white',
+                  borderRadius: '20px',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between'
+                }}>
                   <div>
-                  {countSellers === 0 ? '0' : countSellers} Resultado(s) encontrado(s) {' '}
+                    <h5 className="mb-0" style={{ color: 'var(--slate-900)', fontWeight: '700' }}>
+                      {countSellers === 0 ? '0' : countSellers} Resultado(s) encontrado(s)
+                    </h5>
                   </div>
-                </Col>
-              </Row>
-              {sellers.length === 0 && (<MessageBox> {t('suppliersnotfound')}</MessageBox>)}
-            <Row>
-              {sellers.map((seller)=>(
-                <Col sm={6} lg={3} className="mb-3" key={seller._id}>
-                  <Product seller={seller}></Product>
-                </Col>
-              ))}
-            </Row>
-            
-            </>
-          )}
-      <div>
-      {[...Array(pages).keys()].map((x)=>(
-          <Link
-          key={x+1}
-          className="mx-1"
-          to={getFilterUrl({ page: x+1 })}
-          >
-            <Button className={Number(page) === x +1? 'text-bold':''} variant="light">
-              {x+1}
-            </Button>
-          </Link>
-        ))}
+                </div>
+
+                {/* No Results Message */}
+                {sellers.length === 0 && (
+                  <div className="text-center py-5">
+                    <MessageBox>{t('suppliersnotfound')}</MessageBox>
+                  </div>
+                )}
+
+                {/* Premium Sellers Grid */}
+                <Row className="g-4">
+                  {sellers.map((seller) => (
+                    <Col key={seller._id} xs={12} sm={6} lg={4} xl={3}>
+                      <Product seller={seller} />
+                    </Col>
+                  ))}
+                </Row>
+
+                {/* Premium Pagination */}
+                {pages > 1 && (
+                  <div className="pagination-premium mt-5" style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    gap: '12px',
+                    flexWrap: 'wrap'
+                  }}>
+                    {[...Array(pages).keys()].map((x) => (
+                      <Link
+                        key={x + 1}
+                        to={getFilterUrl({ page: x + 1 })}
+                        style={{ textDecoration: 'none' }}
+                      >
+                        <Button
+                          className={Number(page) === x + 1 ? 'btn-page-active' : 'btn-page'}
+                          style={{
+                            background: Number(page) === x + 1 ? 'var(--primary-gradient)' : 'white',
+                            color: Number(page) === x + 1 ? 'white' : 'var(--slate-700)',
+                            border: 'none',
+                            borderRadius: '12px',
+                            padding: '10px 18px',
+                            fontWeight: '600',
+                            transition: 'all 0.3s ease',
+                            boxShadow: Number(page) === x + 1
+                              ? '0 10px 15px -3px rgba(232, 90, 79, 0.4)'
+                              : '0 2px 4px rgba(0, 0, 0, 0.05)'
+                          }}
+                        >
+                          {x + 1}
+                        </Button>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+          </Col>
+        </Row>
       </div>
-        </Col>
-      </Row>
+
+      <style>{`
+        .search-sellers-premium {
+          position: relative;
+        }
+        .premium-sidebar-card h6 {
+          font-family: 'Outfit', sans-serif;
+          font-weight: 700;
+          color: var(--slate-900);
+          margin-bottom: 16px;
+        }
+        .btn-page:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1) !important;
+          background: var(--slate-100) !important;
+        }
+        .results-header h5 {
+          font-family: 'Outfit', sans-serif;
+        }
+        @media (max-width: 992px) {
+          .premium-sidebar-card {
+            position: static !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

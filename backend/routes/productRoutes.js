@@ -38,31 +38,40 @@ const getFilteredProducts = async (query, additionalFilters = {}, showAllIsActiv
       ? { nome: { $regex: searchQuery, $options: 'i' } }
       : {};
 
-  const categoryFilter = category && category !== 'all' ? { category } : {};
+  // Fix: Look up category by nome instead of using it as ObjectId
+  let categoryFilter = {};
+  if (category && category !== 'all') {
+    const Category = mongoose.model('Category');
+    const categoryDoc = await Category.findOne({ nome: category });
+    if (categoryDoc) {
+      categoryFilter = { category: categoryDoc._id };
+    }
+  }
+
   const provinceFilter = province && province !== 'all' ? { province } : {};
   const ratingFilter = rating && rating !== 'all' ? { rating: { $gte: Number(rating) } } : {};
   const priceFilter =
     price && price !== 'all'
       ? {
-          price: {
-            $gte: Number(price.split('-')[0]),
-            $lte: Number(price.split('-')[1]),
-          },
-        }
+        price: {
+          $gte: Number(price.split('-')[0]),
+          $lte: Number(price.split('-')[1]),
+        },
+      }
       : {};
 
   const sortOrder =
     order === 'featured'
       ? { featured: -1 }
       : order === 'lowest'
-      ? { price: 1 }
-      : order === 'highest'
-      ? { price: -1 }
-      : order === 'toprated'
-      ? { rating: -1 }
-      : order === 'newest'
-      ? { createdAt: -1 }
-      : { _id: -1 };
+        ? { price: 1 }
+        : order === 'highest'
+          ? { price: -1 }
+          : order === 'toprated'
+            ? { rating: -1 }
+            : order === 'newest'
+              ? { createdAt: -1 }
+              : { _id: -1 };
 
   const filters = {
     ...queryFilter,

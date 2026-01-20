@@ -9,8 +9,6 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { getError } from '../utils';
 import Button from 'react-bootstrap/Button';
 import { useTranslation } from 'react-i18next';
-
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import Product from '../components/Product';
@@ -51,8 +49,6 @@ export default function SearchScreen() {
   const province = searchParams.get('province') || 'all';
   const { t } = useTranslation();
 
-
-
   const [{ loading, error, products, pages, countProducts }, dispatch] =
     useReducer(reducer, { loading: true, error: '' });
 
@@ -60,23 +56,16 @@ export default function SearchScreen() {
     const fetchSearchData = async () => {
       try {
         dispatch({ type: 'FETCH_REQUEST' });
-    
-
-            const {data}  = await axios.get(
-            `api/products/search?page=${page}&query=${query}&category=${category}&price=${price}&rating=${rating}&order=${order}&province=${province}`
-          );
-        
-
-
+        const { data } = await axios.get(
+          `api/products/search?page=${page}&query=${query}&category=${category}&price=${price}&rating=${rating}&order=${order}&province=${province}`
+        );
         dispatch({ type: 'FETCH_SUCCESS', payload: data });
       } catch (err) {
-
         dispatch({ type: 'FETCH_FAIL', payload: getError(err) });
       }
     };
     fetchSearchData();
   }, [category, order, page, price, query, rating, province]);
-
 
   const getFilterUrl = (filter) => {
     const filterCategory = filter.category || category;
@@ -89,91 +78,203 @@ export default function SearchScreen() {
     return `/search?category=${filterCategory}&query=${filterQuery}&price=${filterPrice}&rating=${filterRating}&order=${filterOrder}&page=${filterPage}&province=${filterProvince}`;
   };
 
-  
-
   return (
-    <div>
+    <div className="search-premium min-vh-100" style={{ background: '#f8fafc', paddingTop: '100px', paddingBottom: '60px' }}>
       <Helmet>
-        <title>{t('searchproducts')}</title>
+        <title>{t('searchproducts')} - Visacasa</title>
       </Helmet>
-      <h1><p>{t('searchproducts')}</p></h1>
-      <Row>
-        <Col md={3}>
-        <CategoriesFilter></CategoriesFilter>
-        </Col>
-        <Col md={9}>
-          {loading ? (
-            <LoadingBox></LoadingBox>
-          ) : error ? (
-            <MessageBox variant="danger">{error}</MessageBox>
-          ) : (
-            <>
-              <Row className="justify-content-between mb-3">
-                <Col md={6}>
-                  <div>
-                    {countProducts === 0 ? '0' : countProducts} {t('resultfound')} {' '}
-                    {query !== 'all' && ' : ' + query}
-                    {category !== 'all' && ' : ' + products && products[0] && products[0].category && products[0].category.name}
-                    {province !== 'all' && ' : ' + products && products[0] && products[0].province && products && products[0].province.name}
-                    {price !== 'all' && ' : Preço ' + price +' MT'}
-                    {rating !== 'all' && ' : Rating ' + rating + ' & acima'}
-                    {query !== 'all' ||
-                    province !== 'all' ||
-                    category !== 'all' ||
-                    rating !== 'all' ||
-                    price !== 'all' ? (
-                      <Button
-                        variant="light"
-                        onClick={() => {
-                          navigate('/search');
+
+      <div className="container-fluid px-lg-5">
+        {/* Premium Page Header */}
+        <div className="text-center mb-5">
+          <h1 className="h1-premium mb-3">{t('searchproducts')}</h1>
+          <p className="text-muted-premium">Encontre os melhores produtos para sua construção</p>
+        </div>
+
+        <Row>
+          {/* Premium Sidebar */}
+          <Col lg={3} className="mb-4">
+            <div className="premium-sidebar-card" style={{
+              background: 'rgba(255, 255, 255, 0.9)',
+              backdropFilter: 'blur(16px)',
+              borderRadius: '24px',
+              padding: '28px',
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.05)',
+              border: '1px solid rgba(255, 255, 255, 0.4)',
+              position: 'sticky',
+              top: '100px'
+            }}>
+              <CategoriesFilter />
+            </div>
+          </Col>
+
+          {/* Main Content */}
+          <Col lg={9}>
+            {loading ? (
+              <div className="text-center py-5">
+                <LoadingBox />
+              </div>
+            ) : error ? (
+              <MessageBox variant="danger">{error}</MessageBox>
+            ) : (
+              <>
+                {/* Results Header with Filters & Sort */}
+                <div className="results-header mb-4 p-4" style={{
+                  background: 'white',
+                  borderRadius: '20px',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
+                }}>
+                  <Row className="align-items-center">
+                    <Col md={8}>
+                      <h5 className="mb-2" style={{ color: 'var(--slate-900)', fontWeight: '700' }}>
+                        {countProducts === 0 ? '0' : countProducts} {t('resultfound')}
+                      </h5>
+                      <div className="d-flex flex-wrap gap-2 align-items-center" style={{ fontSize: '0.875rem', color: 'var(--slate-600)' }}>
+                        {query !== 'all' && (
+                          <span className="filter-badge">🔍 {query}</span>
+                        )}
+                        {category !== 'all' && products && products[0] && products[0].category && (
+                          <span className="filter-badge">📂 {products[0].category.name}</span>
+                        )}
+                        {province !== 'all' && products && products[0] && products[0].province && (
+                          <span className="filter-badge">📍 {products[0].province.name}</span>
+                        )}
+                        {price !== 'all' && (
+                          <span className="filter-badge">💰 {price} MT</span>
+                        )}
+                        {rating !== 'all' && (
+                          <span className="filter-badge">⭐ {rating}+</span>
+                        )}
+                        {(query !== 'all' || province !== 'all' || category !== 'all' || rating !== 'all' || price !== 'all') && (
+                          <Button
+                            variant="light"
+                            size="sm"
+                            onClick={() => navigate('/search')}
+                            style={{
+                              borderRadius: '8px',
+                              padding: '4px 12px',
+                              fontSize: '0.8rem',
+                              fontWeight: '600'
+                            }}
+                          >
+                            <FontAwesomeIcon icon={faTimesCircle} /> Limpar
+                          </Button>
+                        )}
+                      </div>
+                    </Col>
+                    <Col md={4} className="text-md-end mt-3 mt-md-0">
+                      <label style={{ fontSize: '0.875rem', fontWeight: '600', color: 'var(--slate-700)', marginRight: '8px' }}>
+                        {t('orderby')}
+                      </label>
+                      <select
+                        value={order}
+                        onChange={(e) => navigate(getFilterUrl({ order: e.target.value }))}
+                        style={{
+                          borderRadius: '10px',
+                          padding: '8px 12px',
+                          border: '1px solid #e2e8f0',
+                          fontSize: '0.875rem',
+                          fontWeight: '600',
+                          color: 'var(--slate-700)'
                         }}
                       >
-                        {' '}
-                        <FontAwesomeIcon icon={faTimesCircle}></FontAwesomeIcon>
-                      </Button>
-                    ) : null}
-                  </div>
-                </Col>
-                <Col className="text-end">
-                  {t('orderby')}{' '}
-                  <select value={order}
-                  onChange={(e)=>{
-                    navigate(getFilterUrl({order: e.target.value}));
-                  }}>
-                    <option value="newest">{t('newproducts')}</option>
-                    <option value="lowest">{t('lowtohigh')}</option>
-                    <option value="highest">{t('hightolow')}</option>
-                    <option value="toprated">{t('avgcustomerreviews')}</option>
+                        <option value="newest">{t('newproducts')}</option>
+                        <option value="lowest">{t('lowtohigh')}</option>
+                        <option value="highest">{t('hightolow')}</option>
+                        <option value="toprated">{t('avgcustomerreviews')}</option>
+                      </select>
+                    </Col>
+                  </Row>
+                </div>
 
-                  </select>
-                </Col>
-              </Row>
-              {products.length === 0 && (<MessageBox> {t('productsnotfound')}</MessageBox>)}
-            <Row>
-              {products.map((product)=>(
-                <Col sm={6} lg={3} className="mb-3" key={product._id}>
-                  <Product product={product}></Product>
-                </Col>
-              ))}
-            </Row>
-            
-            </>
-          )}
-      <div>
-      {[...Array(pages).keys()].map((x)=>(
-          <Link
-          key={x+1}
-          className="mx-1"
-          to={getFilterUrl({ page: x+1 })}
-          >
-            <Button className={Number(page) === x +1? 'text-bold':''} variant="light">
-              {x+1}
-            </Button>
-          </Link>
-        ))}
+                {/* No Results Message */}
+                {products.length === 0 && (
+                  <div className="text-center py-5">
+                    <MessageBox>{t('productsnotfound')}</MessageBox>
+                  </div>
+                )}
+
+                {/* Premium Products Grid */}
+                <Row className="g-4">
+                  {products.map((product) => (
+                    <Col key={product._id} xs={12} sm={6} lg={4} xl={3}>
+                      <Product product={product} />
+                    </Col>
+                  ))}
+                </Row>
+
+                {/* Premium Pagination */}
+                {pages > 1 && (
+                  <div className="pagination-premium mt-5" style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    gap: '12px',
+                    flexWrap: 'wrap'
+                  }}>
+                    {[...Array(pages).keys()].map((x) => (
+                      <Link
+                        key={x + 1}
+                        to={getFilterUrl({ page: x + 1 })}
+                        style={{ textDecoration: 'none' }}
+                      >
+                        <Button
+                          className={Number(page) === x + 1 ? 'btn-page-active' : 'btn-page'}
+                          style={{
+                            background: Number(page) === x + 1 ? 'var(--primary-gradient)' : 'white',
+                            color: Number(page) === x + 1 ? 'white' : 'var(--slate-700)',
+                            border: 'none',
+                            borderRadius: '12px',
+                            padding: '10px 18px',
+                            fontWeight: '600',
+                            transition: 'all 0.3s ease',
+                            boxShadow: Number(page) === x + 1
+                              ? '0 10px 15px -3px rgba(232, 90, 79, 0.4)'
+                              : '0 2px 4px rgba(0, 0, 0, 0.05)'
+                          }}
+                        >
+                          {x + 1}
+                        </Button>
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+          </Col>
+        </Row>
       </div>
-        </Col>
-      </Row>
+
+      <style>{`
+        .search-premium {
+          position: relative;
+        }
+        .premium-sidebar-card h6 {
+          font-family: 'Outfit', sans-serif;
+          font-weight: 700;
+          color: var(--slate-900);
+          margin-bottom: 16px;
+        }
+        .filter-badge {
+          background: var(--slate-100);
+          padding: 4px 12px;
+          border-radius: 8px;
+          font-weight: 500;
+          display: inline-block;
+        }
+        .btn-page:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1) !important;
+          background: var(--slate-100) !important;
+        }
+        .results-header h5 {
+          font-family: 'Outfit', sans-serif;
+        }
+        @media (max-width: 992px) {
+          .premium-sidebar-card {
+            position: static !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

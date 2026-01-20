@@ -110,31 +110,17 @@ const ProductCardView = memo(({ item, showComparison = false }) => {
                         source={{ uri: productDetail.image }}
                         style={styles.productImage}
                         resizeMode="cover"
+                        onError={(e) => {
+                            // Basic error handling for mobile
+                            console.log('Image load error:', e.nativeEvent.error);
+                        }}
                     />
 
-<<<<<<< HEAD
-                    }}
-                        style={styles.image} />
-                    <View style={styles.details}>
-                        <Text style={styles.title} numberOfLines={1}>{item.item.nome}</Text>
-                        <Text style={styles.supplier} numberOfLines={1}>{item.item.seller.seller.name}</Text>
-
-                        <Text style={styles.price} numberOfLines={1}>{item.item.price} Mt</Text>
-                        <Text>
-                            {item.item.isOrdered ? <Badge style={{ color: 'white', backgroundColor: 'green' }}>  Por encomenda  </Badge> : item.item.countInStock !== 0 ? item.item.countInStock + ` unidade(s)` : <Badge bg='danger'>Sem stock</Badge>}
-                        </Text>
-
-                    </View>
-                    <TouchableOpacity style={styles.addBtn}>
-                        <Ionicons name='cart' size={25}
-                            color={'#7F00FF'}
-=======
                     {/* Action Buttons (Top Corners) */}
                     {showComparison && (
                         <ComparisonButton
                             isSelected={isSelected}
                             onPress={handleToggleComparison}
->>>>>>> a13dfda7a88a9ffabbe8512c1fb3c1832a3387d7
                         />
                     )}
 
