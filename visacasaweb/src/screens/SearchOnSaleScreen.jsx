@@ -47,7 +47,13 @@ export default function SearchOnSaleScreen() {
   const { t } = useTranslation();
 
   const [{ loading, error, products, pages, countProducts }, dispatch] =
-    useReducer(reducer, { loading: true, error: '' });
+    useReducer(reducer, {
+      loading: true,
+      error: '',
+      products: [], // Initialize as empty array
+      pages: 0,
+      countProducts: 0
+    });
 
   useEffect(() => {
     window.scrollTo(0, 0);

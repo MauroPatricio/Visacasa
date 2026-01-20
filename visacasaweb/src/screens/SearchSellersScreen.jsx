@@ -49,7 +49,13 @@ export default function SearchSellersScreen() {
   const { t } = useTranslation();
 
   const [{ loading, error, sellers, pages, countSellers }, dispatch] =
-    useReducer(reducer, { loading: true, error: '' });
+    useReducer(reducer, {
+      loading: true,
+      error: '',
+      sellers: [], // Initialize as empty array
+      pages: 0,
+      countSellers: 0
+    });
 
   useEffect(() => {
     const fetchSearchData = async () => {

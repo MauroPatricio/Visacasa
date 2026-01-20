@@ -77,17 +77,22 @@ export function HomeScreen() {
   const { t } = useTranslation();
   const { state } = useContext(Store);
   const { changelng } = state;
-  const [{ topSellers, loadingTopUsers, errorTopUsers, loading, categories, loadingCategories }, dispatch] = useReducer(reducer, {
-    topSellers: [],
-    categories: [],
+  const [
+    { loading, error, loadingCategories, categories, loadingTopUsers, topSellers },
+    dispatch,
+  ] = useReducer(reducer, {
     loading: true,
-    loadingCategories: true,
     error: '',
+    loadingCategories: true,
+    categories: [],  // Initialize as empty array
+    loadingTopUsers: true,
+    topSellers: [],  // Initialize as empty array
+    errorTopUsers: '',
   });
 
   const [page, setPage] = useState(1);
   const [pageSize] = useState(10);
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState([]);  // Initialize as empty array
   const [showCarouselTopSellers, setShowCarouselTopSellers] = useState(false);
 
   useEffect(() => {

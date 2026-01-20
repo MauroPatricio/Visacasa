@@ -50,7 +50,13 @@ export default function SearchScreen() {
   const { t } = useTranslation();
 
   const [{ loading, error, products, pages, countProducts }, dispatch] =
-    useReducer(reducer, { loading: true, error: '' });
+    useReducer(reducer, {
+      loading: true,
+      error: '',
+      products: [], // Initialize as empty array
+      pages: 0,
+      countProducts: 0
+    });
 
   useEffect(() => {
     const fetchSearchData = async () => {
