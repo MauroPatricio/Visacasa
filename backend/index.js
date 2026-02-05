@@ -114,6 +114,10 @@ app.use('/api/favorites', favoriteRouter);
 // **Configuração do diretório e frontend**
 const __dirname = path.resolve();
 // const rootDir = path.join(__dirname, '..');
+
+// Servir arquivos estáticos da pasta images (para compatibilidade com URLs relativas)
+app.use('/images', express.static(path.join(__dirname, '../visacasaweb/public/images')));
+
 app.use(express.static(path.join(__dirname, '/frontend/build')));
 
 // **Rota de Status da API - Premium**

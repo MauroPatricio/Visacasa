@@ -1,60 +1,128 @@
 /* 🔹 Estilização do container principal */
 .bg-color-row {
-    background: linear-gradient(135deg, #d0d2d5, #626b75); /* Azul moderno com gradiente */
-    color: #fff; /* Texto branco para contraste */
-    padding: 15px 20px;
-    border-radius: 8px;
-    text-align: center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Sombra para destaque */
+  background: linear-gradient(135deg, #d0d2d5, #626b75);
+  /* Azul moderno com gradiente */
+  color: #fff;
+  /* Texto branco para contraste */
+  padding: 15px 20px;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  /* Sombra para destaque */
+  margin: 0 10px 10px 10px;
+}
+
+/* 🔹 Estilização do texto de entrega */
+.delivery-info {
+  font-size: 1rem;
+  font-weight: 600;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  line-height: 1.5;
+}
+
+/* 🔹 Ícone de relógio */
+.delivery-info svg {
+  font-size: 1.3rem;
+  color: #7F00FF;
+  /* Roxo para destaque */
+  transition: transform 0.3s ease-in-out;
+}
+
+/* 🔹 Efeito de animação no ícone ao passar o mouse */
+.delivery-info:hover svg {
+  transform: rotate(10deg) scale(1.1);
+}
+
+/* 🔹 Alerta de vendedor não autorizado */
+.not-approved-seller {
+  background: rgba(255, 0, 0, 0.1);
+  /* Fundo vermelho claro */
+  color: #dc3545;
+  /* Vermelho forte */
+  padding: 8px 12px;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 5px;
+  display: inline-block;
+  box-shadow: 0 2px 5px rgba(255, 0, 0, 0.2);
+}
+
+/* 🔹 Responsividade - Tablets */
+@media (max-width: 768px) {
+  .bg-color-row {
+    padding: 12px 15px;
+    margin: 0 8px 8px 8px;
+    border-radius: 6px;
   }
-  
-  /* 🔹 Estilização do texto de entrega */
+
   .delivery-info {
-    /* font-size: 1.2rem; */
-    font-weight: 600;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    /* gap: 8px; Espaço entre o texto e o ícone */
+    font-size: 0.9rem;
+    gap: 6px;
   }
-  
-  /* 🔹 Ícone de relógio */
+
   .delivery-info svg {
-    font-size: 1.5rem;
-    color: #7F00FF; /* Amarelo para destaque */
-    transition: transform 0.3s ease-in-out;
+    font-size: 1.2rem;
   }
-  
-  /* 🔹 Efeito de animação no ícone ao passar o mouse */
-  .delivery-info:hover svg {
-    transform: rotate(10deg) scale(1.1);
-  }
-  
-  /* 🔹 Alerta de vendedor não autorizado */
+
   .not-approved-seller {
-    background: rgba(255, 0, 0, 0.1); /* Fundo vermelho claro */
-    color: #dc3545; /* Vermelho forte */
-    padding: 8px 12px;
+    font-size: 0.9rem;
+    padding: 6px 10px;
+  }
+}
+
+/* 🔹 Responsividade - Smartphones */
+@media (max-width: 576px) {
+  .bg-color-row {
+    padding: 10px 12px;
+    margin: 0 4px 8px 4px;
+    border-radius: 6px;
+  }
+
+  .delivery-info {
+    font-size: 0.85rem;
+    gap: 5px;
+    flex-wrap: wrap;
+  }
+
+  .delivery-info b {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    justify-content: center;
+  }
+
+  .delivery-info svg {
+    font-size: 1.1rem;
+  }
+
+  .not-approved-seller {
+    font-size: 0.85rem;
+    padding: 6px 8px;
+    margin-top: 5px;
+  }
+}
+
+/* 🔹 Responsividade - Extra small */
+@media (max-width: 400px) {
+  .bg-color-row {
+    padding: 8px 10px;
+    margin: 0 2px 6px 2px;
+  }
+
+  .delivery-info {
+    font-size: 0.8rem;
+    gap: 4px;
+  }
+
+  .delivery-info svg {
     font-size: 1rem;
-    font-weight: bold;
-    border-radius: 5px;
-    display: inline-block;
-    box-shadow: 0 2px 5px rgba(255, 0, 0, 0.2);
   }
-  
-  /* 🔹 Responsividade */
-  @media (max-width: 768px) {
-    .bg-color-row {
-      padding: 10px;
-    }
-  
-    .delivery-info {
-      font-size: 1rem;
-      flex-direction: column;
-    }
-  
-    .delivery-info svg {
-      font-size: 1.3rem;
-    }
+
+  .not-approved-seller {
+    font-size: 0.8rem;
+    padding: 5px 8px;
   }
-  
+}

@@ -155,6 +155,16 @@ export function App() {
 
 function AppContent({ expanded, setExpanded, signOutHandler, userInfo, t, cart, state, ctxDispatch }) {
   const location = useLocation();
+  const [activeDropdown, setActiveDropdown] = useState(null);
+
+  const handleDropdownToggle = (dropdownId, isOpen) => {
+    setActiveDropdown(isOpen ? dropdownId : null);
+  };
+
+  const closeDropdowns = () => {
+    setActiveDropdown(null);
+    setExpanded(false);
+  };
 
   useEffect(() => {
     const observerOptions = {
@@ -178,6 +188,12 @@ function AppContent({ expanded, setExpanded, signOutHandler, userInfo, t, cart, 
     };
   }, [location.pathname]);
 
+  // Close mobile menu and dropdowns on route change
+  useEffect(() => {
+    setExpanded(false);
+    setActiveDropdown(null);
+  }, [location.pathname, setExpanded]);
+
   return (
     <div className="d-flex flex-column site-background">
       <Helmet>
@@ -188,6 +204,7 @@ function AppContent({ expanded, setExpanded, signOutHandler, userInfo, t, cart, 
       <header >
         <Navbar
           expanded={expanded}
+          onSelect={() => setExpanded(false)}
           bg="light"
           variant="light"
           expand="lg"
@@ -211,7 +228,7 @@ function AppContent({ expanded, setExpanded, signOutHandler, userInfo, t, cart, 
               onClick={() => setExpanded(!expanded)}
               aria-controls="basic-navbar-nav"
             />
-            <Link to="/cart" className="nav-link black-icon hide-icon-screen me-3">
+            <Link to="/cart" className="nav-link black-icon hide-icon-screen me-3" onClick={closeDropdowns}>
               <FontAwesomeIcon icon={faCartShopping}></FontAwesomeIcon>
               {cart.cartItems.length > 0 && (
                 <Badge
@@ -226,13 +243,13 @@ function AppContent({ expanded, setExpanded, signOutHandler, userInfo, t, cart, 
                 </Badge>
               )}
             </Link>
-            <Link to="/favorites" className="nav-link black-icon hide-icon-screen me-3">
+            <Link to="/favorites" className="nav-link black-icon hide-icon-screen me-3" onClick={closeDropdowns}>
               <FaRegHeart />
               {state.favorites.length > 0 && (
                 <Badge bg="danger" className="cart-number">{state.favorites.length}</Badge>
               )}
             </Link>
-            <Link to="/compare" className="nav-link black-icon hide-icon-screen me-3">
+            <Link to="/compare" className="nav-link black-icon hide-icon-screen me-3" onClick={closeDropdowns}>
               <FaExchangeAlt />
               {state.compareProducts.length > 0 && (
                 <Badge bg="primary" className="cart-number">{state.compareProducts.length}</Badge>
@@ -258,20 +275,26 @@ function AppContent({ expanded, setExpanded, signOutHandler, userInfo, t, cart, 
                 </Link>
 
                 {userInfo ? (
-                  <NavDropdown title={<span className="fw-bold">{userInfo.name}</span>} id="basic-nav-dropdown" className="premium-dropdown">
+                  <NavDropdown
+                    title={<span className="fw-bold">{userInfo.name}</span>}
+                    id="basic-nav-dropdown"
+                    className="premium-dropdown"
+                    show={activeDropdown === 'user'}
+                    onToggle={(isOpen) => handleDropdownToggle('user', isOpen)}
+                  >
                     <LinkContainer to="/profile">
-                      <NavDropdown.Item>{t('profile')}</NavDropdown.Item>
+                      <NavDropdown.Item onClick={closeDropdowns}>{t('profile')}</NavDropdown.Item>
                     </LinkContainer>
 
                     {userInfo && !userInfo.isDeliveryMan && (
                       <LinkContainer to="/orderHistory">
-                        <NavDropdown.Item>{t('myorders')}</NavDropdown.Item>
+                        <NavDropdown.Item onClick={closeDropdowns}>{t('myorders')}</NavDropdown.Item>
                       </LinkContainer>
                     )}
 
                     {userInfo && userInfo.isDeliveryMan && (
                       <LinkContainer to="/delivery/orderlist">
-                        <NavDropdown.Item>
+                        <NavDropdown.Item onClick={closeDropdowns}>
                           {t('orderstodeliver')}
 
                         </NavDropdown.Item>
@@ -280,18 +303,18 @@ function AppContent({ expanded, setExpanded, signOutHandler, userInfo, t, cart, 
 
 
                     <LinkContainer to="/requestdelivermanhistory">
-                      <NavDropdown.Item>{t('deliveryrequesthistory')}</NavDropdown.Item>
+                      <NavDropdown.Item onClick={closeDropdowns}>{t('deliveryrequesthistory')}</NavDropdown.Item>
                     </LinkContainer>
 
 
                     <LinkContainer to="/allrequestdelivermanhistory">
-                      <NavDropdown.Item>{t('alldeliveryrequesthistory')}</NavDropdown.Item>
+                      <NavDropdown.Item onClick={closeDropdowns}>{t('alldeliveryrequesthistory')}</NavDropdown.Item>
                     </LinkContainer>
 
 
 
                     <LinkContainer to="/signin">
-                      <NavDropdown.Item onClick={signOutHandler}>
+                      <NavDropdown.Item onClick={() => { signOutHandler(); closeDropdowns(); }}>
                         <b>{t('logout')}</b>
                       </NavDropdown.Item>
                     </LinkContainer>
@@ -310,12 +333,18 @@ function AppContent({ expanded, setExpanded, signOutHandler, userInfo, t, cart, 
 
 
                 {userInfo && userInfo.isSeller && userInfo.isApproved && (
-                  <NavDropdown title={userInfo.seller.name} id="admin-nav-dropdown">
+                  <NavDropdown
+                    title={userInfo.seller.name}
+                    id="seller-nav-dropdown"
+                    className="premium-dropdown"
+                    show={activeDropdown === 'seller'}
+                    onToggle={(isOpen) => handleDropdownToggle('seller', isOpen)}
+                  >
                     <LinkContainer to="/productlist/seller">
-                      <NavDropdown.Item>{t('myproducts')}</NavDropdown.Item>
+                      <NavDropdown.Item onClick={closeDropdowns}>{t('myproducts')}</NavDropdown.Item>
                     </LinkContainer>
                     <LinkContainer to="/orderlist/seller">
-                      <NavDropdown.Item>{t('orderclients')}
+                      <NavDropdown.Item onClick={closeDropdowns}>{t('orderclients')}
                         <Badge
                           bg="danger"
                           variant="danger"
@@ -326,63 +355,69 @@ function AppContent({ expanded, setExpanded, signOutHandler, userInfo, t, cart, 
                       </NavDropdown.Item>
                     </LinkContainer>
                     <LinkContainer to="/orderhistorybycustomer/seller">
-                      <NavDropdown.Item>{t('paymenthistory')}</NavDropdown.Item>
+                      <NavDropdown.Item onClick={closeDropdowns}>{t('paymenthistory')}</NavDropdown.Item>
                     </LinkContainer>
                   </NavDropdown>
                 )}
                 {userInfo && userInfo.isAdmin && (
-                  <NavDropdown title="Admin" id="admin-nav-dropdown">
+                  <NavDropdown
+                    title="Admin"
+                    id="admin-nav-dropdown"
+                    className="premium-dropdown"
+                    show={activeDropdown === 'admin'}
+                    onToggle={(isOpen) => handleDropdownToggle('admin', isOpen)}
+                  >
                     <LinkContainer to="/admin/dashboard">
-                      <NavDropdown.Item>{t('dashboard')}</NavDropdown.Item>
+                      <NavDropdown.Item onClick={closeDropdowns}>{t('dashboard')}</NavDropdown.Item>
                     </LinkContainer>
                     <LinkContainer to="/provinceList">
-                      <NavDropdown.Item>{t('provinces')}</NavDropdown.Item>
+                      <NavDropdown.Item onClick={closeDropdowns}>{t('provinces')}</NavDropdown.Item>
                     </LinkContainer>
                     <LinkContainer to="/documentTypeList">
-                      <NavDropdown.Item>{t('doctypes')}</NavDropdown.Item>
+                      <NavDropdown.Item onClick={closeDropdowns}>{t('doctypes')}</NavDropdown.Item>
                     </LinkContainer>
                     <LinkContainer to="/categoryList">
-                      <NavDropdown.Item>{t('categories')}</NavDropdown.Item>
+                      <NavDropdown.Item onClick={closeDropdowns}>{t('categories')}</NavDropdown.Item>
                     </LinkContainer>
                     <LinkContainer to="/subcategoryList">
-                      <NavDropdown.Item>Subcategorias</NavDropdown.Item>
+                      <NavDropdown.Item onClick={closeDropdowns}>Subcategorias</NavDropdown.Item>
                     </LinkContainer>
                     <LinkContainer to="/colorList">
-                      <NavDropdown.Item>{t('availablecolors')}</NavDropdown.Item>
+                      <NavDropdown.Item onClick={closeDropdowns}>{t('availablecolors')}</NavDropdown.Item>
                     </LinkContainer>
                     <LinkContainer to="/sizeList">
-                      <NavDropdown.Item>{t('availablesizes')}</NavDropdown.Item>
+                      <NavDropdown.Item onClick={closeDropdowns}>{t('availablesizes')}</NavDropdown.Item>
                     </LinkContainer>
                     <LinkContainer to="/conditionstatusList">
-                      <NavDropdown.Item>{t('productcondition')}</NavDropdown.Item>
+                      <NavDropdown.Item onClick={closeDropdowns}>{t('productcondition')}</NavDropdown.Item>
                     </LinkContainer>
                     <LinkContainer to="/qualitytypeList">
-                      <NavDropdown.Item>{t('productquality')}</NavDropdown.Item>
+                      <NavDropdown.Item onClick={closeDropdowns}>{t('productquality')}</NavDropdown.Item>
                     </LinkContainer>
                     <LinkContainer to="/admin/productlist">
-                      <NavDropdown.Item>{t('products')}</NavDropdown.Item>
+                      <NavDropdown.Item onClick={closeDropdowns}>{t('products')}</NavDropdown.Item>
                     </LinkContainer>
                     <LinkContainer to="/admin/orderlist">
-                      <NavDropdown.Item>{t('orders')}</NavDropdown.Item>
+                      <NavDropdown.Item onClick={closeDropdowns}>{t('orders')}</NavDropdown.Item>
                     </LinkContainer>
                     <LinkContainer to="/admin/userlist">
-                      <NavDropdown.Item>{t('userslist')}</NavDropdown.Item>
+                      <NavDropdown.Item onClick={closeDropdowns}>{t('userslist')}</NavDropdown.Item>
                     </LinkContainer>
                     <LinkContainer to="/support">
-                      <NavDropdown.Item>{t('Support')}</NavDropdown.Item>
+                      <NavDropdown.Item onClick={closeDropdowns}>{t('Support')}</NavDropdown.Item>
                     </LinkContainer>
                     <LinkContainer to="/broadcast">
-                      <NavDropdown.Item>{t('broadcast')}</NavDropdown.Item>
+                      <NavDropdown.Item onClick={closeDropdowns}>{t('broadcast')}</NavDropdown.Item>
                     </LinkContainer>
                     <LinkContainer to="/admin/sellerstopay">
-                      <NavDropdown.Item>{t('sellerstopay')}</NavDropdown.Item>
+                      <NavDropdown.Item onClick={closeDropdowns}>{t('sellerstopay')}</NavDropdown.Item>
                     </LinkContainer>
                     <LinkContainer to="/admin/deliverstopay">
-                      <NavDropdown.Item>{t('deliverstopay')}</NavDropdown.Item>
+                      <NavDropdown.Item onClick={closeDropdowns}>{t('deliverstopay')}</NavDropdown.Item>
                     </LinkContainer>
 
                     <LinkContainer to="/admin/tipoestabelecimentos">
-                      <NavDropdown.Item>{t('tipoestabelecimento')}</NavDropdown.Item>
+                      <NavDropdown.Item onClick={closeDropdowns}>{t('tipoestabelecimento')}</NavDropdown.Item>
                     </LinkContainer>
 
 
@@ -394,7 +429,7 @@ function AppContent({ expanded, setExpanded, signOutHandler, userInfo, t, cart, 
 
 
 
-                <Link to="/cart" className="nav-link  hide-cart">
+                <Link to="/cart" className="nav-link  hide-cart" onClick={closeDropdowns}>
                   <FontAwesomeIcon icon={faCartShopping}></FontAwesomeIcon>
                   {cart.cartItems.length > 0 && (
                     <Badge
@@ -874,6 +909,24 @@ function AppContent({ expanded, setExpanded, signOutHandler, userInfo, t, cart, 
                 element={
                   <SellerRoute>
                     <OrderHistoryBySellerScreen />
+                  </SellerRoute>
+                }
+              />
+
+              <Route
+                path="/product/create"
+                element={
+                  <SellerRoute>
+                    <ProductCreateScreen />
+                  </SellerRoute>
+                }
+              />
+
+              <Route
+                path="/product/:id"
+                element={
+                  <SellerRoute>
+                    <ProductEditScreen />
                   </SellerRoute>
                 }
               />
