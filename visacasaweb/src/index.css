@@ -81,7 +81,7 @@ body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #fcfcfc;
+  background: #E6E6FA;
   color: var(--slate-800);
   line-height: 1.6;
   overflow-x: hidden;
@@ -917,4 +917,550 @@ table {
   .premium-dropdown .dropdown-item:hover {
     padding-left: 18px;
   }
+}
+
+/* ============================================================
+   PREMIUM MODAL STYLES
+   Modern modal design with smooth animations
+   ============================================================ */
+
+.modal-content {
+  border-radius: var(--radius-lg) !important;
+  border: none !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+  overflow: hidden;
+}
+
+.modal-header {
+  background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+  border-bottom: 2px solid #f1f5f9 !important;
+  padding: 1.5rem 2rem;
+}
+
+.modal-title {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  color: var(--slate-900);
+  font-size: 1.5rem;
+}
+
+.modal-body {
+  padding: 2rem !important;
+}
+
+.modal-footer {
+  background: #f8f9fa;
+  border-top: 2px solid #f1f5f9 !important;
+  padding: 1.5rem 2rem;
+}
+
+/* Modal Animation */
+.modal.fade .modal-dialog {
+  transform: scale(0.8) translateY(-20px);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.modal.show .modal-dialog {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
+
+/* ============================================================
+   PREMIUM BUTTON STYLES
+   Consistent, modern button design across the app
+   ============================================================ */
+
+.btn-premium {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-md);
+  border: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-subtle);
+}
+
+.btn-premium::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.4s, height 0.4s;
+}
+
+.btn-premium:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.btn-premium:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-premium);
+}
+
+.btn-premium:active {
+  transform: translateY(0);
+}
+
+/* Button Variants */
+.btn-primary-premium {
+  background: var(--primary-gradient);
+  color: white;
+}
+
+.btn-secondary-premium {
+  background: var(--dark-gradient);
+  color: white;
+}
+
+.btn-success-premium {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+}
+
+.btn-danger-premium {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: white;
+}
+
+.btn-outline-premium {
+  background: transparent;
+  border: 2px solid var(--primary);
+  color: var(--primary);
+}
+
+.btn-outline-premium:hover {
+  background: var(--primary-gradient);
+  color: white;
+  border-color: transparent;
+}
+
+/* ============================================================
+   PREMIUM FORM STYLES
+   Modern form inputs with floating labels
+   ============================================================ */
+
+.form-control-premium {
+  border-radius: var(--radius-md) !important;
+  border: 2px solid #e2e8f0 !important;
+  padding: 0.875rem 1rem !important;
+  font-size: 1rem !important;
+  transition: all 0.3s ease !important;
+  background: white !important;
+}
+
+.form-control-premium:focus {
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 4px rgba(232, 90, 79, 0.1) !important;
+  outline: none !important;
+}
+
+.form-control-premium::placeholder {
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+.form-label-premium {
+  font-weight: 600;
+  color: var(--slate-700);
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+/* Floating Label Animation */
+.form-floating-premium {
+  position: relative;
+}
+
+.form-floating-premium .form-control-premium:focus~label,
+.form-floating-premium .form-control-premium:not(:placeholder-shown)~label {
+  transform: translateY(-1.5rem) scale(0.85);
+  color: var(--primary);
+}
+
+.form-floating-premium label {
+  position: absolute;
+  top: 0.875rem;
+  left: 1rem;
+  transition: all 0.3s ease;
+  pointer-events: none;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+/* ============================================================
+   PREMIUM LOADING COMPONENTS
+   Modern loading indicators
+   ============================================================ */
+
+.loading-spinner-premium {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(232, 90, 79, 0.1);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-dots {
+  display: inline-flex;
+  gap: 8px;
+}
+
+.loading-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--primary);
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.loading-dot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.loading-dot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes bounce {
+
+  0%,
+  80%,
+  100% {
+    transform: scale(0);
+  }
+
+  40% {
+    transform: scale(1);
+  }
+}
+
+/* ============================================================
+   M-PESA PAYMENT MODAL PREMIUM STYLES
+   Enhanced payment experience
+   ============================================================ */
+
+.mpesa-modal-header {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white !important;
+  border-bottom: none !important;
+}
+
+.mpesa-modal-header .modal-title {
+  color: white !important;
+}
+
+.mpesa-modal-header .btn-close {
+  filter: brightness(0) invert(1);
+}
+
+.payment-amount-display {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  padding: 1.5rem;
+  border-radius: var(--radius-md);
+  text-align: center;
+  margin-bottom: 1.5rem;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+.payment-amount-label {
+  font-size: 0.875rem;
+  color: var(--slate-600);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.payment-amount-value {
+  font-size: 2rem;
+  font-weight: 800;
+  background: var(--primary-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.phone-number-selector {
+  margin: 1.5rem 0;
+}
+
+.phone-option-label {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: var(--radius-md);
+  margin-bottom: 0.75rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.phone-option-label:hover {
+  border-color: var(--primary);
+  background: rgba(232, 90, 79, 0.05);
+  transform: translateX(4px);
+}
+
+.phone-option-label input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  margin-right: 1rem;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+.phone-option-label input[type="radio"]:checked~span {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.phone-input-group {
+  display: flex;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.phone-prefix {
+  padding: 0.875rem 1rem;
+  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  border: 2px solid #e2e8f0;
+  border-right: none;
+  border-top-left-radius: var(--radius-md);
+  border-bottom-left-radius: var(--radius-md);
+  font-weight: 700;
+  color: var(--slate-700);
+  font-size: 1rem;
+}
+
+.phone-input-group .form-control {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-left: none !important;
+}
+
+.payment-instructions-box {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-md);
+  border-left: 4px solid #3b82f6;
+  margin-top: 1.5rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.payment-instructions-icon {
+  font-size: 1.5rem;
+  color: #3b82f6;
+  flex-shrink: 0;
+}
+
+.payment-instructions-text {
+  color: #1e40af;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+.payment-success-animation {
+  text-align: center;
+  padding: 2rem 0;
+  animation: fadeInScale 0.5s ease-out;
+}
+
+.success-checkmark {
+  font-size: 4rem;
+  color: #10b981;
+  margin-bottom: 1rem;
+  animation: scaleIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0) rotate(-180deg);
+  }
+
+  to {
+    transform: scale(1) rotate(0);
+  }
+}
+
+.payment-error-box {
+  background: linear-gradient(135deg, #fee 0%, #fdd 100%);
+  border: 1px solid #fcc;
+  border-left: 4px solid #dc3545;
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-md);
+  margin-top: 1.5rem;
+  color: #c53030;
+  animation: shake 0.5s;
+}
+
+@keyframes shake {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-10px);
+  }
+
+  75% {
+    transform: translateX(10px);
+  }
+}
+
+/* ============================================================
+   CARD & LIST GROUP ENHANCEMENTS
+   Bootstrap component improvements
+   ============================================================ */
+
+.card {
+  border-radius: var(--radius-lg) !important;
+  border: 1px solid rgba(0, 0, 0, 0.05) !important;
+  box-shadow: var(--shadow-subtle) !important;
+  transition: all 0.3s ease !important;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-premium) !important;
+}
+
+.card-header {
+  background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%) !important;
+  border-bottom: 2px solid #f1f5f9 !important;
+  font-weight: 600 !important;
+  padding: 1.25rem 1.5rem !important;
+}
+
+.card-body {
+  padding: 1.5rem !important;
+}
+
+.list-group-item {
+  border: none !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+  padding: 1rem 1.5rem !important;
+  transition: all 0.2s ease !important;
+}
+
+.list-group-item:hover {
+  background: #f8f9fa !important;
+  padding-left: 1.75rem !important;
+}
+
+.list-group-item:last-child {
+  border-bottom: none !important;
+}
+
+/* ============================================================
+   UTILITY ANIMATIONS
+   Reusable animation classes
+   ============================================================ */
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.slide-in-up {
+  animation: slideInUp 0.5s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-in-right {
+  animation: slideInRight 0.5s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ============================================================
+   PREMIUM TRANSITIONS
+   Smooth micro-interactions
+   ============================================================ */
+
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-premium);
+}
+
+.hover-glow {
+  transition: box-shadow 0.3s ease;
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 20px rgba(232, 90, 79, 0.3);
+}
+
+.hover-scale {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
 }

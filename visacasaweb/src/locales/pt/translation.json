@@ -242,5 +242,20 @@
   "aboutus": "Sobre nós",
   "searchfilters": "Filtros de pesquisa",
   "privacy": "Política de Privacidade",
-  "broadcast": "Enviar mensagem para todos os utilizadores"
+  "broadcast": "Enviar mensagem para todos os utilizadores",
+  "processingpayment": "Processando pagamento...",
+  "paymentinitiating": "Iniciando pagamento",
+  "paymentprocessing": "A processar pagamento",
+  "paymentconfirming": "Confirmando pagamento",
+  "paymentsuccess": "Pagamento efectuado com sucesso!",
+  "transactionref": "Referência da transação",
+  "validatenumber": "Por favor, insira um número válido de 9 dígitos",
+  "paymentamount": "Valor a pagar",
+  "retrypayment": "Tentar novamente",
+  "paymentinstructions": "Irá receber uma notificação USSD no seu telefone. Digite o seu PIN M-Pesa para confirmar o pagamento.",
+  "waitingconfirmation": "Aguardando confirmação...",
+  "paymenttimeout": "Tempo limite de pagamento",
+  "paymentfailed": "Pagamento sem sucesso",
+  "cancel": "Cancelar",
+  "pay": "Pagar"
 }

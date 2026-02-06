@@ -1,0 +1,590 @@
+/* ============================================================
+   PREMIUM ORDER TRACKING & STATUS STYLES
+   Modern, elegant order tracking interface with animations
+   ============================================================ */
+
+/* Order Tracking Container */
+.order-tracking-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.order-tracking-header {
+    margin-bottom: 3rem;
+    text-align: center;
+}
+
+.order-tracking-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--slate-900);
+    margin-bottom: 0.5rem;
+}
+
+.order-number {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.25rem;
+    color: var(--slate-700);
+    font-weight: 600;
+}
+
+.order-number-highlight {
+    color: var(--primary);
+    font-weight: 700;
+}
+
+/* ============================================================
+   PREMIUM PROGRESS STEPPER
+   Animated horizontal timeline with smooth transitions
+   ============================================================ */
+
+.progress-stepper-container {
+    margin: 3rem 0;
+    padding: 2rem;
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-premium);
+}
+
+.progress-stepper {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    position: relative;
+    padding: 2rem 0;
+}
+
+/* Progress Line Background */
+.progress-stepper::before {
+    content: '';
+    position: absolute;
+    top: 45px;
+    left: 40px;
+    right: 40px;
+    height: 4px;
+    background: linear-gradient(to right, #e2e8f0 0%, #e2e8f0 100%);
+    border-radius: 2px;
+    z-index: 1;
+}
+
+/* Active Progress Line */
+.progress-stepper::after {
+    content: '';
+    position: absolute;
+    top: 45px;
+    left: 40px;
+    width: 0;
+    height: 4px;
+    background: var(--primary-gradient);
+    border-radius: 2px;
+    z-index: 2;
+    transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 20px rgba(232, 90, 79, 0.4);
+}
+
+/* Step Item */
+.progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    flex: 1;
+    z-index: 3;
+}
+
+/* Step Circle */
+.step-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: white;
+    border: 4px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: #cbd5e0;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Step Icon */
+.step-icon {
+    font-size: 22px;
+    transition: all 0.3s ease;
+}
+
+/* Step Label */
+.step-label {
+    margin-top: 1rem;
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #94a3b8;
+    max-width: 120px;
+    line-height: 1.4;
+    transition: color 0.3s ease;
+}
+
+/* Active Step */
+.progress-step.active .step-circle {
+    background: var(--primary-gradient);
+    border-color: var(--primary);
+    color: white;
+    transform: scale(1.15);
+    box-shadow: 0 8px 16px -4px rgba(232, 90, 79, 0.4),
+        0 0 0 8px rgba(232, 90, 79, 0.1);
+    animation: pulseActive 2s infinite;
+}
+
+.progress-step.active .step-label {
+    color: var(--primary);
+    font-weight: 700;
+}
+
+/* Completed Step */
+.progress-step.completed .step-circle {
+    background: var(--primary-gradient);
+    border-color: var(--primary);
+    color: white;
+    box-shadow: 0 4px 6px -1px rgba(232, 90, 79, 0.3);
+}
+
+.progress-step.completed .step-label {
+    color: var(--slate-700);
+}
+
+/* Pulse Animation for Active Step */
+@keyframes pulseActive {
+
+    0%,
+    100% {
+        box-shadow: 0 8px 16px -4px rgba(232, 90, 79, 0.4),
+            0 0 0 8px rgba(232, 90, 79, 0.1);
+    }
+
+    50% {
+        box-shadow: 0 8px 16px -4px rgba(232, 90, 79, 0.6),
+            0 0 0 12px rgba(232, 90, 79, 0.2);
+    }
+}
+
+/* ============================================================
+   PREMIUM CARDS & CONTAINERS
+   Glassmorphism design with elevation
+   ============================================================ */
+
+.premium-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    box-shadow: var(--shadow-premium);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.premium-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+}
+
+.premium-card-header {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--slate-900);
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #f1f5f9;
+}
+
+.premium-card-body {
+    color: var(--slate-700);
+    line-height: 1.8;
+}
+
+/* Info Row */
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    font-weight: 600;
+    color: var(--slate-700);
+    font-size: 0.95rem;
+}
+
+.info-value {
+    font-weight: 600;
+    color: var(--slate-900);
+    font-size: 0.95rem;
+}
+
+.info-value.total {
+    font-size: 1.25rem;
+    color: var(--primary);
+}
+
+/* ============================================================
+   PREMIUM ALERTS & NOTIFICATIONS
+   Modern alert boxes with icons and colors
+   ============================================================ */
+
+.premium-alert {
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius-md);
+    font-size: 0.95rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 1rem 0;
+    box-shadow: var(--shadow-subtle);
+    border-left: 4px solid;
+    transition: all 0.3s ease;
+}
+
+.premium-alert:hover {
+    transform: translateX(4px);
+}
+
+.premium-alert-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+/* Alert Variants */
+.premium-alert-danger {
+    background: linear-gradient(135deg, #fee 0%, #fdd 100%);
+    border-left-color: #dc3545;
+    color: #c53030;
+}
+
+.premium-alert-danger .premium-alert-icon {
+    color: #dc3545;
+}
+
+.premium-alert-success {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    border-left-color: #28a745;
+    color: #155724;
+}
+
+.premium-alert-success .premium-alert-icon {
+    color: #28a745;
+}
+
+.premium-alert-warning {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border-left-color: #ffc107;
+    color: #856404;
+}
+
+.premium-alert-warning .premium-alert-icon {
+    color: #ffc107;
+}
+
+.premium-alert-info {
+    background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+    border-left-color: #17a2b8;
+    color: #0c5460;
+}
+
+.premium-alert-info .premium-alert-icon {
+    color: #17a2b8;
+}
+
+/* ============================================================
+   PREMIUM BADGES & STATUS INDICATORS
+   Vibrant, modern badges with animations
+   ============================================================ */
+
+.premium-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: var(--shadow-subtle);
+    transition: all 0.3s ease;
+}
+
+.premium-badge:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-premium);
+}
+
+/* Badge Variants */
+.badge-pending {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    color: white;
+}
+
+.badge-approved {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+}
+
+.badge-in-transit {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+}
+
+.badge-delivered {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    color: white;
+}
+
+.badge-cancelled {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+}
+
+.badge-paid {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+}
+
+.badge-unpaid {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+}
+
+/* Badge Icon */
+.badge-icon {
+    font-size: 1rem;
+}
+
+/* Status Dot with Pulse */
+.status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 0.5rem;
+    animation: pulse 2s infinite;
+}
+
+.status-dot.pending {
+    background: #fbbf24;
+}
+
+.status-dot.success {
+    background: #10b981;
+}
+
+.status-dot.danger {
+    background: #ef4444;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.6;
+        transform: scale(1.1);
+    }
+}
+
+/* ============================================================
+   RESPONSIVE DESIGN
+   Mobile-optimized layouts
+   ============================================================ */
+
+@media (max-width: 992px) {
+    .progress-stepper {
+        flex-wrap: wrap;
+        gap: 2rem;
+    }
+
+    .progress-step {
+        flex: 1 1 calc(33.333% - 2rem);
+        min-width: 100px;
+    }
+
+    .step-label {
+        font-size: 0.75rem;
+        max-width: 100px;
+    }
+
+    .progress-stepper::before,
+    .progress-stepper::after {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .order-tracking-container {
+        padding: 1rem;
+    }
+
+    .order-tracking-title {
+        font-size: 1.5rem;
+    }
+
+    .progress-stepper {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .progress-step {
+        flex-direction: row;
+        justify-content: flex-start;
+        gap: 1rem;
+        padding: 1rem 0;
+        position: relative;
+    }
+
+    .progress-step::after {
+        content: '';
+        position: absolute;
+        left: 25px;
+        top: 60px;
+        width: 4px;
+        height: calc(100% + 2rem);
+        background: #e2e8f0;
+        z-index: 1;
+    }
+
+    .progress-step:last-child::after {
+        display: none;
+    }
+
+    .progress-step.completed::after {
+        background: var(--primary-gradient);
+    }
+
+    .step-label {
+        text-align: left;
+        margin-top: 0;
+        max-width: 100%;
+    }
+
+    .premium-card {
+        padding: 1.5rem;
+    }
+
+    .info-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+}
+
+/* ============================================================
+   UTILITY CLASSES
+   Helper classes for quick styling
+   ============================================================ */
+
+.mt-4 {
+    margin-top: 2rem;
+}
+
+.mb-4 {
+    margin-bottom: 2rem;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.fw-bold {
+    font-weight: 700;
+}
+
+.grid-2-col {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+}
+
+@media (max-width: 768px) {
+    .grid-2-col {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
+
+/* ============================================================
+   ENHANCED CARD VARIANTS
+   Additional card styles for different use cases
+   ============================================================ */
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+}
+
+.highlight-card {
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    border-left: 5px solid var(--primary);
+    padding: 1.5rem;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-premium);
+}
+
+/* ============================================================
+   PAYMENT METHOD STYLES
+   Styled payment information display
+   ============================================================ */
+
+.payment-method-container {
+    background: white;
+    padding: 1.5rem;
+    border-radius: var(--radius-md);
+    border: 2px solid #f1f5f9;
+    transition: all 0.3s ease;
+}
+
+.payment-method-container:hover {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(232, 90, 79, 0.1);
+}
+
+.payment-method-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--slate-600);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+}
+
+.payment-method-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--slate-900);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.payment-icon {
+    font-size: 1.5rem;
+    color: var(--primary);
+}

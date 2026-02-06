@@ -31,15 +31,20 @@ const reducer = (state, action) => {
     case 'CREATE_FAIL':
       return { ...state, loading: false };
 
-
     case 'CREATE_MPESA_REQUEST':
-      return { ...state, loading: true };
+      return { ...state, loadingPayment: true, paymentError: null, paymentProgress: 'initiating' };
 
     case 'CREATE_MPESA_SUCCESS':
-      return { ...state, paymentMpesa: action.payload, loading: false };
+      return { ...state, paymentMpesa: action.payload, loadingPayment: false, paymentProgress: 'success', paymentError: null };
 
     case 'CREATE_MPESA_FAIL':
-      return { ...state, loading: false };
+      return { ...state, loadingPayment: false, paymentProgress: 'failed', paymentError: action.payload };
+
+    case 'PAYMENT_PROGRESS':
+      return { ...state, paymentProgress: action.payload };
+
+    case 'PAYMENT_RESET':
+      return { ...state, loadingPayment: false, paymentProgress: null, paymentError: null };
 
     case 'SELLER_DETAILS_REQUEST':
       return { ...state, loadingSeller: true };
@@ -50,8 +55,6 @@ const reducer = (state, action) => {
     case 'SELLER_DETAILS_FAIL':
       return { ...state, errorSeller: action.payload, loadingSeller: false };
 
-
-
     default:
       return state;
   }
@@ -60,7 +63,12 @@ const reducer = (state, action) => {
 export default function PlaceOrderScreen() {
   const { t } = useTranslation();
 
-  const [{ loading }, dispatch] = useReducer(reducer, { loading: false });
+  const [{ loading, loadingPayment, paymentProgress, paymentError }, dispatch] = useReducer(reducer, {
+    loading: false,
+    loadingPayment: false,
+    paymentProgress: null,
+    paymentError: null
+  });
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const navigate = useNavigate();
   const { cart, userInfo } = state;
@@ -69,7 +77,7 @@ export default function PlaceOrderScreen() {
   const [isModalStock, setIsModalStock] = useState(false);
   const [isModalDelayOrder, setIsModalDelayOrder] = useState(false);
   const [itemOutOfStock, setItemOutOfStock] = useState([]);
-
+  const [phoneNumberError, setPhoneNumberError] = useState('');
 
   let [customerNumber, setCustomerNumber] = useState(null);
 
@@ -88,8 +96,10 @@ export default function PlaceOrderScreen() {
 
   const closeModalMpesa = () => {
     setIsModalMpesa(false);
-    dispatch({ type: 'CREATE_MPESA_FAIL' });
-
+    dispatch({ type: 'PAYMENT_RESET' });
+    setEscolha(null);
+    setValorInput('');
+    setPhoneNumberError('');
   };
 
   const closeModalStock = () => {
@@ -146,33 +156,48 @@ export default function PlaceOrderScreen() {
 
   // Função para lidar com a mudança no campo de input
   const handleInputChange = (event) => {
-    const novoValor = event.target.value;
-    setValorInput(novoValor);
+    const novoValor = event.target.value.replace(/\D/g, ''); // Only numbers
+    if (novoValor.length <= 9) {
+      setValorInput(novoValor);
+      if (novoValor.length === 9) {
+        setPhoneNumberError('');
+      }
+    }
   };
 
   const paymentMpesa = async () => {
+    // Validate phone number
+    if (escolha === 'opcao2' && valorInput.length !== 9) {
+      setPhoneNumberError(t('validatenumber'));
+      return;
+    }
+
+    if (!escolha) {
+      setPhoneNumberError(t('whichnumbertopay'));
+      return;
+    }
 
     if (valorInput) {
-      customerNumber = valorInput
+      customerNumber = valorInput;
     }
     customerNumber = '258' + customerNumber;
 
-    const amount = cart.totalPrice;
-
-    // validar a quantidade disponviel em stock
-    // Caso o valor em stock disponivel seja maior que a quantidade selecionado ele deve avancar;
-    // Caso nao deve emitir uma mensagem informando que a quantidade disponivel em stock e tanto e pede que se reduza
-    // A quantidade para o disponivel em stock
+    const amount = parseFloat(cart.totalPrice);
 
     try {
       dispatch({ type: 'CREATE_MPESA_REQUEST' });
+      dispatch({ type: 'PAYMENT_PROGRESS', payload: 'initiating' });
 
       const { data } = await axios.post(`/api/payments/mpesa/c2b`, { customerNumber, amount }, {
         headers: {
           authorization: `Bearer ${userInfo.token}`,
         },
       });
+
+      dispatch({ type: 'PAYMENT_PROGRESS', payload: 'processing' });
+
       if (data.paid) {
+        dispatch({ type: 'PAYMENT_PROGRESS', payload: 'confirming' });
 
         try {
           dispatch({ type: 'CREATE_REQUEST' });
@@ -199,43 +224,48 @@ export default function PlaceOrderScreen() {
               },
             }
           );
-          ctxDispatch({ type: 'CART_CLEAR' });
-          dispatch({ type: 'CREATE_SUCCESS' });
-          navigate(`/order/${order.data.order._id}`);
-          toast.success('Pedido efectuado com sucesso');
 
           dispatch({ type: 'CREATE_MPESA_SUCCESS', payload: data });
+          toast.success(t('paymentsuccess'));
+
+          // Show success state for 2 seconds before redirecting
+          setTimeout(() => {
+            ctxDispatch({ type: 'CART_CLEAR' });
+            dispatch({ type: 'CREATE_SUCCESS' });
+            navigate(`/order/${order.data.order._id}`);
+          }, 2000);
+
         } catch (err) {
-          dispatch({ type: 'CREATE_MPESA_FAIL', payload: getError(err) });
+          const errorMsg = getError(err);
+          dispatch({ type: 'CREATE_MPESA_FAIL', payload: errorMsg });
+          toast.error(errorMsg);
         }
       } else {
+        let errorMessage = t('paymentfailed');
+
         if (data.code === 'INS-1') {
-          toast.error('Erro Interno');
-        }
-        if (data.code === 'INS-4') {
-          toast.error('Conta inactiva');
-        }
-        if (data.code === 'INS-5') {
-          toast.error('Transação cancelada pelo utilizador');
-        }
-        if (data.code === 'INS-6') {
-          toast.error('Transação falhada');
-        }
-        if (data.code === 'INS-9') {
-          toast.error('Tempo de espera excedido');
-        }
-        if (data.code === 'INS-2006') {
-          toast.error('Saldo insuficiente');
-        }
-        if (data.code === 'INS-2051') {
-          toast.error('Número de telefone inválido');
+          errorMessage = 'Erro Interno';
+        } else if (data.code === 'INS-4') {
+          errorMessage = 'Conta inactiva';
+        } else if (data.code === 'INS-5') {
+          errorMessage = 'Transação cancelada pelo utilizador';
+        } else if (data.code === 'INS-6') {
+          errorMessage = 'Transação falhada';
+        } else if (data.code === 'INS-9') {
+          errorMessage = 'Tempo de espera excedido';
+        } else if (data.code === 'INS-2006') {
+          errorMessage = 'Saldo insuficiente';
+        } else if (data.code === 'INS-2051') {
+          errorMessage = 'Número de telefone inválido';
         }
 
-        toast.error('Pagamento sem sucesso');
-        setIsModalMpesa(false);
+        dispatch({ type: 'CREATE_MPESA_FAIL', payload: errorMessage });
+        toast.error(errorMessage);
       }
     } catch (err) {
-      toast.error(getError(err));
+      const errorMsg = getError(err);
+      dispatch({ type: 'CREATE_MPESA_FAIL', payload: errorMsg });
+      toast.error(errorMsg);
     }
   };
 
@@ -604,58 +634,128 @@ export default function PlaceOrderScreen() {
         </Modal.Footer>
       </Modal>
 
-      <Modal show={isModalMpesa} className='modal' >
+      <Modal show={isModalMpesa} className='modal' centered>
         <Modal.Header closeButton onClick={closeModalMpesa}>
           <Modal.Title>{t('mpesapayment')}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {t('whichnumbertopay')}<br />
+          <div style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px', textAlign: 'center' }}>
+            <div style={{ fontSize: '14px', color: '#666', marginBottom: '8px' }}>{t('paymentamount')}</div>
+            <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#667eea' }}>{cart.totalPrice} MT</div>
+          </div>
 
-
-          {/* RadioButtons */}
-          <label>
-            <input
-              type="radio"
-              value="opcao1"
-              checked={escolha === "opcao1"}
-              onChange={handleEscolhaChange}
-            />
-            {userInfo && userInfo.phoneNumber}
-          </label>
-          <br />
-          <label>
-            <input
-              type="radio"
-              value="opcao2"
-              checked={escolha === "opcao2"}
-              onChange={handleEscolhaChange}
-            />
-            {t('anothernumber')}
-          </label>
-
-          {/* Campo de input condicional */}
-          {escolha === 'opcao2' && (
-            <div>
-              <Form.Control
-                type="text"
-                max={9}
-                maxLength={9}
-                pattern="[0-9]*"
-                title="Insira apenas números"
-                placeholder="8********"
-                value={valorInput}
-                onChange={handleInputChange}
-              />
+          {loadingPayment ? (
+            <div style={{ textAlign: 'center', padding: '30px 0' }}>
+              <LoadingBox />
+              <div style={{ marginTop: '15px', fontSize: '14px', color: '#666' }}>
+                {paymentProgress === 'initiating' && t('paymentinitiating')}
+                {paymentProgress === 'processing' && t('paymentprocessing')}
+                {paymentProgress === 'confirming' && t('paymentconfirming')}
+              </div>
+              <div style={{ marginTop: '10px', fontSize: '12px', color: '#999', fontStyle: 'italic' }}>
+                {t('paymentinstructions')}
+              </div>
             </div>
+          ) : paymentProgress === 'success' ? (
+            <div style={{ textAlign: 'center', padding: '30px 0' }}>
+              <div style={{ fontSize: '48px', color: '#10b981', marginBottom: '15px' }}>✓</div>
+              <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#10b981', marginBottom: '10px' }}>
+                {t('paymentsuccess')}
+              </div>
+              <div style={{ fontSize: '12px', color: '#666' }}>
+                {t('waitingconfirmation')}
+              </div>
+            </div>
+          ) : (
+            <>
+              <div style={{ marginBottom: '15px' }}>
+                {t('whichnumbertopay')}
+              </div>
+
+              <div style={{ marginBottom: '15px' }}>
+                <label style={{ display: 'block', marginBottom: '10px', cursor: 'pointer' }}>
+                  <input
+                    type="radio"
+                    value="opcao1"
+                    checked={escolha === "opcao1"}
+                    onChange={handleEscolhaChange}
+                    disabled={loadingPayment}
+                    style={{ marginRight: '10px' }}
+                  />
+                  <span style={{ fontSize: '16px' }}>258{userInfo && userInfo.phoneNumber}</span>
+                </label>
+
+                <label style={{ display: 'block', cursor: 'pointer' }}>
+                  <input
+                    type="radio"
+                    value="opcao2"
+                    checked={escolha === "opcao2"}
+                    onChange={handleEscolhaChange}
+                    disabled={loadingPayment}
+                    style={{ marginRight: '10px' }}
+                  />
+                  <span style={{ fontSize: '16px' }}>{t('anothernumber')}</span>
+                </label>
+              </div>
+
+              {escolha === 'opcao2' && (
+                <div style={{ marginTop: '15px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
+                    <span style={{ padding: '10px 15px', backgroundColor: '#f0f0f0', borderTopLeftRadius: '4px', borderBottomLeftRadius: '4px', fontSize: '16px' }}>258</span>
+                    <Form.Control
+                      type="text"
+                      maxLength={9}
+                      placeholder="8********"
+                      value={valorInput}
+                      onChange={handleInputChange}
+                      disabled={loadingPayment}
+                      style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0, fontSize: '16px' }}
+                    />
+                  </div>
+                  {phoneNumberError && (
+                    <div style={{ color: '#dc3545', fontSize: '12px', marginTop: '5px' }}>
+                      {phoneNumberError}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {paymentError && (
+                <div style={{ marginTop: '20px', padding: '12px', backgroundColor: '#fee', border: '1px solid #fcc', borderRadius: '4px', color: '#c33' }}>
+                  <strong>{t('paymentfailed')}:</strong> {paymentError}
+                </div>
+              )}
+
+              <div style={{ marginTop: '20px', padding: '12px', backgroundColor: '#e7f3ff', borderRadius: '4px', fontSize: '13px', color: '#0066cc' }}>
+                ℹ️ {t('paymentinstructions')}
+              </div>
+            </>
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="dark" onClick={paymentMpesa}>
-            Pagar
-          </Button>
-          <Button variant="danger" onClick={closeModalMpesa}>
-            Cancelar
-          </Button>
+          {paymentProgress === 'success' ? (
+            <Button variant="success" disabled>
+              {t('paymentsuccess')}
+            </Button>
+          ) : paymentError ? (
+            <>
+              <Button variant="primary" onClick={paymentMpesa} disabled={loadingPayment}>
+                {t('retrypayment')}
+              </Button>
+              <Button variant="secondary" onClick={closeModalMpesa}>
+                {t('cancel')}
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="dark" onClick={paymentMpesa} disabled={loadingPayment || !escolha}>
+                {loadingPayment ? t('processingpayment') : t('pay')}
+              </Button>
+              <Button variant="danger" onClick={closeModalMpesa} disabled={loadingPayment}>
+                {t('cancel')}
+              </Button>
+            </>
+          )}
         </Modal.Footer>
       </Modal>
       <Modal show={isModalStock} className='modal' >
