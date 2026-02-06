@@ -70,14 +70,16 @@ mongoose
 // **Inicializando Express**
 const app = express();
 app.use(express.json());
-app.use(cors());
 
-// Configuração de CORS
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
+// Configuração de CORS - MUST be before other middleware
+app.use(cors({
+  origin: ['https://visacasa.gestaomodernaonline.com', 'http://localhost:3000', 'http://localhost:5173'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range'],
+  optionsSuccessStatus: 200
+}));
 
 app.use(express.urlencoded({ extended: true }));
 
